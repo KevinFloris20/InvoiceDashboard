@@ -8,9 +8,31 @@
     <title>FCR Dashboard</title>
 </head>
 <body>
-    <div class="ui segment">
-        <p>Hi</p>
+    <div id="head">
+        <div class="ui center aligned container" style="padding-top: 1%;">
+            <div style="background:black; display:inline-block; padding:10px; border-radius:5px;">
+                <h1 id="fonts" style="color:white">FCR Invoice Dashboard</h1>
+            </div>
+        </div>
+        <div class="ui inverted menu" style="margin-bottom: 1%;padding:.5%;">
+            <a class="item" href="/newInv">
+                Make New Invoice
+            </a>
+            <a class="item" href="/search">
+                Search Invoice
+            </a>
+        </div>
     </div>
+    
+
+
+    <div class="ui segment" id="inv">
+        <div class="ui form" id="invoice-form">
+            <img src="FCRInvoiceTemplateNull.png" alt="Invoice Form" id="invoice-image">
+        </div>
+    </div>
+
+    
+    <script src="script.js"></script>
 </body>
-<script src="script.js"></script>
 </html>

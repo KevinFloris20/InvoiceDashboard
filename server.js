@@ -11,6 +11,10 @@ app.use((err, req, res, next) => {
   res.status(500).send('Something broke! Error:', err);
 });
 
+//routes
+const routes = require("./server/routes.js");
+app.use(routes);
+
 //lisissteen
 app.listen(PORT, function () {
   console.log(`Server is running on port ${PORT}`);
