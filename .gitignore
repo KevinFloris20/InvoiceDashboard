@@ -2,3 +2,5 @@ cred.env
 node_modules
 FCRInvoiceTemplate.pdf
 FCRInvoiceTemplate.png
+invoicedashboardfcr-b62134e84d26.json
+sendObjToDB.js

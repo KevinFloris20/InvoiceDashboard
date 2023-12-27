@@ -15,11 +15,11 @@
             </div>
         </div>
         <div class="ui inverted menu" style="margin-bottom: 1%;padding:.5%;">
-            <a class="item" href="/newInv">
+            <a id="menuNewInv" class="item">
                 Make New Invoice
             </a>
-            <a class="item" href="/search">
-                Search Invoice
+            <a id="menuSearch" class="item">
+                Search Invoices
             </a>
         </div>
     </div>
@@ -29,6 +29,13 @@
     <div class="ui segment" id="inv">
         <div class="ui form" id="invoice-form">
             <img src="FCRInvoiceTemplateNull.png" alt="Invoice Form" id="invoice-image">
+        </div>
+    </div>
+
+
+    <div class="ui segment" id="searchSection" style="display: none;">
+        <div class="ui segment">
+            <h1>Search Invoices</h1>
         </div>
     </div>
 
