@@ -237,7 +237,6 @@ async function deleteData(client, projectId, dbname, collectionId, documentId, t
     }
 }
 
-
 async function readData(client, projectId, dbname, collectionId, documentId) {
     const accessToken = await getAccessToken(client);
     const headers = {
@@ -255,7 +254,6 @@ async function readData(client, projectId, dbname, collectionId, documentId) {
         return null;
     }
 }
-
 
 async function interactWithFirestore(whatAreWeDoing, data) {
     try {
@@ -312,23 +310,4 @@ module.exports = { interactWithFirestore };
 //       }
 //     }
 //   });
-// const lastDocument = await getLastDocument(client, projectId, db_name, collection_Id);
-// let documentId;
-
-// if (lastDocument && isDocumentWithinSizeLimit(lastDocument, data)) {
-//     documentId = lastDocument.name.split('/').pop();
-//     await writeData(client, projectId, db_name, collection_Id, documentId, data);
-// } else {
-//     const newDocument = await createNewDocument(client, projectId, db_name, collection_Id, data);
-//     if (newDocument) {
-//         documentId = newDocument.name.split('/').pop();
-//     } else {
-//         console.log('Failed to create a new document');
-//         return;
-//     }
-// }
-// console.log('Data written to document ID:', documentId);
-// return;
-  
-
 
