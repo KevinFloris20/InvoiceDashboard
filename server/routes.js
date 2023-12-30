@@ -15,25 +15,26 @@ router.get('/formdata', async (req, res) => {
 });
 
 //just run the sendObjToDB.js file
-const { interactWithFirestore } = require('./models/sendObjToDB');
-var sampledata = {
-    invoiceid: null,
-    wholeInvoice: {
-      A: "any string value",
-      B: "any string value",
-      C: "any string value",
-      D: "any string value",
-      invoicemap: {
-        "key1": "value1",
-        "key2": "value2",
-        "key3": "value3",
-        "key4": "value4",
-        "key5": "value5",
-      }
-    }
-};
+const { interactWithFirestore } = require('./models/firestoreApp.js');
 
-interactWithFirestore("writeData", sampledata);
+
 
 //export
 module.exports = router;
+
+// var sampledata = {
+//   invoiceid: '2',
+//   wholeInvoice: {
+//     A: "Test",
+//     B: "Test",
+//     C: "any string value",
+//     D: "any string value",
+//     invoicemap: {
+//       "key1": "value1",
+//       "key2": "value2",
+//       "key3": "value3",
+//       "key4": "value4",
+//       "key5": "value5",
+//     }
+//   }
+// };
