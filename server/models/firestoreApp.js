@@ -14,7 +14,7 @@ function logToFile(message) {
     fs.appendFileSync(logFile, `[${timestamp}] ${message}\n`);
 }
 
-function handleError(error, customMessage){
+function handleError(error, customMessage) {
     const errorMsg = customMessage + '\n' + (error.response ? error.response.data : error);
     logToFile(errorMsg);
     console.error(errorMsg);
