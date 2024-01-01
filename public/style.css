@@ -15,7 +15,8 @@ body{
 #inv{
     width: 60%;
     height:auto;
-    margin: 0 auto;
+    display:inline-block;
+    /* margin: 0 auto; */
 }
 #invoice-form {
     position: relative;
@@ -41,3 +42,60 @@ body{
     margin: 0;
 }
 
+
+
+
+/* Style adjustments for alignment */
+#head, .ui.inverted.menu {
+    width: 100%; /* Ensure header and menu take the full width */
+}
+
+/* Flex container adjustments */
+.container {
+    display: flex;
+    flex-direction: row; /* Align children in a row */
+    width: 100%;
+    margin-top: 20px; /* Adjust this value to match the top of the invoice */
+}
+
+.button-list {
+    flex: 0 0 auto; /* Do not grow or shrink, but base on content width */
+    display: flex; /* Use flexbox for the buttons themselves */
+    flex-direction: column; /* Stack buttons vertically */
+    justify-content: flex-start; /* Align buttons at the start of the main axis */
+    align-items: flex-start; /* Align buttons at the start of the cross axis */
+    width: calc(20% - 2 * 10px); /* Set the width to 20% of the container */
+    margin: 10px;
+}
+
+.button-list .fluid.ui.button {
+    width: calc(100% - 2%); /* Subtract padding from the width */
+    margin-bottom: 10px; /* Add margin at the bottom of each button */
+    box-sizing: border-box; /* Include padding and border in the width calculation */
+}
+
+.button-list .fluid.ui.button:hover {
+    opacity: 0.8; /* 80% opacity makes the button slightly transparent */
+}
+
+
+
+.pdf-form {
+    width: 60%; /* Set the form width to 60% of its container */
+    display: flex; /* Use flexbox for alignment */
+    justify-content: center; /* Center content horizontally */
+    align-items: flex-start; /* Align at the top */
+}
+
+/* Media query adjustments */
+@media (max-width: 768px) {
+    /* ... */
+    .container {
+        flex-direction: column;
+    }
+
+    .button-list, .pdf-form {
+        width: 100%;
+        margin-top: 0;
+    }
+}

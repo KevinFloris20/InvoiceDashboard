@@ -1,6 +1,68 @@
 document.addEventListener('DOMContentLoaded', function() {
     let formData;  // Store the fetched form data
     let fieldValues = {};  // Store current field values
+
+
+        //this is for the buttons
+
+    // Function to submit form data
+    async function submitFormData() {
+        // Collect all input values from the form
+        const inputs = document.querySelectorAll('#invoice-form .dynamic-input');
+        const submitData = Array.from(inputs).reduce((data, input) => {
+            data[input.name] = input.value;
+            return data;
+        }, {});
+
+        // Post the data to the server
+        return fetch('/submit-form', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(submitData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Form submitted:', data);
+            return data;
+        })
+        .catch(error => console.error('Error submitting form:', error));
+    }
+
+    // Function to download the invoice
+    async function downloadInvoice() {
+        // Assuming the server responds with the URL of the PDF to download
+        fetch('/download-invoice')
+        .then(response => response.blob())
+        .then(blob => {
+            // Create a link element, set the href to the blob, and trigger the download
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'invoice.pdf'; // Set the file name for download
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        })
+        .catch(error => console.error('Error downloading invoice:', error));
+    }
+
+    // Add click event listener for Save button
+    document.getElementById('saveButton').addEventListener('click', function() {
+        submitFormData();
+    });
+
+    // Add click event listener for Save&Download button
+    document.getElementById('saveDownloadButton').addEventListener('click', function() {
+        submitFormData().then(() => downloadInvoice());
+    });
+
+    // Add click event listener for Save&Print button
+    document.getElementById('savePrintButton').addEventListener('click', function() {
+        submitFormData().then(() => window.print());
+    });
     
     function clearFormFields() {
         const existingFields = document.querySelectorAll('#invoice-form .dynamic-input');
@@ -111,6 +173,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
             document.getElementById(sectionId).style.display = '';
     }
+
+
+
+
+
     
 });
 
