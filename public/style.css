@@ -42,6 +42,19 @@ body{
     margin: 0;
 }
 
+#errorBar{
+    width: 20%;
+    height:fit-content;
+    width: calc(20% - 2 * 10px); /* Set the width to 20% of the container */
+    margin: 10px;
+}
+
+.success-message{
+    color: rgb(0, 180, 0);
+}
+.error-message{
+    color: rgb(255, 0, 0);
+}
 
 
 

@@ -101,6 +101,10 @@ async function getLastObjectId(document) {
 }
 
 function formatFirestoreValue(value) {
+    // Check for Date type to format as Firestore timestamp
+    if (value instanceof Date) {
+        return { timestampValue: value.toISOString() };
+    }
     if (typeof value === 'string') {
         return { stringValue: value };
     } else if (typeof value === 'boolean') {
@@ -122,9 +126,16 @@ function formatFirestoreValue(value) {
 }
 
 async function formatDataForFirestore(data) {
+    if (!data.fullInvoice || typeof data.fullInvoice !== 'object') {
+        throw new Error('Invalid or missing fullInvoice in data');
+    }
+
     let formattedData = {};
-    for (let [key, value] of Object.entries(data.wholeInvoice)) {
-        if (key === 'invoicemap') {
+    for (let [key, value] of Object.entries(data.fullInvoice)) {
+        // Special handling for the 'completedDate' field
+        if (key === 'completedDate') {
+            formattedData[key] = formatFirestoreValue(new Date(value));
+        } else if (key === 'invoicemap') {
             let mapFields = {};
             for (let [mapKey, mapValue] of Object.entries(value)) {
                 mapFields[mapKey] = formatFirestoreValue(mapValue);
@@ -211,7 +222,10 @@ async function writeData(client, projectId, dbname, collectionId, documentId, ne
     try {
         // Send the PATCH request to update the document with the new fields
         const response = await axios.patch(url, { fields: updateData }, { headers });
-        console.log('Document updated with new fields:', response.data);
+        console.log('Document updated with new fields:', response.data.fields);
+        var id = Math.max(...Object.keys(response.data.fields).map(key => parseInt(key.match(/(\d+)$/)?.[1] || 0)))
+        console.log('New ID:', id );
+        return "New Invoice ID: "+id;
     } catch (error) {
         console.error('Error updating document:', error.response ? error.response.data : error.message);
     }
@@ -256,6 +270,10 @@ async function readData(client, projectId, dbname, collectionId, documentId) {
 }
 
 async function interactWithFirestore(whatAreWeDoing, data) {
+    if (!data) {
+        throw new Error('No data provided to interactWithFirestore function');
+    }
+
     try {
         const { client, projectId } = await initializeFirestore();
         let documentId;
@@ -299,7 +317,8 @@ async function interactWithFirestore(whatAreWeDoing, data) {
 module.exports = { interactWithFirestore };
 // interactWithFirestore('writeData', {
 //     invoiceid: null,
-//     wholeInvoice: {
+//     completedDate: 'todays date',
+//     fullInvoice: {
 //       A: "any string value",
 //       B: "any string value",
 //       C: "any string value",

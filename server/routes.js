@@ -1,9 +1,11 @@
 //routes
 const express = require('express');
 const router = express.Router();
+const fs = require('fs');
+
 
 //get the pdfdata
-const { extractFormFields } = require('./models/extractPDFData');
+const { extractFormFields } = require('./models/PDFDataApp.js');
 router.get('/formdata', async (req, res) => {
     try {
         const pdfPath = 'FCRInvoiceTemplateNull.pdf';
@@ -17,34 +19,58 @@ router.get('/formdata', async (req, res) => {
 //just run the sendObjToDB.js file
 const { interactWithFirestore } = require('./models/firestoreApp.js');
 
+const { validateAndTransform } = require('./models/validation.js');
+
+const { newInvoicePDF } = require('./models/PDFDataApp.js');
 
 router.post('/submit-form', async (req, res) => {
     try {
         const submitData = req.body;
+        var result;
+
+        // Validate and transform data
+        const validatedData = validateAndTransform(submitData);
+
+        console.log(validatedData);
+
         // Save the data to the database
-        // const saveResult = await interactWithFirestore(submitData);
-        console.log(submitData);
+        if (validatedData.invoiceid === null) {
+            // New invoice
+            result = await interactWithFirestore('writeData', validatedData);
+
+        } else {
+            // Existing invoice
+            result = await interactWithFirestore('updateData', validatedData);
+        }
 
         // Respond with success and any additional data if needed
-        res.json({ message: 'Form submitted successfully' });
+        res.json({ message: 'Invoice submitted successfully', result: result });
     } catch (error) {
-        res.status(500).send('Error submitting form');
+        // Send back the error message to the client
+        res.status(500).json({ error: error.message });
     }
 });
 
-router.get('/download-invoice', async (req, res) => {
+router.post('/download-invoice', async (req, res) => {
     try {
-        // Generate or locate the invoice PDF file
-        // This is highly dependent on how you're generating or storing your PDFs
-
-        // For demonstration, if you had a static file to send:
-        console.log("downloaded");
-        // Or if you're dynamically generating a PDF:
-        // const pdfBuffer = await generateInvoicePDF();
-        // res.setHeader('Content-Type', 'application/pdf');
-        // res.send(pdfBuffer);
+        const data = req.body; // Assuming the data is sent in the request body
+        var pdfPath;
+        //check if a file exists FCRInvoiceTemplate if not then use FCRInvoiceTemplateNull
+        if (fs.existsSync('FCRInvoiceTemplate.pdf')) {
+            pdfPath = 'FCRInvoiceTemplate.pdf';
+        } else {
+            pdfPath = 'FCRInvoiceTemplateNull.pdf';
+        }
+        const pdfBytes = await newInvoicePDF(data, pdfPath);
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'attachment; filename=invoice.pdf');
+        res.setHeader('Content-Length', pdfBytes.length);
+        
+        res.end(pdfBytes);
     } catch (error) {
-        res.status(500).send('Error downloading invoice');
+        console.error(error);
+        console.log(error.message)
+        res.status(500).json({message:'Error generating invoice', error:error.message});
     }
 });
 
@@ -54,6 +80,7 @@ module.exports = router;
 // var sampledata = {
 //   invoiceid: '2',
 //   wholeInvoice: {
+//     
 //     A: "Test",
 //     B: "Test",
 //     C: "any string value",

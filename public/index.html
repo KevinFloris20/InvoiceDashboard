@@ -25,23 +25,33 @@
     </div>
     
 
-<div class="container">
+    <div class="container" id="newInv">
 
-    <!-- button list -->
-    <div class="button-list">
-        <button id="saveButton" class="fluid ui button" style="color:black; background-color: rgb(33,186,69);">Save</button>
-        <button id="saveDownloadButton" class="fluid ui button" style="color:black; background-color: rgb(33,133,208);">Save&Download</button>
-        <button id="savePrintButton" class="fluid ui button" style="color:black; background-color: rgb(219,40,40);">Save&Print</button>
-    </div>
+        <!-- button list -->
+        <div class="button-list">
+            <button id="saveButton" class="fluid ui button" style="color:black; background-color: rgb(33,186,69);">Save</button>
+            <button id="saveDownloadButton" class="fluid ui button" style="color:black; background-color: rgb(33,133,208);">Save&Download</button>
+            <button id="savePrintButton" class="fluid ui button" style="color:black; background-color: rgb(219,40,40);">Save&Print</button>
+        </div>
 
-    <!-- pdf Form -->
-    <div class="pdf-form ui segment" id="inv">
-        <div class="ui form" id="invoice-form">
-            <img src="FCRInvoiceTemplateNull.png" alt="Invoice Form" id="invoice-image">
+        <!-- pdf Form -->
+        <div class="pdf-form ui segment" id="inv">
+            <div class="ui form" id="invoice-form">
+                <img src="FCRInvoiceTemplateNull.png" alt="Invoice Form" id="invoice-image">
+            </div>
+        </div>
+
+        <!-- Error bar -->
+        <div class="ui segment" id="errorBar" >
+            <div class="ui segment">
+                <h1>Messages:</h1>
+            </div>
+            <div class="ui segment" id="errorList">
+                <div id="errorListUl">
+                </div>
+            </div>
         </div>
     </div>
-
-</div>
 
 
     <div class="ui segment" id="searchSection" style="display: none;">

@@ -3,7 +3,14 @@ document.addEventListener('DOMContentLoaded', function() {
     let fieldValues = {};  // Store current field values
 
 
-        //this is for the buttons
+    // Function to display messages
+    function displayMessage(message, type) {
+        const errorListUl = document.getElementById('errorListUl');
+        const messageElement = document.createElement('div');
+        messageElement.textContent = message;
+        messageElement.classList.add(type === 'error' ? 'error-message' : 'success-message');
+        errorListUl.appendChild(messageElement);
+    }
 
     // Function to submit form data
     async function submitFormData() {
@@ -15,38 +22,72 @@ document.addEventListener('DOMContentLoaded', function() {
         }, {});
 
         // Post the data to the server
-        return fetch('/submit-form', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(submitData)
-        })
-        .then(response => response.json())
-        .then(data => {
+        try {
+            const response = await fetch('/submit-form', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(submitData)
+            });
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Unknown error');
+            }
+
             console.log('Form submitted:', data);
+            displayMessage(`Success: ${data.message} ${data.result}`, 'success');
             return data;
-        })
-        .catch(error => console.error('Error submitting form:', error));
+        } catch (error) {
+            console.error('Error submitting form:', error);
+            displayMessage(`Error: ${error.message}`, 'error');
+        }
     }
 
+
     // Function to download the invoice
-    async function downloadInvoice() {
-        // Assuming the server responds with the URL of the PDF to download
-        fetch('/download-invoice')
-        .then(response => response.blob())
-        .then(blob => {
-            // Create a link element, set the href to the blob, and trigger the download
+    async function downloadInvoice(invoiceData, resID) {
+        var invoiceName = 'invoice.pdf'; // Default invoice name
+        if (resID && resID.result) {
+            var idMatch = resID.result.match(/\d+/); // Get the first sequence of digits
+            if (idMatch) {
+                var id = idMatch[0];
+                invoiceName = 'invoice' + id + '.pdf';
+            }
+        }
+
+        try {
+            const response = await fetch('/download-invoice', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(invoiceData)
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error downloading invoice: ${response.statusText}`);
+            }
+
+            const blob = await response.blob();
+            console.log(`Blob Type: ${blob.type}, Blob Size: ${blob.size}`);
+            if (blob.type !== 'application/pdf' || blob.size === 0) {
+                throw new Error('Received invalid PDF data');
+            }
+
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'invoice.pdf'; // Set the file name for download
+            a.download = invoiceName;
             document.body.appendChild(a);
             a.click();
             a.remove();
             window.URL.revokeObjectURL(url);
-        })
-        .catch(error => console.error('Error downloading invoice:', error));
+        } catch (error) {
+            console.error('Error downloading invoice:', error);
+            displayMessage(`Error: ${error.message}`, 'error');
+        }
     }
 
     // Add click event listener for Save button
@@ -54,9 +95,27 @@ document.addEventListener('DOMContentLoaded', function() {
         submitFormData();
     });
 
+    // Function to collect form data
+    function collectFormData() {
+        const inputs = document.querySelectorAll('#invoice-form .dynamic-input');
+        return Array.from(inputs).reduce((data, input) => {
+            data[input.name] = input.value;
+            return data;
+        }, {});
+    }
+
     // Add click event listener for Save&Download button
-    document.getElementById('saveDownloadButton').addEventListener('click', function() {
-        submitFormData().then(() => downloadInvoice());
+    document.getElementById('saveDownloadButton').addEventListener('click', async function() {
+        const invoiceData = collectFormData();
+        const resID = await submitFormData();
+        
+        // Check if resID is valid before calling downloadInvoice
+        if (resID && resID.result) {
+            await downloadInvoice(invoiceData, resID);
+        } else {
+            console.error('Error: Invalid response from submitFormData');
+            displayMessage('Error: Invalid response from submitFormData', 'error');
+        }
     });
 
     // Add click event listener for Save&Print button
@@ -157,22 +216,16 @@ document.addEventListener('DOMContentLoaded', function() {
     
 
 
-
-
     // this is the stuff for the menu
     document.getElementById('menuNewInv').addEventListener('click', function() {
-        showSection('inv');
+        document.getElementById('newInv').style.display = '';
+        document.getElementById('searchSection').style.display = 'none';
     });
     document.getElementById('menuSearch').addEventListener('click', function() {
-        showSection('searchSection');
+        document.getElementById('newInv').style.display = 'none';
+        document.getElementById('searchSection').style.display = '';
     });
-    function showSection(sectionId) {
-        var sections = document.getElementsByClassName('ui segment');
-        for (var i = 0; i < sections.length; i++) {
-            sections[i].style.display = 'none';
-        }
-            document.getElementById(sectionId).style.display = '';
-    }
+    
 
 
 

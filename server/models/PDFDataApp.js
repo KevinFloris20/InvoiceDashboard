@@ -1,5 +1,6 @@
 const fs = require('fs');
 const PDFParser = require('pdf2json');
+const { PDFDocument } = require('pdf-lib');
 
 function extractFormFields(pdfPath) {
     return new Promise((resolve, reject) => {
@@ -30,6 +31,26 @@ function extractFormFields(pdfPath) {
     });
 }
 
-module.exports = { extractFormFields };
+async function newInvoicePDF(data, pdfPath) {
+    const existingPdfBytes = fs.readFileSync(pdfPath);
+    const pdfDoc = await PDFDocument.load(existingPdfBytes);
+
+    const form = pdfDoc.getForm();
+
+    // Fill each field with data
+    for (let key in data) {
+        const formField = form.getField(key);
+        if (formField) {
+            formField.setText(data[key]);
+        }
+    }
+
+    form.flatten(); // This makes the form fields no longer editable
+
+    const pdfBytes = await pdfDoc.save();
+    return pdfBytes; // Returns a buffer
+}
+
+module.exports = { extractFormFields, newInvoicePDF};
 
 

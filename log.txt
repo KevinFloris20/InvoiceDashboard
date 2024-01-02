@@ -1,0 +1,20 @@
+[2024-01-01T22:11:23.080Z] Error in the main function
+Error: Unsupported operation: [object Object]
+[2024-01-01T22:13:17.613Z] Error in the main function
+Error: Unsupported operation: newInvoice
+[2024-01-01T22:14:19.880Z] Error in the main function
+TypeError: Cannot convert undefined or null to object
+[2024-01-01T22:15:58.158Z] Error in the main function
+TypeError: Cannot convert undefined or null to object
+[2024-01-01T22:16:15.572Z] Error in the main function
+TypeError: Cannot convert undefined or null to object
+[2024-01-01T22:16:24.753Z] Error in the main function
+TypeError: Cannot convert undefined or null to object
+[2024-01-01T22:24:20.193Z] Error in the main function
+TypeError: Cannot convert undefined or null to object
+[2024-01-01T22:25:19.707Z] Error in the main function
+TypeError: Cannot convert undefined or null to object
+[2024-01-01T22:25:30.170Z] Error in the main function
+TypeError: Cannot convert undefined or null to object
+[2024-01-01T22:26:26.673Z] Error in the main function
+Error: Invalid or missing wholeInvoice in data
