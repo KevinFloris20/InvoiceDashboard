@@ -31,7 +31,7 @@
         <div class="button-list">
             <button id="saveButton" class="fluid ui button" style="color:black; background-color: rgb(33,186,69);">Save</button>
             <button id="saveDownloadButton" class="fluid ui button" style="color:black; background-color: rgb(33,133,208);">Save&Download</button>
-            <button id="savePrintButton" class="fluid ui button" style="color:black; background-color: rgb(219,40,40);">Save&Print</button>
+            <!-- <button id="savePrintButton" class="fluid ui button" style="color:black; background-color: rgb(219,40,40);">Save&Print</button> -->
         </div>
 
         <!-- pdf Form -->
@@ -57,6 +57,23 @@
     <div class="ui segment" id="searchSection" style="display: none;">
         <div class="ui segment">
             <h1>Search Invoices</h1>
+            <div id="searchTable">
+                <table id="invoiceTable" class="ui celled table">
+                    <thead>
+                        <tr>
+                            <th>Invoice ID</th>
+                            <th>Invoice #</th>
+                            <th>Invoice Date</th>
+                            <th>Client Name</th>
+                            <th>Client Address</th>
+                            <th>Total Charges</th>
+                            <th>Created Invoice Date</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            
         </div>
     </div>
 

@@ -58,6 +58,49 @@ body{
 
 
 
+
+#invoiceTable .ui.dropdown .menu {
+    right: 0;
+    left: auto; /* This resets the default positioning */
+}
+
+.ui.dropdown .menu {
+    display: none;
+    position: absolute;
+    z-index: 1000;
+    background: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    border-radius: 5px;
+    padding: 8px 0;
+}
+
+.ui.dropdown.active .menu {
+    display: block;
+}
+
+.ui.dropdown .menu .item {
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.ui.dropdown .menu .item:hover {
+    background: #f4f4f4;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* Style adjustments for alignment */
 #head, .ui.inverted.menu {
     width: 100%; /* Ensure header and menu take the full width */
@@ -109,6 +152,17 @@ body{
 
     .button-list, .pdf-form {
         width: 100%;
-        margin-top: 0;
+        margin-top: auto;
+
     }
+
+    #errorBar{
+        width: 100%;
+    }
+
+    #inv{
+        width: 100%;
+    }
+
+
 }

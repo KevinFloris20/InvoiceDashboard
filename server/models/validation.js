@@ -4,6 +4,7 @@ const info = {
     'A': 'Invoice #',
     'B': 'Date',
     'C': 'Name',
+    'D': 'Address'
 }
 
 function validateAndTransform(inboundData) {
@@ -18,8 +19,8 @@ function validateAndTransform(inboundData) {
     // Initialize outbound data structure
     const outboundData = {
         invoiceid: null,  // Assuming null as the default value
-        completedDate: new Date().toISOString().split('T')[0],
         fullInvoice: {
+            creationDate: ((date) => ((date.getMonth() + 1).toString().padStart(2, '0')) + '/' + (date.getDate().toString().padStart(2, '0')) + '/' + date.getFullYear())(new Date()),
             A: inboundData.A,
             B: inboundData.B,
             C: inboundData.C,

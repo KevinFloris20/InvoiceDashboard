@@ -18,3 +18,18 @@ TypeError: Cannot convert undefined or null to object
 TypeError: Cannot convert undefined or null to object
 [2024-01-01T22:26:26.673Z] Error in the main function
 Error: Invalid or missing wholeInvoice in data
+[2024-01-03T00:47:07.944Z] Error getting access token
+Error: request to https://www.googleapis.com/oauth2/v4/token failed, reason: socket hang up
+
+
+[2024-01-03T00:47:07.951Z] Error in getLastDocument
+Error getting access token
+Error: request to https://www.googleapis.com/oauth2/v4/token failed, reason: socket hang up
+
+
+[2024-01-03T00:47:07.953Z] Error in the main function
+Error in getLastDocument
+Error getting access token
+Error: request to https://www.googleapis.com/oauth2/v4/token failed, reason: socket hang up
+{}
+

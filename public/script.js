@@ -119,9 +119,9 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Add click event listener for Save&Print button
-    document.getElementById('savePrintButton').addEventListener('click', function() {
-        submitFormData().then(() => window.print());
-    });
+    // document.getElementById('savePrintButton').addEventListener('click', function() {
+    //     submitFormData().then(() => window.print());
+    // });
     
     function clearFormFields() {
         const existingFields = document.querySelectorAll('#invoice-form .dynamic-input');
@@ -176,6 +176,31 @@ document.addEventListener('DOMContentLoaded', function() {
             if(String(field.id) == 'D'){
                 input.style.textAlign = 'center';
             }
+
+            if (field.id === 'B') { 
+                // input.setAttribute('placeholder', 'MM/DD/YYYY');
+                input.addEventListener('input', function(e) {
+                    var value = e.target.value;
+                    var cleanValue = value.replace(/[^\d]/g, ''); // Remove non-digits
+                    var yearPart = '';
+    
+                    if (cleanValue.length > 4) {
+                        yearPart = cleanValue.slice(4, 8);
+                        cleanValue = cleanValue.slice(0, 4); // Ensure MMDD format
+                    }
+    
+                    // Auto-insert slashes
+                    if (cleanValue.length >= 2) {
+                        cleanValue = cleanValue.slice(0, 2) + '/' + cleanValue.slice(2);
+                    }
+    
+                    if (yearPart) {
+                        cleanValue += '/' + yearPart;
+                    }
+    
+                    e.target.value = cleanValue;
+                });
+            }
     
             // Set font size based on the height of the field
             const fontSize = scaledHeight * 0.9; // Adjust the factor as needed
@@ -227,7 +252,162 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
 
+    async function fetchAndDisplayInvoices() {
+        try {
+            const response = await fetch('/getInvoices');
+            if (!response.ok) throw new Error('Failed to fetch invoices');
+    
+            const invoices = await response.json();
+            console.log(invoices);  // Log to verify data structure
+            renderInvoicesTable(invoices);
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+    
+    function renderInvoicesTable(invoices) {
+        const tbody = document.getElementById('invoiceTable').querySelector('tbody');
+        tbody.innerHTML = ''; // Clear existing rows
+    
+        // Sort the invoices by ID in descending order
+        const sortedInvoices = Object.entries(invoices).sort((a, b) => {
+            const idA = parseInt(a[0].replace('Invoice_ID_', ''));
+            const idB = parseInt(b[0].replace('Invoice_ID_', ''));
+            return idB - idA;
+        });
+    
+        sortedInvoices.forEach(([key, value]) => {
+            if (value.mapValue) {
+                const rowData = value.mapValue.fields;
+                const row = document.createElement('tr');
+    
+                // Extracting Invoice ID from the key
+                const invoiceId = key.replace('Invoice_ID_', '');
+                row.appendChild(createCell(invoiceId)); // Invoice ID
+    
+                // Invoice #
+                const invoiceNumber = rowData['A'] ? rowData['A'].stringValue : 'null';
+                row.appendChild(createCell(invoiceNumber)); // Invoice #
+    
+                // Invoice Date
+                const invoiceDate = rowData['B'] ? rowData['B'].stringValue : 'null';
+                row.appendChild(createCell(invoiceDate)); // Invoice Date
+    
+                // Client Name
+                const clientName = rowData['C'] ? rowData['C'].stringValue : 'null';
+                row.appendChild(createCell(clientName)); // Client Name
+    
+                // Client Address
+                const clientAddress = rowData['D'] ? rowData['D'].stringValue : 'null';
+                row.appendChild(createCell(clientAddress)); // Client Address
+    
+                // Total Charges
+                let totalCharges = 0;
+                if (rowData.invoicemap && rowData.invoicemap.mapValue.fields) {
+                    totalCharges = Object.entries(rowData.invoicemap.mapValue.fields)
+                        .filter(([mapKey, _]) => mapKey.endsWith('C'))
+                        .reduce((total, [_, mapValue]) => total + parseFloat(mapValue.stringValue || 0), 0);
+                }
+                row.appendChild(createCell(totalCharges.toFixed(2) === '0.00' ? 'null' : totalCharges.toFixed(2))); // Total Charges
+    
+                // Created Invoice Date obcreationdate
+                const creationDate = rowData['creationDate'] ? rowData['creationDate'].stringValue : 'null';
+                row.appendChild(createCell(creationDate)); // Created Invoice Date
 
+                // Create options cell
+                const optionsCell = document.createElement('td');
+                optionsCell.innerHTML = `
+                    <div class="ui floating dropdown icon button">
+                        <i class="options icon"></i>
+                        <div class="menu">
+                            <div class="item" onclick="viewInvoice('${key}')">View Invoice</div>
+                            <div class="item" onclick="downloadInvoice('${key}')">Download Invoice</div>
+                            <div class="item" onclick="printInvoice('${key}')">Print Invoice</div>
+                            <div class="item" onclick="deleteInvoice('${key}')">Delete Invoice</div>
+                        </div>
+                    </div>
+                `;
+
+                // Append the options cell to the row
+                row.appendChild(optionsCell);
+
+                tbody.appendChild(row);
+            }
+        });
+        initializeDropdowns()
+    }
+    function initializeDropdowns() {
+        const dropdowns = document.querySelectorAll('.ui.dropdown');
+    
+        console.log("Initializing dropdowns", dropdowns.length); // Debugging
+    
+        dropdowns.forEach(dropdown => {
+            console.log("Setting up a dropdown"); // Debugging
+    
+            dropdown.addEventListener('click', function(event) {
+                event.stopPropagation();
+                console.log("Dropdown clicked"); // Debugging
+                this.classList.toggle('active');
+                let menu = this.querySelector('.menu');
+                if (menu) {
+                    menu.classList.toggle('visible');
+                }
+            });
+        });
+    
+        document.addEventListener('click', (event) => {
+            console.log("Document clicked"); // Debugging
+            dropdowns.forEach(dropdown => {
+                if (!dropdown.contains(event.target)) {
+                    console.log("Closing dropdown"); // Debugging
+                    dropdown.classList.remove('active');
+                    let menu = dropdown.querySelector('.menu');
+                    if (menu) {
+                        menu.classList.remove('visible');
+                    }
+                }
+            });
+        });
+    }
+    
+    
+    function createCell(text) {
+        const cell = document.createElement('td');
+        cell.textContent = text;
+        return cell;
+    }
+    
+    // Define the functions that will be called on click
+    function viewInvoice(key) {
+        console.log('Viewing invoice', key);
+        // Implement the logic to view the invoice
+    }
+
+    function downloadInvoice(key) {
+        console.log('Downloading invoice', key);
+        // Implement the logic to download the invoice
+    }
+
+    function printInvoice(key) {
+        console.log('Printing invoice', key);
+        // Implement the logic to print the invoice
+    }
+
+    function deleteInvoice(key) {
+        console.log('Deleting invoice', key);
+        // Implement the logic to delete the invoice
+    }
+        
+    
+    
+    
+    
+    
+    
+    // Call this function when the 'Search Invoices' tab is clicked
+    document.getElementById('menuSearch').addEventListener('click', fetchAndDisplayInvoices);
+    
+    
 
 
 

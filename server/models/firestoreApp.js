@@ -9,14 +9,14 @@ const keyFilename = process.env.KEYFILE.toString();
 const project_Id = process.env.PROJECTID.toString();
 const logFile = 'log.txt';
 
-function logToFile(message) {
+function logToFile(message, data) {
     const timestamp = new Date().toISOString();
-    fs.appendFileSync(logFile, `[${timestamp}] ${message}\n`);
+    fs.appendFileSync(logFile, `[${timestamp}] ${message}\n${data ? JSON.stringify(data, null, 2) : ''}\n\n`);
 }
 
-function handleError(error, customMessage) {
+function handleError(error, customMessage, data) {
     const errorMsg = customMessage + '\n' + (error.response ? error.response.data : error);
-    logToFile(errorMsg);
+    logToFile(errorMsg, data);
     console.error(errorMsg);
     return errorMsg;
 }
@@ -33,7 +33,7 @@ async function initializeFirestore() {
 
         return { client, projectId };
     } catch (error) {
-        throw handleError(error, 'Error in initializeFirestore');
+        throw handleError(error, 'Error in initializeFirestore', null);
     }
 }
 
@@ -42,7 +42,7 @@ async function getAccessToken(client) {
         const res = await client.getAccessToken();
         return res.token;
     } catch (error) {
-        throw handleError(error, 'Error getting access token');
+        throw handleError(error, 'Error getting access token', null);
     }
 }
 
@@ -63,7 +63,7 @@ async function getLastDocument(client, projectId, dbname, collectionId) {
             return null;
         }
     } catch (error) {
-        throw handleError(error, 'Error in getLastDocument');
+        throw handleError(error, 'Error in getLastDocument', null);
     }
 }
 
@@ -81,7 +81,7 @@ async function createNewDocument(client, projectId, dbname, collectionId, data) 
         console.log('New document created:', response.data);
         return response.data;
     } catch (error) {
-        throw handleError(error, 'Error creating new document');
+        throw handleError(error, 'Error creating new document', data);
     }
 }
 
@@ -188,15 +188,14 @@ async function writeData(client, projectId, dbname, collectionId, documentId, ne
     var newId;
     var newFieldKey = newData.invoiceid;
     
-    // Check for non null integer invoice ID and decide to make new or not
     if(newFieldKey === null) {
         // Prepare the new field data with the incremented ID as the key
         lastDocument = await getLastDocument(client, projectId, dbname, collectionId);
         lastId = await getLastObjectId(lastDocument);
         newId = lastId + 1; // Increment ID for the new object field
         newFieldKey = `Invoice_ID_${newId}`;
-    }else{
-        newFieldKey = `Invoice_ID_${newFieldKey}`
+    } else {
+        newFieldKey = `Invoice_ID_${newFieldKey}`;
     }
 
     // Format the data for Firestore
@@ -310,7 +309,7 @@ async function interactWithFirestore(whatAreWeDoing, data) {
         }
         return output;
     } catch (error) {
-        throw handleError(error, 'Error in the main function');
+        throw handleError(error, 'Error in the main function', data);
     }
 }
 
