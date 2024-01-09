@@ -33,3 +33,555 @@ Error getting access token
 Error: request to https://www.googleapis.com/oauth2/v4/token failed, reason: socket hang up
 {}
 
+[2024-01-09T01:58:57.911Z] Error in interactWithFirestore
+Error: Unsupported operation: writeData
+{
+  "invoiceid": null,
+  "completedDate": "todays date",
+  "fullInvoice": {
+    "A": "any string value",
+    "B": "any string value",
+    "C": "any string value",
+    "D": "any string value",
+    "invoicemap": {
+      "key1": "value1",
+      "key2": "value2"
+    }
+  }
+}
+
+[2024-01-09T01:59:35.642Z] Error in interactWithFirestore
+[object Object]
+{
+  "invoiceid": null,
+  "completedDate": "todays date",
+  "fullInvoice": {
+    "A": "any string value",
+    "B": "any string value",
+    "C": "any string value",
+    "D": "any string value",
+    "invoicemap": {
+      "key1": "value1",
+      "key2": "value2"
+    }
+  }
+}
+
+[2024-01-09T02:11:20.369Z] Error in interactWithFirestore
+Error: Unsupported operation: writeData
+{
+  "invoiceid": null,
+  "completedDate": "todays date",
+  "fullInvoice": {
+    "A": "any string value",
+    "B": "any string value",
+    "C": "any string value",
+    "D": "any string value",
+    "invoicemap": {
+      "key1": "value1",
+      "key2": "value2"
+    }
+  }
+}
+
+[2024-01-09T02:20:19.045Z] Error in interactWithFirestore
+[object Object]
+{
+  "documentId": "1",
+  "updateFields": {
+    "A": "any thing",
+    "B": "any string value",
+    "C": "any string value",
+    "D": "any string value",
+    "invoiceDetails": {
+      "key1": "value1",
+      "key2": "value2",
+      "key3": "value3",
+      "key4": "value4",
+      "key5": "value5",
+      "key6": "value6"
+    }
+  }
+}
+
+[2024-01-09T02:23:19.383Z] Error in updateData
+[object Object]
+{
+  "documentId": "1",
+  "updateFields": {
+    "A": "any thing",
+    "B": "any string value",
+    "C": "any string value",
+    "D": "any string value",
+    "invoiceDetails": {
+      "key1": "value1",
+      "key2": "value2",
+      "key3": "value3",
+      "key4": "value4",
+      "key5": "value5",
+      "key6": "value6"
+    }
+  }
+}
+
+[2024-01-09T02:26:03.996Z] Error in updateData
+Error Details: Request failed with status code 400
+Stack Trace: AxiosError: Request failed with status code 400
+    at settle (C:\Users\theus\yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:1967:12)
+    at Unzip.handleStreamEnd (C:\Users\theus\yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:3062:11)
+    at Unzip.emit (node:events:527:35)
+    at endReadableNT (node:internal/streams/readable:1589:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+{
+  "documentId": "1",
+  "updateFields": {
+    "A": "any thing",
+    "B": "any string value",
+    "C": "any string value",
+    "D": "any string value",
+    "invoiceDetails": {
+      "key1": "value1",
+      "key2": "value2",
+      "key3": "value3",
+      "key4": "value4",
+      "key5": "value5",
+      "key6": "value6"
+    }
+  }
+}
+
+[2024-01-09T03:11:18.642Z] Error in interactWithFirestore
+Error Details: ENOENT: no such file or directory, open 'C:\Users\theus\yeaa\invoicedashboardfcr-b62134e84d26.json'
+Stack Trace: Error: ENOENT: no such file or directory, open 'C:\Users\theus\yeaa\invoicedashboardfcr-b62134e84d26.json'
+{
+  "A": "any strineeeg value",
+  "B": "any string value",
+  "C": "any string value",
+  "D": "any string value",
+  "invoiceDetails": {
+    "key1": "value1",
+    "key2": "value2",
+    "key3": "value3",
+    "key4": "value4",
+    "key5": "value5",
+    "key6": "value6"
+  }
+}
+
+[2024-01-09T03:30:10.011Z] Error in readData
+Error Details: Request failed with status code 404
+Response Data: {
+  "error": {
+    "code": 404,
+    "message": "Document \"projects/invoicedashboardfcr/databases/invoicedatastore/documents/invoices/pbqNZyh2tDSxRfVscM7q\" not found.",
+    "status": "NOT_FOUND"
+  }
+}
+Stack Trace: AxiosError: Request failed with status code 404
+    at settle (C:\Users\theus\yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:1967:12)
+    at Unzip.handleStreamEnd (C:\Users\theus\yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:3062:11)
+    at Unzip.emit (node:events:527:35)
+    at endReadableNT (node:internal/streams/readable:1589:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+"{\n  \"documentId\": \"pbqNZyh2tDSxRfVscM7q\"\n}"
+
+[2024-01-09T03:38:38.804Z] Error in readData
+Error Details: Request failed with status code 404
+Response Data: {
+  "error": {
+    "code": 404,
+    "message": "Document \"projects/invoicedashboardfcr/databases/invoicedatastore/documents/invoices/MDkWGO117orHDg49bEVw\" not found.",
+    "status": "NOT_FOUND"
+  }
+}
+Stack Trace: AxiosError: Request failed with status code 404
+    at settle (C:\Users\theus\yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:1967:12)
+    at Unzip.handleStreamEnd (C:\Users\theus\yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:3062:11)
+    at Unzip.emit (node:events:527:35)
+    at endReadableNT (node:internal/streams/readable:1589:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+"{\n  \"documentId\": \"MDkWGO117orHDg49bEVw\"\n}"
+
+[2024-01-09T03:43:18.633Z] Error in readData
+Error Details: Request failed with status code 404
+Response Data: {
+  "error": {
+    "code": 404,
+    "message": "Document \"projects/invoicedashboardfcr/databases/invoicedatastore/documents/invoices/niQ0Cm0drrFDLnPyIvCE\" not found.",
+    "status": "NOT_FOUND"
+  }
+}
+Stack Trace: AxiosError: Request failed with status code 404
+    at settle (C:\Users\theus\yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:1967:12)
+    at Unzip.handleStreamEnd (C:\Users\theus\yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:3062:11)
+    at Unzip.emit (node:events:527:35)
+    at endReadableNT (node:internal/streams/readable:1589:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+"{\n  \"documentId\": \"niQ0Cm0drrFDLnPyIvCE\"\n}"
+
+[2024-01-09T03:48:50.907Z] Error in readData
+Error Details: Request failed with status code 404
+Response Data: {
+  "error": {
+    "code": 404,
+    "message": "Document \"projects/invoicedashboardfcr/databases/invoicedatastore/documents/invoices/Ra8jzwitset8cr0MPPLp\" not found.",
+    "status": "NOT_FOUND"
+  }
+}
+Stack Trace: AxiosError: Request failed with status code 404
+    at settle (C:\Users\theus\yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:1967:12)
+    at Unzip.handleStreamEnd (C:\Users\theus\yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:3062:11)
+    at Unzip.emit (node:events:527:35)
+    at endReadableNT (node:internal/streams/readable:1589:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+"{\n  \"documentId\": \"Ra8jzwitset8cr0MPPLp\"\n}"
+
+[2024-01-09T03:49:23.206Z] Error in readData
+Error Details: Request failed with status code 404
+Response Data: {
+  "error": {
+    "code": 404,
+    "message": "Document \"projects/invoicedashboardfcr/databases/invoicedatastore/documents/invoices/Zi7PAgboGccAMCX32gmn\" not found.",
+    "status": "NOT_FOUND"
+  }
+}
+Stack Trace: AxiosError: Request failed with status code 404
+    at settle (C:\Users\theus\yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:1967:12)
+    at Unzip.handleStreamEnd (C:\Users\theus\yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:3062:11)
+    at Unzip.emit (node:events:527:35)
+    at endReadableNT (node:internal/streams/readable:1589:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+"{\n  \"documentId\": \"Zi7PAgboGccAMCX32gmn\"\n}"
+
+[2024-01-09T03:53:40.147Z] Error in readData
+Error Details: Request failed with status code 404
+Response Data: {
+  "error": {
+    "code": 404,
+    "message": "Document \"projects/invoicedashboardfcr/databases/invoicedatastore/documents/invoices/jQFNdpm4L6eHJNoGhuQK\" not found.",
+    "status": "NOT_FOUND"
+  }
+}
+Stack Trace: AxiosError: Request failed with status code 404
+    at settle (C:\Users\theus\yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:1967:12)
+    at Unzip.handleStreamEnd (C:\Users\theus\yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:3062:11)
+    at Unzip.emit (node:events:527:35)
+    at endReadableNT (node:internal/streams/readable:1589:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+"{\n  \"documentId\": \"jQFNdpm4L6eHJNoGhuQK\"\n}"
+
+[2024-01-09T03:54:27.912Z] Error in readData
+Error Details: Request failed with status code 404
+Response Data: {
+  "error": {
+    "code": 404,
+    "message": "Document \"projects/invoicedashboardfcr/databases/invoicedatastore/documents/invoices/Hs3c3VDKI6JwLvIiWuIP\" not found.",
+    "status": "NOT_FOUND"
+  }
+}
+Stack Trace: AxiosError: Request failed with status code 404
+    at settle (C:\Users\theus\yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:1967:12)
+    at Unzip.handleStreamEnd (C:\Users\theus\yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:3062:11)
+    at Unzip.emit (node:events:527:35)
+    at endReadableNT (node:internal/streams/readable:1589:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+"{\n  \"documentId\": \"Hs3c3VDKI6JwLvIiWuIP\"\n}"
+
+[2024-01-09T03:55:47.013Z] Error in readData
+Error Details: Request failed with status code 404
+Response Data: {
+  "error": {
+    "code": 404,
+    "message": "Document \"projects/invoicedashboardfcr/databases/invoicedatastore/documents/invoices/XNa6PFjHgJwnOWPqXJ3O\" not found.",
+    "status": "NOT_FOUND"
+  }
+}
+Stack Trace: AxiosError: Request failed with status code 404
+    at settle (C:\Users\theus\yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:1967:12)
+    at Unzip.handleStreamEnd (C:\Users\theus\yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:3062:11)
+    at Unzip.emit (node:events:527:35)
+    at endReadableNT (node:internal/streams/readable:1589:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+"{\n  \"documentId\": \"XNa6PFjHgJwnOWPqXJ3O\"\n}"
+
+[2024-01-09T03:56:06.270Z] Error in readData
+Error Details: Request failed with status code 404
+Response Data: {
+  "error": {
+    "code": 404,
+    "message": "Document \"projects/invoicedashboardfcr/databases/invoicedatastore/documents/invoices/T5JAS7Z59Fa57VJXroPl\" not found.",
+    "status": "NOT_FOUND"
+  }
+}
+Stack Trace: AxiosError: Request failed with status code 404
+    at settle (C:\Users\theus\yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:1967:12)
+    at Unzip.handleStreamEnd (C:\Users\theus\yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:3062:11)
+    at Unzip.emit (node:events:527:35)
+    at endReadableNT (node:internal/streams/readable:1589:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+"{\n  \"documentId\": \"T5JAS7Z59Fa57VJXroPl\"\n}"
+
+[2024-01-09T03:57:28.302Z] Error in readData
+Error Details: Request failed with status code 404
+Response Data: {
+  "error": {
+    "code": 404,
+    "message": "Document \"projects/invoicedashboardfcr/databases/invoicedatastore/documents/invoices/PLjiMSxxufskA7ExoP1n\" not found.",
+    "status": "NOT_FOUND"
+  }
+}
+Stack Trace: AxiosError: Request failed with status code 404
+    at settle (C:\Users\theus\yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:1967:12)
+    at Unzip.handleStreamEnd (C:\Users\theus\yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:3062:11)
+    at Unzip.emit (node:events:527:35)
+    at endReadableNT (node:internal/streams/readable:1589:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+"{\n  \"documentId\": \"PLjiMSxxufskA7ExoP1n\"\n}"
+
+[2024-01-09T03:58:37.125Z] Error in readData
+Error Details: Request failed with status code 404
+Response Data: {
+  "error": {
+    "code": 404,
+    "message": "Document \"projects/invoicedashboardfcr/databases/invoicedatastore/documents/invoices/H2o1T5jBHzFjOBJPXugb\" not found.",
+    "status": "NOT_FOUND"
+  }
+}
+Stack Trace: AxiosError: Request failed with status code 404
+    at settle (C:\Users\theus\yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:1967:12)
+    at Unzip.handleStreamEnd (C:\Users\theus\yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:3062:11)
+    at Unzip.emit (node:events:527:35)
+    at endReadableNT (node:internal/streams/readable:1589:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+"{\n  \"documentId\": \"H2o1T5jBHzFjOBJPXugb\"\n}"
+
+[2024-01-09T04:00:00.110Z] Error in readData
+Error Details: Request failed with status code 404
+Response Data: {
+  "error": {
+    "code": 404,
+    "message": "Document \"projects/invoicedashboardfcr/databases/invoicedatastore/documents/invoices/wEbltSiKVWqyBt6oCp7i\" not found.",
+    "status": "NOT_FOUND"
+  }
+}
+Stack Trace: AxiosError: Request failed with status code 404
+    at settle (C:\Users\theus\yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:1967:12)
+    at Unzip.handleStreamEnd (C:\Users\theus\yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:3062:11)
+    at Unzip.emit (node:events:527:35)
+    at endReadableNT (node:internal/streams/readable:1589:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+"{\n  \"documentId\": \"wEbltSiKVWqyBt6oCp7i\"\n}"
+
+[2024-01-09T04:02:11.332Z] Error in readData
+Error Details: Request failed with status code 404
+Response Data: {
+  "error": {
+    "code": 404,
+    "message": "Document \"projects/invoicedashboardfcr/databases/invoicedatastore/documents/invoices/7glU8WcjaEiL2iVEKX4x\" not found.",
+    "status": "NOT_FOUND"
+  }
+}
+Stack Trace: AxiosError: Request failed with status code 404
+    at settle (C:\Users\theus\yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:1967:12)
+    at Unzip.handleStreamEnd (C:\Users\theus\yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:3062:11)
+    at Unzip.emit (node:events:527:35)
+    at endReadableNT (node:internal/streams/readable:1589:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+"{\n  \"documentId\": \"7glU8WcjaEiL2iVEKX4x\"\n}"
+
+[2024-01-09T04:04:30.566Z] Error in readData
+Error Details: Request failed with status code 404
+Response Data: {
+  "error": {
+    "code": 404,
+    "message": "Document \"projects/invoicedashboardfcr/databases/invoicedatastore/documents/invoices/xgpdNWqR0EXfnbU8gPAS\" not found.",
+    "status": "NOT_FOUND"
+  }
+}
+Stack Trace: AxiosError: Request failed with status code 404
+    at settle (C:\Users\theus\yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:1967:12)
+    at Unzip.handleStreamEnd (C:\Users\theus\yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:3062:11)
+    at Unzip.emit (node:events:527:35)
+    at endReadableNT (node:internal/streams/readable:1589:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+"{\n  \"documentId\": \"xgpdNWqR0EXfnbU8gPAS\"\n}"
+
+[2024-01-09T04:05:29.448Z] Error in readData
+Error Details: Request failed with status code 404
+Response Data: {
+  "error": {
+    "code": 404,
+    "message": "Document \"projects/invoicedashboardfcr/databases/invoicedatastore/documents/invoices/WI7TADTKPDFROCaUhYBz\" not found.",
+    "status": "NOT_FOUND"
+  }
+}
+Stack Trace: AxiosError: Request failed with status code 404
+    at settle (C:\Users\theus\yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:1967:12)
+    at Unzip.handleStreamEnd (C:\Users\theus\yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:3062:11)
+    at Unzip.emit (node:events:527:35)
+    at endReadableNT (node:internal/streams/readable:1589:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+"{\n  \"documentId\": \"WI7TADTKPDFROCaUhYBz\"\n}"
+
+[2024-01-09T04:05:44.498Z] Error in readData
+Error Details: Request failed with status code 404
+Response Data: {
+  "error": {
+    "code": 404,
+    "message": "Document \"projects/invoicedashboardfcr/databases/invoicedatastore/documents/invoices/NC3Pcy2iElgrwNRJQECq\" not found.",
+    "status": "NOT_FOUND"
+  }
+}
+Stack Trace: AxiosError: Request failed with status code 404
+    at settle (C:\Users\theus\yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:1967:12)
+    at Unzip.handleStreamEnd (C:\Users\theus\yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:3062:11)
+    at Unzip.emit (node:events:527:35)
+    at endReadableNT (node:internal/streams/readable:1589:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+"{\n  \"documentId\": \"NC3Pcy2iElgrwNRJQECq\"\n}"
+
+[2024-01-09T04:08:02.555Z] Error in readData
+Error Details: Request failed with status code 404
+Response Data: {
+  "error": {
+    "code": 404,
+    "message": "Document \"projects/invoicedashboardfcr/databases/invoicedatastore/documents/invoices/VSH1AUmN185UKWTv90LO\" not found.",
+    "status": "NOT_FOUND"
+  }
+}
+Stack Trace: AxiosError: Request failed with status code 404
+    at settle (C:\Users\theus\yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:1967:12)
+    at Unzip.handleStreamEnd (C:\Users\theus\yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:3062:11)
+    at Unzip.emit (node:events:527:35)
+    at endReadableNT (node:internal/streams/readable:1589:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+"{\n  \"documentId\": \"VSH1AUmN185UKWTv90LO\"\n}"
+
+[2024-01-09T04:08:45.145Z] Error in readData
+Error Details: Request failed with status code 404
+Response Data: {
+  "error": {
+    "code": 404,
+    "message": "Document \"projects/invoicedashboardfcr/databases/invoicedatastore/documents/invoices/h2omTSNSp1acXNHunbjR\" not found.",
+    "status": "NOT_FOUND"
+  }
+}
+Stack Trace: AxiosError: Request failed with status code 404
+    at settle (C:\Users\theus\yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:1967:12)
+    at Unzip.handleStreamEnd (C:\Users\theus\yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:3062:11)
+    at Unzip.emit (node:events:527:35)
+    at endReadableNT (node:internal/streams/readable:1589:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+"{\n  \"documentId\": \"h2omTSNSp1acXNHunbjR\"\n}"
+
+[2024-01-09T04:09:34.746Z] Error in readData
+Error Details: Request failed with status code 404
+Response Data: {
+  "error": {
+    "code": 404,
+    "message": "Document \"projects/invoicedashboardfcr/databases/invoicedatastore/documents/invoices/8sVfW7DZR9gOJ29gIBE8\" not found.",
+    "status": "NOT_FOUND"
+  }
+}
+Stack Trace: AxiosError: Request failed with status code 404
+    at settle (C:\Users\theus\yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:1967:12)
+    at Unzip.handleStreamEnd (C:\Users\theus\yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:3062:11)
+    at Unzip.emit (node:events:527:35)
+    at endReadableNT (node:internal/streams/readable:1589:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+"{\n  \"documentId\": \"8sVfW7DZR9gOJ29gIBE8\"\n}"
+
+[2024-01-09T04:10:11.145Z] Error in readData
+Error Details: Request failed with status code 404
+Response Data: {
+  "error": {
+    "code": 404,
+    "message": "Document \"projects/invoicedashboardfcr/databases/invoicedatastore/documents/invoices/TxM3iDD36AU6skKPdLXq\" not found.",
+    "status": "NOT_FOUND"
+  }
+}
+Stack Trace: AxiosError: Request failed with status code 404
+    at settle (C:\Users\theus\yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:1967:12)
+    at Unzip.handleStreamEnd (C:\Users\theus\yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:3062:11)
+    at Unzip.emit (node:events:527:35)
+    at endReadableNT (node:internal/streams/readable:1589:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+"{\n  \"documentId\": \"TxM3iDD36AU6skKPdLXq\"\n}"
+
+[2024-01-09T04:12:25.624Z] Error in readData
+Error Details: Request failed with status code 404
+Response Data: {
+  "error": {
+    "code": 404,
+    "message": "Document \"projects/invoicedashboardfcr/databases/invoicedatastore/documents/invoices/jJJUYQg2hHX4zxbfJN9l\" not found.",
+    "status": "NOT_FOUND"
+  }
+}
+Stack Trace: AxiosError: Request failed with status code 404
+    at settle (C:\Users\theus\yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:1967:12)
+    at Unzip.handleStreamEnd (C:\Users\theus\yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:3062:11)
+    at Unzip.emit (node:events:527:35)
+    at endReadableNT (node:internal/streams/readable:1589:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+"{\n  \"documentId\": \"jJJUYQg2hHX4zxbfJN9l\"\n}"
+
+[2024-01-09T04:15:09.776Z] Error in readData
+Error Details: Request failed with status code 404
+Response Data: {
+  "error": {
+    "code": 404,
+    "message": "Document \"projects/invoicedashboardfcr/databases/invoicedatastore/documents/invoices/xEysXrwp9NERDeNUjAkA\" not found.",
+    "status": "NOT_FOUND"
+  }
+}
+Stack Trace: AxiosError: Request failed with status code 404
+    at settle (C:\Users\theus\yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:1967:12)
+    at Unzip.handleStreamEnd (C:\Users\theus\yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:3062:11)
+    at Unzip.emit (node:events:527:35)
+    at endReadableNT (node:internal/streams/readable:1589:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+"{\n  \"documentId\": \"xEysXrwp9NERDeNUjAkA\"\n}"
+
+[2024-01-09T04:15:12.708Z] Error in readData
+Error Details: Request failed with status code 404
+Response Data: {
+  "error": {
+    "code": 404,
+    "message": "Document \"projects/invoicedashboardfcr/databases/invoicedatastore/documents/invoices/kc3ETK5PK0U2etRQplm6\" not found.",
+    "status": "NOT_FOUND"
+  }
+}
+Stack Trace: AxiosError: Request failed with status code 404
+    at settle (C:\Users\theus\yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:1967:12)
+    at Unzip.handleStreamEnd (C:\Users\theus\yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:3062:11)
+    at Unzip.emit (node:events:527:35)
+    at endReadableNT (node:internal/streams/readable:1589:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+"{\n  \"documentId\": \"kc3ETK5PK0U2etRQplm6\"\n}"
+
+[2024-01-09T04:15:16.797Z] Error in readData
+Error Details: Request failed with status code 404
+Response Data: {
+  "error": {
+    "code": 404,
+    "message": "Document \"projects/invoicedashboardfcr/databases/invoicedatastore/documents/invoices/rHKaUsId4TPnaE8JeOJB\" not found.",
+    "status": "NOT_FOUND"
+  }
+}
+Stack Trace: AxiosError: Request failed with status code 404
+    at settle (C:\Users\theus\yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:1967:12)
+    at Unzip.handleStreamEnd (C:\Users\theus\yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:3062:11)
+    at Unzip.emit (node:events:527:35)
+    at endReadableNT (node:internal/streams/readable:1589:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+"{\n  \"documentId\": \"rHKaUsId4TPnaE8JeOJB\"\n}"
+
+[2024-01-09T04:24:21.548Z] Error in updateData
+Error Details: Cannot convert undefined or null to object
+Stack Trace: TypeError: Cannot convert undefined or null to object
+    at Function.keys (<anonymous>)
+    at interactWithFirestore (C:\Users\theus\yeaa\FCRdashboard\server\models\firestoreApp.js:147:196)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async C:\Users\theus\yeaa\FCRdashboard\server\routes.js:43:22
+"{\n  \"A\": \"123\",\n  \"B\": \"01/07/2024\",\n  \"C\": \"H&E\",\n  \"D\": \"Kevin street\",\n  \"creationDate\": \"2024-01-09T04:24:21.252Z\",\n  \"invoiceDetails\": {\n    \"1A\": \"xyxy123123\",\n    \"1B\": \"new shoes\",\n    \"1C\": \"150\",\n    \"2A\": \"Some\",\n    \"2B\": \"thing\",\n    \"2C\": \"1.2\",\n    \"3A\": \"\",\n    \"3B\": \"\",\n    \"3C\": \"\",\n    \"4A\": \"\",\n    \"4B\": \"\",\n    \"4C\": \"\",\n    \"5A\": \"\",\n    \"5B\": \"\",\n    \"5C\": \"\",\n    \"6A\": \"\",\n    \"6B\": \"\",\n    \"6C\": \"\",\n    \"7A\": \"\",\n    \"7B\": \"\",\n    \"7C\": \"\",\n    \"8A\": \"\",\n    \"8B\": \"\",\n    \"8C\": \"\",\n    \"9A\": \"\",\n    \"9B\": \"\",\n    \"9C\": \"\",\n    \"10A\": \"\",\n    \"10B\": \"\",\n    \"10C\": \"\",\n    \"11A\": \"\",\n    \"11B\": \"\",\n    \"11C\": \"\",\n    \"12A\": \"\",\n    \"12B\": \"\",\n    \"12C\": \"\",\n    \"13A\": \"\",\n    \"13B\": \"\",\n    \"13C\": \"\",\n    \"14A\": \"\",\n    \"14B\": \"\",\n    \"14C\": \"\",\n    \"15A\": \"\",\n    \"15B\": \"\",\n    \"15C\": \"\",\n    \"16A\": \"\",\n    \"16B\": \"\",\n    \"16C\": \"\",\n    \"17A\": \"\",\n    \"17B\": \"\",\n    \"17C\": \"\",\n    \"18A\": \"\",\n    \"18B\": \"\",\n    \"18C\": \"\",\n    \"19A\": \"\",\n    \"19B\": \"\",\n    \"19C\": \"\",\n    \"20A\": \"\",\n    \"20B\": \"\",\n    \"20C\": \"\",\n    \"21A\": \"\",\n    \"21B\": \"\",\n    \"21C\": \"\",\n    \"22A\": \"\",\n    \"22B\": \"\",\n    \"22C\": \"\",\n    \"23A\": \"\",\n    \"23B\": \"\",\n    \"23C\": \"\",\n    \"24A\": \"\",\n    \"24B\": \"\",\n    \"24C\": \"\",\n    \"25A\": \"\",\n    \"25B\": \"\",\n    \"25C\": \"\",\n    \"26A\": \"\",\n    \"26B\": \"\",\n    \"26C\": \"\"\n  }\n}"
+

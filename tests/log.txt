@@ -1,0 +1,132 @@
+[2024-01-09T03:19:40.653Z] Error in interactWithFirestore
+Error Details: ENOENT: no such file or directory, open 'C:\Users\theus\yeaa\FCRdashboard\tests\invoicedashboardfcr-b62134e84d26.json'
+Stack Trace: Error: ENOENT: no such file or directory, open 'C:\Users\theus\yeaa\FCRdashboard\tests\invoicedashboardfcr-b62134e84d26.json'
+{
+  "A": "Test A",
+  "B": "Test B",
+  "C": "Test C",
+  "D": "Test D",
+  "invoiceDetails": {
+    "key1": "value1",
+    "key2": "value2"
+  }
+}
+
+[2024-01-09T03:19:40.658Z] Error in interactWithFirestore
+Error Details: ENOENT: no such file or directory, open 'C:\Users\theus\yeaa\FCRdashboard\tests\invoicedashboardfcr-b62134e84d26.json'
+Stack Trace: Error: ENOENT: no such file or directory, open 'C:\Users\theus\yeaa\FCRdashboard\tests\invoicedashboardfcr-b62134e84d26.json'
+{}
+
+[2024-01-09T03:19:40.662Z] Error in interactWithFirestore
+Error Details: ENOENT: no such file or directory, open 'C:\Users\theus\yeaa\FCRdashboard\tests\invoicedashboardfcr-b62134e84d26.json'
+Stack Trace: Error: ENOENT: no such file or directory, open 'C:\Users\theus\yeaa\FCRdashboard\tests\invoicedashboardfcr-b62134e84d26.json'
+{
+  "updateFields": {
+    "A": "Updated A",
+    "B": "Updated B"
+  }
+}
+
+[2024-01-09T03:19:40.665Z] Error in interactWithFirestore
+Error Details: ENOENT: no such file or directory, open 'C:\Users\theus\yeaa\FCRdashboard\tests\invoicedashboardfcr-b62134e84d26.json'
+Stack Trace: Error: ENOENT: no such file or directory, open 'C:\Users\theus\yeaa\FCRdashboard\tests\invoicedashboardfcr-b62134e84d26.json'
+{}
+
+[2024-01-09T03:19:40.668Z] Error in interactWithFirestore
+Error Details: ENOENT: no such file or directory, open 'C:\Users\theus\yeaa\FCRdashboard\tests\invoicedashboardfcr-b62134e84d26.json'
+Stack Trace: Error: ENOENT: no such file or directory, open 'C:\Users\theus\yeaa\FCRdashboard\tests\invoicedashboardfcr-b62134e84d26.json'
+{}
+
+[2024-01-09T03:19:40.671Z] Error in interactWithFirestore
+Error Details: ENOENT: no such file or directory, open 'C:\Users\theus\yeaa\FCRdashboard\tests\invoicedashboardfcr-b62134e84d26.json'
+Stack Trace: Error: ENOENT: no such file or directory, open 'C:\Users\theus\yeaa\FCRdashboard\tests\invoicedashboardfcr-b62134e84d26.json'
+{}
+
+[2024-01-09T03:20:08.041Z] Error in interactWithFirestore
+Error Details: ENOENT: no such file or directory, open 'C:\Users\theus\yeaa\FCRdashboard\tests\invoicedashboardfcr-b62134e84d26.json'
+Stack Trace: Error: ENOENT: no such file or directory, open 'C:\Users\theus\yeaa\FCRdashboard\tests\invoicedashboardfcr-b62134e84d26.json'
+{
+  "A": "Test A",
+  "B": "Test B",
+  "C": "Test C",
+  "D": "Test D",
+  "invoiceDetails": {
+    "key1": "value1",
+    "key2": "value2"
+  }
+}
+
+[2024-01-09T03:20:08.048Z] Error in interactWithFirestore
+Error Details: ENOENT: no such file or directory, open 'C:\Users\theus\yeaa\FCRdashboard\tests\invoicedashboardfcr-b62134e84d26.json'
+Stack Trace: Error: ENOENT: no such file or directory, open 'C:\Users\theus\yeaa\FCRdashboard\tests\invoicedashboardfcr-b62134e84d26.json'
+{}
+
+[2024-01-09T03:20:08.052Z] Error in interactWithFirestore
+Error Details: ENOENT: no such file or directory, open 'C:\Users\theus\yeaa\FCRdashboard\tests\invoicedashboardfcr-b62134e84d26.json'
+Stack Trace: Error: ENOENT: no such file or directory, open 'C:\Users\theus\yeaa\FCRdashboard\tests\invoicedashboardfcr-b62134e84d26.json'
+{
+  "updateFields": {
+    "A": "Updated A",
+    "B": "Updated B"
+  }
+}
+
+[2024-01-09T03:20:08.054Z] Error in interactWithFirestore
+Error Details: ENOENT: no such file or directory, open 'C:\Users\theus\yeaa\FCRdashboard\tests\invoicedashboardfcr-b62134e84d26.json'
+Stack Trace: Error: ENOENT: no such file or directory, open 'C:\Users\theus\yeaa\FCRdashboard\tests\invoicedashboardfcr-b62134e84d26.json'
+{}
+
+[2024-01-09T03:20:08.057Z] Error in interactWithFirestore
+Error Details: ENOENT: no such file or directory, open 'C:\Users\theus\yeaa\FCRdashboard\tests\invoicedashboardfcr-b62134e84d26.json'
+Stack Trace: Error: ENOENT: no such file or directory, open 'C:\Users\theus\yeaa\FCRdashboard\tests\invoicedashboardfcr-b62134e84d26.json'
+{}
+
+[2024-01-09T03:20:08.061Z] Error in interactWithFirestore
+Error Details: ENOENT: no such file or directory, open 'C:\Users\theus\yeaa\FCRdashboard\tests\invoicedashboardfcr-b62134e84d26.json'
+Stack Trace: Error: ENOENT: no such file or directory, open 'C:\Users\theus\yeaa\FCRdashboard\tests\invoicedashboardfcr-b62134e84d26.json'
+{}
+
+[2024-01-09T03:23:36.353Z] Error in interactWithFirestore
+Error Details: ENOENT: no such file or directory, open 'C:\Users\theus\yeaa\FCRdashboard\tests\invoicedashboardfcr-b62134e84d26.json'
+Stack Trace: Error: ENOENT: no such file or directory, open 'C:\Users\theus\yeaa\FCRdashboard\tests\invoicedashboardfcr-b62134e84d26.json'
+{
+  "A": "Test A",
+  "B": "Test B",
+  "C": "Test C",
+  "D": "Test D",
+  "invoiceDetails": {
+    "key1": "value1",
+    "key2": "value2"
+  }
+}
+
+[2024-01-09T03:23:36.356Z] Error in interactWithFirestore
+Error Details: ENOENT: no such file or directory, open 'C:\Users\theus\yeaa\FCRdashboard\tests\invoicedashboardfcr-b62134e84d26.json'
+Stack Trace: Error: ENOENT: no such file or directory, open 'C:\Users\theus\yeaa\FCRdashboard\tests\invoicedashboardfcr-b62134e84d26.json'
+{}
+
+[2024-01-09T03:23:36.359Z] Error in interactWithFirestore
+Error Details: ENOENT: no such file or directory, open 'C:\Users\theus\yeaa\FCRdashboard\tests\invoicedashboardfcr-b62134e84d26.json'
+Stack Trace: Error: ENOENT: no such file or directory, open 'C:\Users\theus\yeaa\FCRdashboard\tests\invoicedashboardfcr-b62134e84d26.json'
+{
+  "updateFields": {
+    "A": "Updated A",
+    "B": "Updated B"
+  }
+}
+
+[2024-01-09T03:23:36.360Z] Error in interactWithFirestore
+Error Details: ENOENT: no such file or directory, open 'C:\Users\theus\yeaa\FCRdashboard\tests\invoicedashboardfcr-b62134e84d26.json'
+Stack Trace: Error: ENOENT: no such file or directory, open 'C:\Users\theus\yeaa\FCRdashboard\tests\invoicedashboardfcr-b62134e84d26.json'
+{}
+
+[2024-01-09T03:23:36.362Z] Error in interactWithFirestore
+Error Details: ENOENT: no such file or directory, open 'C:\Users\theus\yeaa\FCRdashboard\tests\invoicedashboardfcr-b62134e84d26.json'
+Stack Trace: Error: ENOENT: no such file or directory, open 'C:\Users\theus\yeaa\FCRdashboard\tests\invoicedashboardfcr-b62134e84d26.json'
+{}
+
+[2024-01-09T03:23:36.364Z] Error in interactWithFirestore
+Error Details: ENOENT: no such file or directory, open 'C:\Users\theus\yeaa\FCRdashboard\tests\invoicedashboardfcr-b62134e84d26.json'
+Stack Trace: Error: ENOENT: no such file or directory, open 'C:\Users\theus\yeaa\FCRdashboard\tests\invoicedashboardfcr-b62134e84d26.json'
+{}
+

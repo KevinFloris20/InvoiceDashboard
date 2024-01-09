@@ -31,16 +31,18 @@ router.post('/submit-form', async (req, res) => {
         // Validate and transform data
         const validatedData = validateAndTransform(submitData);
 
-        console.log(validatedData);
+        console.log("Validated Data:", validatedData);
 
-        // Save the data to the database
-        if (validatedData.invoiceid === null) {
-            // New invoice
+        // Determine if this is a new invoice or an update
+        if (!validatedData.invoiceid) {
+            // New invoice - 'writeData' operation
             result = await interactWithFirestore('writeData', validatedData);
-
         } else {
-            // Existing invoice
-            result = await interactWithFirestore('updateData', validatedData);
+            // Existing invoice - 'updateData' operation
+            result = await interactWithFirestore('updateData', {
+                documentId: validatedData.invoiceid,
+                updateFields: validatedData
+            });
         }
 
         // Respond with success and any additional data if needed

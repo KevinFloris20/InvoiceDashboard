@@ -1,11 +1,4 @@
-//this file will be used to validate the data that is being sent to the database and reformatted to the correct format
-
-const info = {
-    'A': 'Invoice #',
-    'B': 'Date',
-    'C': 'Name',
-    'D': 'Address'
-}
+// validation.js
 
 function validateAndTransform(inboundData) {
     // Validate presence and non-empty values for 'A', 'B', 'C'
@@ -18,31 +11,35 @@ function validateAndTransform(inboundData) {
 
     // Initialize outbound data structure
     const outboundData = {
-        invoiceid: null,  // Assuming null as the default value
-        fullInvoice: {
-            creationDate: ((date) => ((date.getMonth() + 1).toString().padStart(2, '0')) + '/' + (date.getDate().toString().padStart(2, '0')) + '/' + date.getFullYear())(new Date()),
-            A: inboundData.A,
-            B: inboundData.B,
-            C: inboundData.C,
-            D: inboundData.D || '',  // D can be empty
-            invoicemap: {}
-        }
+        A: inboundData.A,
+        B: inboundData.B,
+        C: inboundData.C,
+        D: inboundData.D || '',  // 'D' can be empty
+        creationDate: new Date().toISOString(), // ISO string for the Firestore timestamp
+        invoiceDetails: {}
     };
 
-    // Validate and populate invoicemap
+    // Validate and populate invoiceDetails
     const keyPattern = /^\d+[A-Z]$/;
     for (let key in inboundData) {
-        if (!['A', 'B', 'C', 'D'].includes(key)) {
+        if (!['A', 'B', 'C', 'D', 'creationDate'].includes(key)) {
             if (!keyPattern.test(key)) {
-                throw new Error(`Something went wrong... Invalid key format: '${key}'. Expected format: digit(s) followed by a capital letter.`);
+                throw new Error(`Invalid key format: '${key}'. Expected format: digit(s) followed by a capital letter.`);
             }
-            outboundData.fullInvoice.invoicemap[key] = inboundData[key];
+            outboundData.invoiceDetails[key] = inboundData[key];
         }
     }
 
     return outboundData;
 }
 
+// Info object to provide more context in error messages
+const info = {
+    'A': 'Invoice #',
+    'B': 'Date',
+    'C': 'Name',
+    'D': 'Address'
+};
 
 module.exports = { validateAndTransform };
 
