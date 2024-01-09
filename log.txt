@@ -585,3 +585,20 @@ Stack Trace: TypeError: Cannot convert undefined or null to object
     at async C:\Users\theus\yeaa\FCRdashboard\server\routes.js:43:22
 "{\n  \"A\": \"123\",\n  \"B\": \"01/07/2024\",\n  \"C\": \"H&E\",\n  \"D\": \"Kevin street\",\n  \"creationDate\": \"2024-01-09T04:24:21.252Z\",\n  \"invoiceDetails\": {\n    \"1A\": \"xyxy123123\",\n    \"1B\": \"new shoes\",\n    \"1C\": \"150\",\n    \"2A\": \"Some\",\n    \"2B\": \"thing\",\n    \"2C\": \"1.2\",\n    \"3A\": \"\",\n    \"3B\": \"\",\n    \"3C\": \"\",\n    \"4A\": \"\",\n    \"4B\": \"\",\n    \"4C\": \"\",\n    \"5A\": \"\",\n    \"5B\": \"\",\n    \"5C\": \"\",\n    \"6A\": \"\",\n    \"6B\": \"\",\n    \"6C\": \"\",\n    \"7A\": \"\",\n    \"7B\": \"\",\n    \"7C\": \"\",\n    \"8A\": \"\",\n    \"8B\": \"\",\n    \"8C\": \"\",\n    \"9A\": \"\",\n    \"9B\": \"\",\n    \"9C\": \"\",\n    \"10A\": \"\",\n    \"10B\": \"\",\n    \"10C\": \"\",\n    \"11A\": \"\",\n    \"11B\": \"\",\n    \"11C\": \"\",\n    \"12A\": \"\",\n    \"12B\": \"\",\n    \"12C\": \"\",\n    \"13A\": \"\",\n    \"13B\": \"\",\n    \"13C\": \"\",\n    \"14A\": \"\",\n    \"14B\": \"\",\n    \"14C\": \"\",\n    \"15A\": \"\",\n    \"15B\": \"\",\n    \"15C\": \"\",\n    \"16A\": \"\",\n    \"16B\": \"\",\n    \"16C\": \"\",\n    \"17A\": \"\",\n    \"17B\": \"\",\n    \"17C\": \"\",\n    \"18A\": \"\",\n    \"18B\": \"\",\n    \"18C\": \"\",\n    \"19A\": \"\",\n    \"19B\": \"\",\n    \"19C\": \"\",\n    \"20A\": \"\",\n    \"20B\": \"\",\n    \"20C\": \"\",\n    \"21A\": \"\",\n    \"21B\": \"\",\n    \"21C\": \"\",\n    \"22A\": \"\",\n    \"22B\": \"\",\n    \"22C\": \"\",\n    \"23A\": \"\",\n    \"23B\": \"\",\n    \"23C\": \"\",\n    \"24A\": \"\",\n    \"24B\": \"\",\n    \"24C\": \"\",\n    \"25A\": \"\",\n    \"25B\": \"\",\n    \"25C\": \"\",\n    \"26A\": \"\",\n    \"26B\": \"\",\n    \"26C\": \"\"\n  }\n}"
 
+[2024-01-09T04:30:44.802Z] Error in readData
+Error Details: Request failed with status code 404
+Response Data: {
+  "error": {
+    "code": 404,
+    "message": "Document \"projects/invoicedashboardfcr/databases/invoicedatastore/documents/invoices/WN0qJaevuBZCWodqTOFi\" not found.",
+    "status": "NOT_FOUND"
+  }
+}
+Stack Trace: AxiosError: Request failed with status code 404
+    at settle (C:\Users\theus\yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:1967:12)
+    at Unzip.handleStreamEnd (C:\Users\theus\yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:3062:11)
+    at Unzip.emit (node:events:527:35)
+    at endReadableNT (node:internal/streams/readable:1589:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+"{\n  \"documentId\": \"WN0qJaevuBZCWodqTOFi\"\n}"
+

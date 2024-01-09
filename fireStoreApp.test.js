@@ -1,4 +1,4 @@
-const { interactWithFirestore } = require('../server/models/firestoreApp');
+const { interactWithFirestore } = require('./server/models/firestoreApp');
 
 async function runTests() {
     const testData = {
