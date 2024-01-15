@@ -256,7 +256,6 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             const response = await fetch('/getInvoices');
             if (!response.ok) throw new Error('Failed to fetch invoices');
-    
             const invoices = await response.json();
             console.log(invoices);  // Log to verify data structure
             renderInvoicesTable(invoices);
@@ -264,104 +263,131 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Error:', error);
         }
     }
+    function calculateTotalPrice(invoiceDetails) {
+        let total = 0;
+        let excludeKeys = new Set(); // To store keys that should be excluded from the total
+    
+        // First pass to find any 'total' in 'B' keys
+        Object.entries(invoiceDetails.fields).forEach(([key, value]) => {
+            if (key.endsWith('B') && value.stringValue.toLowerCase().includes('total')) {
+                const num = key.match(/(\d+)B$/)[1]; // Extract the number before 'B'
+                excludeKeys.add(num + 'C'); // Add the corresponding 'C' key to the exclude list
+            }
+        });
+    
+        // Second pass to calculate the total of 'C' values
+        Object.entries(invoiceDetails.fields).forEach(([key, value]) => {
+            if (key.endsWith('C') && !excludeKeys.has(key) && key !== 'C') {
+                total += parseFloat(value.stringValue) || 0;
+            }
+        });
+    
+        return total;
+    }
     
     function renderInvoicesTable(invoices) {
         const tbody = document.getElementById('invoiceTable').querySelector('tbody');
         tbody.innerHTML = ''; // Clear existing rows
     
-        // Sort the invoices by ID in descending order
-        const sortedInvoices = Object.entries(invoices).sort((a, b) => {
-            const idA = parseInt(a[0].replace('Invoice_ID_', ''));
-            const idB = parseInt(b[0].replace('Invoice_ID_', ''));
-            return idB - idA;
+        invoices.forEach(invoice => {
+            const row = document.createElement('tr');
+    
+            // Extracting Invoice ID from the invoice object
+            const invoiceId = invoice.id;
+            row.appendChild(createCell(invoiceId)); // Invoice ID
+            
+            // Invoice fields
+            const invoiceNumber = invoice.fields['A'] ? invoice.fields['A'].stringValue : 'null';
+            row.appendChild(createCell(invoiceNumber)); // Invoice #
+            
+            const invoiceDate = invoice.fields['B'] ? invoice.fields['B'].stringValue : 'null';
+            row.appendChild(createCell(invoiceDate)); // Invoice Date
+            
+            const clientName = invoice.fields['C'] ? invoice.fields['C'].stringValue : 'null';
+            row.appendChild(createCell(clientName)); // Client Name
+            
+            const clientAddress = invoice.fields['D'] ? invoice.fields['D'].stringValue : 'null';
+            row.appendChild(createCell(clientAddress)); // Client Address
+            
+            // Calculate total charges
+            const totalCharges = calculateTotalPrice(invoice.fields.invoiceDetails.mapValue);
+            row.appendChild(createCell(totalCharges.toFixed(2))); // Total Charges
+            
+            // Created Invoice Date
+            const creationDate = invoice.fields.creationDate ? new Date(invoice.fields.creationDate.timestampValue).toLocaleString() : 'null';
+            row.appendChild(createCell(creationDate)); // Created Invoice Date
+    
+            // Create options cell with dropdown menu
+            const optionsCell = document.createElement('td');
+            optionsCell.innerHTML = `
+                <div class="ui floating dropdown icon button">
+                    <i class="dropdown icon"></i>
+                    <div class="menu">
+                        <div class="item" onclick="viewInvoice('${invoiceId}')">View Invoice</div>
+                        <div class="item" onclick="downloadInvoice('${invoiceId}')">Download Invoice</div>
+                        <div class="item" onclick="printInvoice('${invoiceId}')">Print Invoice</div>
+                        <div class="item" onclick="deleteInvoice('${invoiceId}')">Delete Invoice</div>
+                    </div>
+                </div>
+            `;
+            row.appendChild(optionsCell); // Append the options cell to the row
+    
+            tbody.appendChild(row); // Append the row to the table body
         });
     
-        sortedInvoices.forEach(([key, value]) => {
-            if (value.mapValue) {
-                const rowData = value.mapValue.fields;
-                const row = document.createElement('tr');
+        // After adding all rows, initialize the dropdowns
+        initializeDropdowns();
+    }
     
-                // Extracting Invoice ID from the key
-                const invoiceId = key.replace('Invoice_ID_', '');
-                row.appendChild(createCell(invoiceId)); // Invoice ID
+    function createCell(text) {
+        const cell = document.createElement('td');
+        cell.textContent = text;
+        return cell;
+    }
     
-                // Invoice #
-                const invoiceNumber = rowData['A'] ? rowData['A'].stringValue : 'null';
-                row.appendChild(createCell(invoiceNumber)); // Invoice #
+    function calculateTotalPrice(invoiceDetails) {
+        let total = 0;
+        let excludeKeys = new Set();
     
-                // Invoice Date
-                const invoiceDate = rowData['B'] ? rowData['B'].stringValue : 'null';
-                row.appendChild(createCell(invoiceDate)); // Invoice Date
-    
-                // Client Name
-                const clientName = rowData['C'] ? rowData['C'].stringValue : 'null';
-                row.appendChild(createCell(clientName)); // Client Name
-    
-                // Client Address
-                const clientAddress = rowData['D'] ? rowData['D'].stringValue : 'null';
-                row.appendChild(createCell(clientAddress)); // Client Address
-    
-                // Total Charges
-                let totalCharges = 0;
-                if (rowData.invoicemap && rowData.invoicemap.mapValue.fields) {
-                    totalCharges = Object.entries(rowData.invoicemap.mapValue.fields)
-                        .filter(([mapKey, _]) => mapKey.endsWith('C'))
-                        .reduce((total, [_, mapValue]) => total + parseFloat(mapValue.stringValue || 0), 0);
-                }
-                row.appendChild(createCell(totalCharges.toFixed(2) === '0.00' ? 'null' : totalCharges.toFixed(2))); // Total Charges
-    
-                // Created Invoice Date obcreationdate
-                const creationDate = rowData['creationDate'] ? rowData['creationDate'].stringValue : 'null';
-                row.appendChild(createCell(creationDate)); // Created Invoice Date
-
-                // Create options cell
-                const optionsCell = document.createElement('td');
-                optionsCell.innerHTML = `
-                    <div class="ui floating dropdown icon button">
-                        <i class="options icon"></i>
-                        <div class="menu">
-                            <div class="item" onclick="viewInvoice('${key}')">View Invoice</div>
-                            <div class="item" onclick="downloadInvoice('${key}')">Download Invoice</div>
-                            <div class="item" onclick="printInvoice('${key}')">Print Invoice</div>
-                            <div class="item" onclick="deleteInvoice('${key}')">Delete Invoice</div>
-                        </div>
-                    </div>
-                `;
-
-                // Append the options cell to the row
-                row.appendChild(optionsCell);
-
-                tbody.appendChild(row);
+        // First pass to find 'total' indicators and mark corresponding 'C' keys for exclusion
+        Object.entries(invoiceDetails.fields).forEach(([key, value]) => {
+            if (key.endsWith('B') && value.stringValue.toLowerCase().includes('total')) {
+                const num = key.match(/(\d+)B$/)[1];
+                excludeKeys.add(num + 'C');
             }
         });
-        initializeDropdowns()
+    
+        // Second pass to sum up the 'C' values, excluding any marked keys
+        Object.entries(invoiceDetails.fields).forEach(([key, value]) => {
+            if (key.endsWith('C') && !excludeKeys.has(key) && key !== 'C') {
+                total += parseFloat(value.stringValue) || 0;
+            }
+        });
+    
+        return total;
     }
+
+    
     function initializeDropdowns() {
         const dropdowns = document.querySelectorAll('.ui.dropdown');
     
-        console.log("Initializing dropdowns", dropdowns.length); // Debugging
-    
         dropdowns.forEach(dropdown => {
-            console.log("Setting up a dropdown"); // Debugging
-    
+            const menu = dropdown.querySelector('.menu');
             dropdown.addEventListener('click', function(event) {
                 event.stopPropagation();
-                console.log("Dropdown clicked"); // Debugging
-                this.classList.toggle('active');
-                let menu = this.querySelector('.menu');
+                dropdown.classList.toggle('active');
                 if (menu) {
                     menu.classList.toggle('visible');
                 }
             });
         });
     
+        // Close dropdowns when clicking outside
         document.addEventListener('click', (event) => {
-            console.log("Document clicked"); // Debugging
             dropdowns.forEach(dropdown => {
                 if (!dropdown.contains(event.target)) {
-                    console.log("Closing dropdown"); // Debugging
+                    const menu = dropdown.querySelector('.menu');
                     dropdown.classList.remove('active');
-                    let menu = dropdown.querySelector('.menu');
                     if (menu) {
                         menu.classList.remove('visible');
                     }
@@ -370,23 +396,16 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    
-    function createCell(text) {
-        const cell = document.createElement('td');
-        cell.textContent = text;
-        return cell;
-    }
-    
     // Define the functions that will be called on click
     function viewInvoice(key) {
         console.log('Viewing invoice', key);
         // Implement the logic to view the invoice
     }
 
-    function downloadInvoice(key) {
-        console.log('Downloading invoice', key);
-        // Implement the logic to download the invoice
-    }
+    // function downloadInvoice(key) {
+    //     console.log('Downloading invoice', key);
+    //     // Implement the logic to download the invoice
+    // }
 
     function printInvoice(key) {
         console.log('Printing invoice', key);

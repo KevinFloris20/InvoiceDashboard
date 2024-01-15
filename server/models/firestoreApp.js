@@ -96,7 +96,7 @@ function formatFirestoreValue(value) {
 
 // Main function to interact with Firestore
 async function interactWithFirestore(whatAreWeDoing, data) {
-    if (!data) {
+    if (!data && whatAreWeDoing !== 'readData') {
         throw new Error('No data provided to interactWithFirestore function');
     }
 
@@ -177,14 +177,18 @@ async function interactWithFirestore(whatAreWeDoing, data) {
                 break;
             case 'readData':
                 try {
-                    const readUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/${db_name}/documents/${collection_Id}/${data.documentId}`;
+                    const pageSize = (Number.isFinite(data) && data > 0) ? data : 5; // Number of documents to retrieve
+                    const orderBy = encodeURIComponent('creationDate desc'); // Order by 'createdAt' field in descending order
+                    const readUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/${db_name}/documents/${collection_Id}?pageSize=${pageSize}&orderBy=${orderBy}`;
+            
                     const readResponse = await axios.get(readUrl, { headers });
-                    console.log('Invoice document data:', readResponse.data);
                     return readResponse;
                 } catch (error) {
                     return handleError(error, 'Error in readData', safeStringify(data));
                 }
                 break;
+            
+            
             default:
                 throw new Error('Unsupported operation: ' + whatAreWeDoing);
         }

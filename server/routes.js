@@ -79,11 +79,17 @@ router.post('/download-invoice', async (req, res) => {
 router.get('/getInvoices', async (req, res) => {
     try {
         const data = req.body;
-        const firestoreData = await interactWithFirestore('readData', data);
+        const firestoreData = await interactWithFirestore('readData', 10);
 
-        // Send back only the fields part
-        if (firestoreData && firestoreData.fields) {
-            res.json(firestoreData.fields);
+        if (firestoreData && firestoreData.data && firestoreData.data.documents) {
+            // Extract fields from each document and return them
+            const documents = firestoreData.data.documents.map(doc => ({
+                id: doc.name.split('/').pop(),
+                fields: doc.fields,
+                createTime: doc.createTime,
+                updateTime: doc.updateTime
+            }));
+            res.json(documents);
         } else {
             res.status(404).json({ message: 'No invoices found' });
         }
@@ -92,6 +98,7 @@ router.get('/getInvoices', async (req, res) => {
         res.status(500).json({ message: 'Error fetching invoices', error: error.message });
     }
 });
+
 
 
 //export
