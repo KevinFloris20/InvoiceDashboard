@@ -180,7 +180,6 @@ async function interactWithFirestore(whatAreWeDoing, data) {
                     const pageSize = (Number.isFinite(data) && data > 0) ? data : 5; // Number of documents to retrieve
                     const orderBy = encodeURIComponent('creationDate desc'); // Order by 'createdAt' field in descending order
                     const readUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/${db_name}/documents/${collection_Id}?pageSize=${pageSize}&orderBy=${orderBy}`;
-            
                     const readResponse = await axios.get(readUrl, { headers });
                     return readResponse;
                 } catch (error) {

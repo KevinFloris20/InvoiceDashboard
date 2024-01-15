@@ -1,27 +1,128 @@
-document.addEventListener('DOMContentLoaded', function() {
-    let formData;  // Store the fetched form data
-    let fieldValues = {};  // Store current field values
+//for the onclick options menu on all of the rows (Search Invoices)
 
-
-    // Function to display messages
-    function displayMessage(message, type) {
-        const errorListUl = document.getElementById('errorListUl');
-        const messageElement = document.createElement('div');
-        messageElement.textContent = message;
-        messageElement.classList.add(type === 'error' ? 'error-message' : 'success-message');
-        errorListUl.appendChild(messageElement);
+function viewInvoice(documentId) {
+    console.log('Viewing invoice', key);
+}
+function printInvoice(key) {
+    console.log('Printing invoice', key);
+}
+function deleteInvoice(documentId) {
+    console.log('Deleting invoice', key);
+}
+async function downloadInvoice(invoiceData, resID, invoiceNum) {
+    var invoiceName = 'invoice.pdf'; 
+    if (resID && resID.result) {
+        invoiceName = 'invoice' + invoiceNum + '.pdf';
     }
 
-    // Function to submit form data
-    async function submitFormData() {
-        // Collect all input values from the form
-        const inputs = document.querySelectorAll('#invoice-form .dynamic-input');
-        const submitData = Array.from(inputs).reduce((data, input) => {
-            data[input.name] = input.value;
-            return data;
-        }, {});
+    try {
+        const response = await fetch('/download-invoice', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(invoiceData)
+        });
 
-        // Post the data to the server
+        if (!response.ok) {
+            throw new Error(`Error downloading invoice: ${response.statusText}`);
+        }
+
+        const blob = await response.blob();
+        console.log(`Blob Type: ${blob.type}, Blob Size: ${blob.size}`);
+        if (blob.type !== 'application/pdf' || blob.size === 0) {
+            throw new Error('Received invalid PDF data');
+        }
+
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = invoiceName;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+    } catch (error) {
+        console.error('Error downloading invoice:', error);
+        displayMessage(`Error: ${error.message}`, 'error');
+    }
+}
+
+
+
+//other helper logic
+
+function createCell(text) {
+    const cell = document.createElement('td');
+    cell.textContent = text;
+    return cell;
+}
+function collectFormData() {
+    const inputs = document.querySelectorAll('#invoice-form .dynamic-input');
+    return Array.from(inputs).reduce((data, input) => {
+        data[input.name] = input.value;
+        return data;
+    }, {});
+}
+function displayMessage(message, type) {
+    const errorListUl = document.getElementById('errorListUl');
+    const messageElement = document.createElement('div');
+    messageElement.textContent = message;
+    messageElement.classList.add(type === 'error' ? 'error-message' : 'success-message');
+    errorListUl.appendChild(messageElement);
+}
+function flattenServerRes(serverResponse) {
+    let flattenedResponse = {};
+    for (const [key, valueObj] of Object.entries(serverResponse.fields)) {
+        flattenedResponse[key] = valueObj.stringValue;
+    }
+    for (const [key, valueObj] of Object.entries(serverResponse.fields.invoiceDetails.mapValue.fields)) {
+        flattenedResponse[key] = valueObj.stringValue;
+    }
+    return flattenedResponse;
+}
+function calculateTotalPrice(invoiceDetails) {
+    let total = 0;
+    let excludeKeys = new Set(); 
+
+    Object.entries(invoiceDetails.fields).forEach(([key, value]) => {
+        if (key.endsWith('B') && value.stringValue.toLowerCase().includes('total')) {
+            const num = key.match(/(\d+)B$/)[1]; 
+            excludeKeys.add(num + 'C'); 
+        }
+    });
+
+    Object.entries(invoiceDetails.fields).forEach(([key, value]) => {
+        if (key.endsWith('C') && !excludeKeys.has(key) && key !== 'C') {
+            total += parseFloat(value.stringValue) || 0;
+        }
+    });
+
+    return total;
+}
+function emptyFormFields() {
+    const inputs = document.querySelectorAll('#invoice-form .dynamic-input');
+    inputs.forEach(input => input.value = '');
+}
+
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    //this is the stuff for the header menu
+    document.getElementById('menuNewInv').addEventListener('click', function() {
+        document.getElementById('newInv').style.display = '';
+        document.getElementById('searchSection').style.display = 'none';
+    });
+    document.getElementById('menuSearch').addEventListener('click', function() {
+        document.getElementById('newInv').style.display = 'none';
+        document.getElementById('searchSection').style.display = '';
+    });
+
+
+
+    //save button (Make New Invoice)
+    async function submitFormData() {
+        const submitData = collectFormData()
         try {
             const response = await fetch('/submit-form', {
                 method: 'POST',
@@ -36,116 +137,55 @@ document.addEventListener('DOMContentLoaded', function() {
                 throw new Error(data.error || 'Unknown error');
             }
 
-            console.log('Form submitted:', data);
-            displayMessage(`Success: ${data.message} ${data.result}`, 'success');
-            return data;
+            console.log('Form submitted:', data, submitData);
+            displayMessage(`Success: ${data.message}. New ID:${data.result}`, 'success');
+
+            return [data,submitData.A];
         } catch (error) {
             console.error('Error submitting form:', error);
             displayMessage(`Error: ${error.message}`, 'error');
         }
     }
-
-
-    // Function to download the invoice
-    async function downloadInvoice(invoiceData, resID) {
-        var invoiceName = 'invoice.pdf'; // Default invoice name
-        if (resID && resID.result) {
-            var idMatch = resID.result.match(/\d+/); // Get the first sequence of digits
-            if (idMatch) {
-                var id = idMatch[0];
-                invoiceName = 'invoice' + id + '.pdf';
-            }
+    document.getElementById('saveButton').addEventListener('click', async function() {
+        const res = submitFormData()
+        if (res && res.result) {
+            emptyFormFields();
         }
-
-        try {
-            const response = await fetch('/download-invoice', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(invoiceData)
-            });
-
-            if (!response.ok) {
-                throw new Error(`Error downloading invoice: ${response.statusText}`);
-            }
-
-            const blob = await response.blob();
-            console.log(`Blob Type: ${blob.type}, Blob Size: ${blob.size}`);
-            if (blob.type !== 'application/pdf' || blob.size === 0) {
-                throw new Error('Received invalid PDF data');
-            }
-
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = invoiceName;
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-            window.URL.revokeObjectURL(url);
-        } catch (error) {
-            console.error('Error downloading invoice:', error);
-            displayMessage(`Error: ${error.message}`, 'error');
-        }
-    }
-
-    // Add click event listener for Save button
-    document.getElementById('saveButton').addEventListener('click', function() {
-        submitFormData();
     });
 
-    // Function to collect form data
-    function collectFormData() {
-        const inputs = document.querySelectorAll('#invoice-form .dynamic-input');
-        return Array.from(inputs).reduce((data, input) => {
-            data[input.name] = input.value;
-            return data;
-        }, {});
-    }
-
-    // Add click event listener for Save&Download button
+    //save and download button (Make New Invoice)
     document.getElementById('saveDownloadButton').addEventListener('click', async function() {
         const invoiceData = collectFormData();
-        const resID = await submitFormData();
-        
-        // Check if resID is valid before calling downloadInvoice
-        if (resID && resID.result) {
-            await downloadInvoice(invoiceData, resID);
+        const [res, invName] = await submitFormData();
+        if (res && res.result) {
+            await downloadInvoice(invoiceData, res, invName).then(emptyFormFields());
         } else {
             console.error('Error: Invalid response from submitFormData');
             displayMessage('Error: Invalid response from submitFormData', 'error');
         }
     });
-
-    // Add click event listener for Save&Print button
-    // document.getElementById('savePrintButton').addEventListener('click', function() {
-    //     submitFormData().then(() => window.print());
-    // });
     
+    //add the text boxes overlaying the client png (Make New Invoice)
+    let formData;
+    let fieldValues = {}; 
     function clearFormFields() {
         const existingFields = document.querySelectorAll('#invoice-form .dynamic-input');
         existingFields.forEach(field => {
-            // Save current field value before removing
             fieldValues[field.name] = field.value;
             field.remove();
         });
     }
-    
-    // Function to create and position form fields
     function createFormFields(fields, scaleFactor) {
         const form = document.getElementById('invoice-form');
         clearFormFields();
-        const adjustmentFactor = 0.003; // Adjustment
+        const adjustmentFactor = 0.003; 
     
         fields.forEach(field => {
-            // Scaling positions and dimensions
             const scaledX = field.x * scaleFactor;
             const scaledY = field.y * scaleFactor - form.offsetHeight * adjustmentFactor;
             const scaledWidth = field.w * scaleFactor;
             const scaledHeight = field.h * scaleFactor;
     
-            // Create a div to hold the input field
             const fieldDiv = document.createElement('div');
             fieldDiv.style.position = 'absolute';
             fieldDiv.style.left = `${scaledX}px`;
@@ -153,16 +193,15 @@ document.addEventListener('DOMContentLoaded', function() {
             fieldDiv.style.width = `${scaledWidth}px`;
             fieldDiv.style.height = `${scaledHeight}px`;
     
-            // Create the input field
             const input = document.createElement('input');
             input.classList.add('dynamic-input');
             input.type = 'text';
-            input.name = field.id; // Use the field name from the PDF
+            input.name = field.id; 
             input.style.width = '100%';
             input.style.height = '100%';
-            input.style.border = 'none'; // Optional: remove border
-            input.style.padding = '0'; // Optional: remove padding
-            input.style.margin = '0'; // Optional: remove margin
+            input.style.border = 'none'; 
+            input.style.padding = '0'; 
+            input.style.margin = '0'; 
     
             if((String(field.id) != 'A') && (String(field.id).includes('A'))){
                 input.style.textAlign = 'center';
@@ -178,18 +217,16 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             if (field.id === 'B') { 
-                // input.setAttribute('placeholder', 'MM/DD/YYYY');
                 input.addEventListener('input', function(e) {
                     var value = e.target.value;
-                    var cleanValue = value.replace(/[^\d]/g, ''); // Remove non-digits
+                    var cleanValue = value.replace(/[^\d]/g, '');
                     var yearPart = '';
     
                     if (cleanValue.length > 4) {
                         yearPart = cleanValue.slice(4, 8);
-                        cleanValue = cleanValue.slice(0, 4); // Ensure MMDD format
+                        cleanValue = cleanValue.slice(0, 4); 
                     }
     
-                    // Auto-insert slashes
                     if (cleanValue.length >= 2) {
                         cleanValue = cleanValue.slice(0, 2) + '/' + cleanValue.slice(2);
                     }
@@ -202,101 +239,65 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             }
     
-            // Set font size based on the height of the field
-            const fontSize = scaledHeight * 0.9; // Adjust the factor as needed
+            const fontSize = scaledHeight * 0.9; 
             input.style.fontSize = `${fontSize}px`;
     
-            // Repopulate field values after creating new fields
             if (fieldValues[field.id] !== undefined) {
                 input.value = fieldValues[field.id];
             }
     
-            // Append the input to the div
             fieldDiv.appendChild(input);
     
-            // Append the div to the form
             form.appendChild(fieldDiv);
         });
     }
-    
-    // Function to handle window resize
-    function onResize() {
+    function reloadFields() {
         const form = document.getElementById('invoice-form');
         const pngWidth = form.offsetWidth;
         const scaleFactor = pngWidth / formData.pdfWidth;
         createFormFields(formData.fields, scaleFactor);
     }
-    
-    // Fetch form data and create fields
     fetch('/formdata')
         .then(response => response.json())
         .then(data => {
-            formData = data; // Store the data for use in resize event
-            onResize(); // Create fields initially
+            formData = data; 
+            reloadFields();
         })
         .catch(error => console.error('Error fetching data:', error));
     
-    // Add resize event listener
-    window.addEventListener('resize', onResize);
+    window.addEventListener('resize', reloadFields);
+
+    //auto fill textbox (Make New Invoice)
+
+
     
 
 
-    // this is the stuff for the menu
-    document.getElementById('menuNewInv').addEventListener('click', function() {
-        document.getElementById('newInv').style.display = '';
-        document.getElementById('searchSection').style.display = 'none';
-    });
-    document.getElementById('menuSearch').addEventListener('click', function() {
-        document.getElementById('newInv').style.display = 'none';
-        document.getElementById('searchSection').style.display = '';
-    });
-    
 
+
+    //show initial interactive table of invoices (Search Invoices)
     async function fetchAndDisplayInvoices() {
         try {
             const response = await fetch('/getInvoices');
             if (!response.ok) throw new Error('Failed to fetch invoices');
             const invoices = await response.json();
-            console.log(invoices);  // Log to verify data structure
             renderInvoicesTable(invoices);
         } catch (error) {
             console.error('Error:', error);
         }
     }
-    function calculateTotalPrice(invoiceDetails) {
-        let total = 0;
-        let excludeKeys = new Set(); // To store keys that should be excluded from the total
-    
-        // First pass to find any 'total' in 'B' keys
-        Object.entries(invoiceDetails.fields).forEach(([key, value]) => {
-            if (key.endsWith('B') && value.stringValue.toLowerCase().includes('total')) {
-                const num = key.match(/(\d+)B$/)[1]; // Extract the number before 'B'
-                excludeKeys.add(num + 'C'); // Add the corresponding 'C' key to the exclude list
-            }
-        });
-    
-        // Second pass to calculate the total of 'C' values
-        Object.entries(invoiceDetails.fields).forEach(([key, value]) => {
-            if (key.endsWith('C') && !excludeKeys.has(key) && key !== 'C') {
-                total += parseFloat(value.stringValue) || 0;
-            }
-        });
-    
-        return total;
-    }
-    
+    document.getElementById('menuSearch').addEventListener('click', fetchAndDisplayInvoices);
     function renderInvoicesTable(invoices) {
         const tbody = document.getElementById('invoiceTable').querySelector('tbody');
-        tbody.innerHTML = ''; // Clear existing rows
-    
+        tbody.innerHTML = ''; 
         invoices.forEach(invoice => {
+            const downloadPDFdata = JSON.stringify(flattenServerRes(invoice));
+
             const row = document.createElement('tr');
     
-            // Extracting Invoice ID from the invoice object
             const invoiceId = invoice.id;
-            row.appendChild(createCell(invoiceId)); // Invoice ID
+            row.appendChild(createCell(invoiceId)); 
             
-            // Invoice fields
             const invoiceNumber = invoice.fields['A'] ? invoice.fields['A'].stringValue : 'null';
             row.appendChild(createCell(invoiceNumber)); // Invoice #
             
@@ -309,65 +310,30 @@ document.addEventListener('DOMContentLoaded', function() {
             const clientAddress = invoice.fields['D'] ? invoice.fields['D'].stringValue : 'null';
             row.appendChild(createCell(clientAddress)); // Client Address
             
-            // Calculate total charges
             const totalCharges = calculateTotalPrice(invoice.fields.invoiceDetails.mapValue);
             row.appendChild(createCell(totalCharges.toFixed(2))); // Total Charges
             
-            // Created Invoice Date
             const creationDate = invoice.fields.creationDate ? new Date(invoice.fields.creationDate.timestampValue).toLocaleString() : 'null';
             row.appendChild(createCell(creationDate)); // Created Invoice Date
     
-            // Create options cell with dropdown menu
             const optionsCell = document.createElement('td');
             optionsCell.innerHTML = `
                 <div class="ui floating dropdown icon button">
                     <i class="dropdown icon"></i>
                     <div class="menu">
                         <div class="item" onclick="viewInvoice('${invoiceId}')">View Invoice</div>
-                        <div class="item" onclick="downloadInvoice('${invoiceId}')">Download Invoice</div>
+                        <div class="item" onclick='downloadInvoice(&quot${downloadPDFdata}&quot,"${invoiceId}","${invoice.fields.A.stringValue}")'>Download Invoice</div>
                         <div class="item" onclick="printInvoice('${invoiceId}')">Print Invoice</div>
                         <div class="item" onclick="deleteInvoice('${invoiceId}')">Delete Invoice</div>
                     </div>
                 </div>
             `;
-            row.appendChild(optionsCell); // Append the options cell to the row
-    
-            tbody.appendChild(row); // Append the row to the table body
+            row.appendChild(optionsCell); 
+            tbody.appendChild(row); 
         });
     
-        // After adding all rows, initialize the dropdowns
         initializeDropdowns();
     }
-    
-    function createCell(text) {
-        const cell = document.createElement('td');
-        cell.textContent = text;
-        return cell;
-    }
-    
-    function calculateTotalPrice(invoiceDetails) {
-        let total = 0;
-        let excludeKeys = new Set();
-    
-        // First pass to find 'total' indicators and mark corresponding 'C' keys for exclusion
-        Object.entries(invoiceDetails.fields).forEach(([key, value]) => {
-            if (key.endsWith('B') && value.stringValue.toLowerCase().includes('total')) {
-                const num = key.match(/(\d+)B$/)[1];
-                excludeKeys.add(num + 'C');
-            }
-        });
-    
-        // Second pass to sum up the 'C' values, excluding any marked keys
-        Object.entries(invoiceDetails.fields).forEach(([key, value]) => {
-            if (key.endsWith('C') && !excludeKeys.has(key) && key !== 'C') {
-                total += parseFloat(value.stringValue) || 0;
-            }
-        });
-    
-        return total;
-    }
-
-    
     function initializeDropdowns() {
         const dropdowns = document.querySelectorAll('.ui.dropdown');
     
@@ -382,7 +348,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     
-        // Close dropdowns when clicking outside
         document.addEventListener('click', (event) => {
             dropdowns.forEach(dropdown => {
                 if (!dropdown.contains(event.target)) {
@@ -395,41 +360,16 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
-    
-    // Define the functions that will be called on click
-    function viewInvoice(key) {
-        console.log('Viewing invoice', key);
-        // Implement the logic to view the invoice
-    }
 
-    // function downloadInvoice(key) {
-    //     console.log('Downloading invoice', key);
-    //     // Implement the logic to download the invoice
-    // }
+    //submit num of most recent amt of invoices (Search Invoices)
 
-    function printInvoice(key) {
-        console.log('Printing invoice', key);
-        // Implement the logic to print the invoice
-    }
+    //dropdown filters for the columns (Search Invoices)
 
-    function deleteInvoice(key) {
-        console.log('Deleting invoice', key);
-        // Implement the logic to delete the invoice
-    }
+    //search bar (Search Invoices)
         
     
     
     
-    
-    
-    
-    // Call this function when the 'Search Invoices' tab is clicked
-    document.getElementById('menuSearch').addEventListener('click', fetchAndDisplayInvoices);
-    
-    
-
-
-
     
 });
 

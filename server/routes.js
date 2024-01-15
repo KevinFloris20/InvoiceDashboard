@@ -16,7 +16,6 @@ router.get('/formdata', async (req, res) => {
     }
 });
 
-//just run the sendObjToDB.js file
 const { interactWithFirestore } = require('./models/firestoreApp.js');
 
 const { validateAndTransform } = require('./models/validation.js');
@@ -27,37 +26,27 @@ router.post('/submit-form', async (req, res) => {
     try {
         const submitData = req.body;
         var result;
-
-        // Validate and transform data
         const validatedData = validateAndTransform(submitData);
 
-        console.log("Validated Data:", validatedData);
-
-        // Determine if this is a new invoice or an update
         if (!validatedData.invoiceid) {
-            // New invoice - 'writeData' operation
             result = await interactWithFirestore('writeData', validatedData);
         } else {
-            // Existing invoice - 'updateData' operation
             result = await interactWithFirestore('updateData', {
                 documentId: validatedData.invoiceid,
                 updateFields: validatedData
             });
         }
 
-        // Respond with success and any additional data if needed
         res.json({ message: 'Invoice submitted successfully', result: result });
     } catch (error) {
-        // Send back the error message to the client
-        res.status(500).json({ error: error.message });
+        res.status(400).json({ error: error.message });
     }
 });
 
 router.post('/download-invoice', async (req, res) => {
     try {
-        const data = req.body; // Assuming the data is sent in the request body
+        const data = req.body; 
         var pdfPath;
-        //check if a file exists FCRInvoiceTemplate if not then use FCRInvoiceTemplateNull
         if (fs.existsSync('FCRInvoiceTemplate.pdf')) {
             pdfPath = 'FCRInvoiceTemplate.pdf';
         } else {
@@ -67,7 +56,6 @@ router.post('/download-invoice', async (req, res) => {
         res.setHeader('Content-Type', 'application/pdf');
         res.setHeader('Content-Disposition', 'attachment; filename=invoice.pdf');
         res.setHeader('Content-Length', pdfBytes.length);
-        
         res.end(pdfBytes);
     } catch (error) {
         console.error(error);
@@ -82,7 +70,6 @@ router.get('/getInvoices', async (req, res) => {
         const firestoreData = await interactWithFirestore('readData', 10);
 
         if (firestoreData && firestoreData.data && firestoreData.data.documents) {
-            // Extract fields from each document and return them
             const documents = firestoreData.data.documents.map(doc => ({
                 id: doc.name.split('/').pop(),
                 fields: doc.fields,
@@ -95,7 +82,21 @@ router.get('/getInvoices', async (req, res) => {
         }
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Error fetching invoices', error: error.message });
+        res.status(400).json({ message: 'Error fetching invoices', error: error.message });
+    }
+});
+
+router.post('/deleteInvoice', async (req, res) => {
+    try {
+        const data = req.body;
+        if (!data.id) {
+            return res.status(400).json({ message: 'Invoice id not provided' });
+        }
+        const firestoreData = await interactWithFirestore('deleteData', {documentId: data.id});
+        res.json({ message: 'Invoice deleted successfully', result: firestoreData });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error deleting invoice', error: error.message });
     }
 });
 

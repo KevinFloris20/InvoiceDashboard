@@ -11,6 +11,9 @@ body{
     overflow: auto;
     background-image:url('backgroundImg.png') ;
 }  
+div{
+    word-wrap: break-word;
+}
 
 #inv{
     width: 60%;
