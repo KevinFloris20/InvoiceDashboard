@@ -169,8 +169,8 @@ async function interactWithFirestore(whatAreWeDoing, data) {
                 try {
                     const deleteUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/${db_name}/documents/${collection_Id}/${data.documentId}`;
                     const deleteResponse = await axios.delete(deleteUrl, { headers });
-                    console.log('Invoice document deleted:', deleteResponse.data);
-                    return deleteResponse;
+                    console.log('Invoice document deleted:', data.documentId , deleteResponse.data);
+                    return deleteResponse.data;
                 } catch (error) {
                    return handleError(error, 'Error in deleteData', safeStringify(data));
                 }

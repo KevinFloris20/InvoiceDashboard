@@ -1,38 +1,100 @@
 //for the onclick options menu on all of the rows (Search Invoices)
+async function viewInvoice(invoiceData) {
+    const blob = await fetchBlob(invoiceData);
 
-function viewInvoice(documentId) {
-    console.log('Viewing invoice', key);
+    const blobUrl = URL.createObjectURL(blob);
+
+    const pdfWindow = window.open(blobUrl);
+
+    pdfWindow.onload = function() {
+        try {
+            URL.revokeObjectURL(blobUrl);
+        } catch (error) {
+            console.error('Error viewing the PDF:', error);
+        }
+    };
+
 }
-function printInvoice(key) {
-    console.log('Printing invoice', key);
+async function printInvoice(invoiceData) {
+    try {
+        const blob = await fetchBlob(invoiceData);
+
+        const blobUrl = URL.createObjectURL(blob);
+
+        const pdfWindow = window.open(blobUrl);
+
+        pdfWindow.onload = function() {
+            try {
+                pdfWindow.print();
+                URL.revokeObjectURL(blobUrl);
+            } catch (error) {
+                console.error('Error printing the PDF:', error);
+            }
+        };
+    } catch (error) {
+        console.error('Error fetching or printing the invoice:', error);
+    }
 }
-function deleteInvoice(documentId) {
-    console.log('Deleting invoice', key);
-}
-async function downloadInvoice(invoiceData, resID, invoiceNum) {
-    var invoiceName = 'invoice.pdf'; 
-    if (resID && resID.result) {
-        invoiceName = 'invoice' + invoiceNum + '.pdf';
+
+async function deleteInvoice(documentId) {
+    const userConfirmed = confirm(`Are you sure you want to delete this invoice? ${documentId}`);
+    if (!userConfirmed) {
+        return; 
     }
 
     try {
-        const response = await fetch('/download-invoice', {
+        const response = await fetch('/deleteInvoice', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(invoiceData)
+            body: JSON.stringify({ id: documentId }) 
         });
 
-        if (!response.ok) {
-            throw new Error(`Error downloading invoice: ${response.statusText}`);
-        }
+        const data = await response.json(); 
 
-        const blob = await response.blob();
-        console.log(`Blob Type: ${blob.type}, Blob Size: ${blob.size}`);
-        if (blob.type !== 'application/pdf' || blob.size === 0) {
-            throw new Error('Received invalid PDF data');
+        if (response.ok) {
+            console.log('Invoice deleted successfully:', data);
+            displayMessage(`Invoice deleted successfully`, 'success');
+            document.querySelector(`#invoice-row-${documentId}`).remove();
+        } else {
+            throw new Error(data.message || 'Unknown error occurred while deleting invoice');
         }
+    } catch (error) {
+        console.error('Error deleting invoice:', error);
+        displayMessage(`Error deleting invoice: ${error.message}`, 'error');
+    }
+}
+
+async function fetchBlob(invoiceData){
+    const response = await fetch('/download-invoice', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(invoiceData)
+    });
+
+    if (!response.ok) {
+        throw new Error(`Error downloading invoice: ${response.statusText}`);
+    }
+
+    const blob = await response.blob();
+    console.log(`Blob Type: ${blob.type}, Blob Size: ${blob.size}`);
+    if (blob.type !== 'application/pdf' || blob.size === 0) {
+        throw new Error('Received invalid PDF data');
+    }
+    return blob;
+}
+
+async function downloadInvoice(invoiceData, resID, invoiceNum) {
+    var invoiceName = 'invoice.pdf'; 
+    if (resID) {
+        invoiceName = 'invoice' + invoiceNum + '.pdf';
+    }
+
+    try {
+        const blob = await fetchBlob(invoiceData);
 
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -294,6 +356,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const downloadPDFdata = JSON.stringify(flattenServerRes(invoice));
 
             const row = document.createElement('tr');
+            row.id = `invoice-row-${invoice.id}`;
     
             const invoiceId = invoice.id;
             row.appendChild(createCell(invoiceId)); 
@@ -320,11 +383,11 @@ document.addEventListener('DOMContentLoaded', function() {
             optionsCell.innerHTML = `
                 <div class="ui floating dropdown icon button">
                     <i class="dropdown icon"></i>
-                    <div class="menu">
-                        <div class="item" onclick="viewInvoice('${invoiceId}')">View Invoice</div>
-                        <div class="item" onclick='downloadInvoice(&quot${downloadPDFdata}&quot,"${invoiceId}","${invoice.fields.A.stringValue}")'>Download Invoice</div>
-                        <div class="item" onclick="printInvoice('${invoiceId}')">Print Invoice</div>
-                        <div class="item" onclick="deleteInvoice('${invoiceId}')">Delete Invoice</div>
+                    <div class="menu" pdfData='${downloadPDFdata}'>
+                        <div class="item itemOptions" id="${invoiceId}" attr="viewInvoice">View Invoice</div>
+                        <div class="item itemOptions" id="${invoiceId}" invnum='${invoice.fields.A.stringValue}' attr="downloadInvoice">Download Invoice</div>
+                        <div class="item itemOptions" id="${invoiceId}" attr="printInvoice">Print Invoice</div>
+                        <div class="item itemOptions" id="${invoiceId}" attr="delInvoice">Delete Invoice</div>
                     </div>
                 </div>
             `;
@@ -359,6 +422,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
         });
+
+        const optionsMenu = document.querySelectorAll('.itemOptions');
+        optionsMenu.forEach(opp => {
+            opp.addEventListener('click', (event) => {
+                const data = JSON.parse(opp.parentElement.getAttribute('pdfData'));
+                if (opp.getAttribute('attr') === 'viewInvoice') {
+                    viewInvoice(data);
+                } else if (opp.getAttribute('attr') === 'downloadInvoice') {
+                    const name = opp.getAttribute("invnum").toString();
+                    downloadInvoice(data, opp.id, name);
+                } else if (opp.getAttribute('attr') === 'printInvoice') {
+                    printInvoice(data, opp.id);
+                } else if (opp.getAttribute('attr') === 'delInvoice') {
+                    deleteInvoice(opp.id);
+                }
+            }
+        )});
+
     }
 
     //submit num of most recent amt of invoices (Search Invoices)

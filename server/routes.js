@@ -88,11 +88,11 @@ router.get('/getInvoices', async (req, res) => {
 
 router.post('/deleteInvoice', async (req, res) => {
     try {
-        const data = req.body;
-        if (!data.id) {
+        const data = req.body.id;
+        if (!data) {
             return res.status(400).json({ message: 'Invoice id not provided' });
         }
-        const firestoreData = await interactWithFirestore('deleteData', {documentId: data.id});
+        const firestoreData = await interactWithFirestore('deleteData', {documentId: data});
         res.json({ message: 'Invoice deleted successfully', result: firestoreData });
     } catch (error) {
         console.error(error);
