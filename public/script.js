@@ -333,6 +333,15 @@ document.addEventListener('DOMContentLoaded', function() {
     
     window.addEventListener('resize', reloadFields);
 
+    //calculate total charges (Make New Invoice)
+    document.getElementById('invoice-form').addEventListener('blur', function() {
+        const formData = collectFormData();
+        console.log('Form data:', formData);
+        const total = calculateTotalPrice(formData);
+        console.log('Total:', total);
+        document.getElementById('totalMSG').innerText = total;
+    }, true);
+
     //auto fill textbox (Make New Invoice)
 
 

@@ -6,6 +6,7 @@ async function runTests() {
         B: "Test B",
         C: "Test C",
         D: "Test D",
+        E: "Test E",
         invoiceDetails: {
             "key1": "value1",
             "key2": "value2"
