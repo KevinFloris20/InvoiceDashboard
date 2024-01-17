@@ -174,6 +174,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('menuNewInv').addEventListener('click', function() {
         document.getElementById('newInv').style.display = '';
         document.getElementById('searchSection').style.display = 'none';
+        reloadFields();
     });
     document.getElementById('menuSearch').addEventListener('click', function() {
         document.getElementById('newInv').style.display = 'none';
@@ -200,17 +201,17 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             console.log('Form submitted:', data, submitData);
-            displayMessage(`Success: ${data.message}. New ID:${data.result}`, 'success');
+            displayMessage(`Success: ${data.message}. New ID: ${data.result}`, 'success');
 
-            return [data,submitData.A];
+            return [data, submitData.A];
         } catch (error) {
             console.error('Error submitting form:', error);
             displayMessage(`Error: ${error.message}`, 'error');
         }
     }
     document.getElementById('saveButton').addEventListener('click', async function() {
-        const res = submitFormData()
-        if (res && res.result) {
+        const [data, name] = await submitFormData()
+        if (data && name) {
             emptyFormFields();
         }
     });
@@ -276,6 +277,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             if(String(field.id) == 'D'){
                 input.style.textAlign = 'center';
+            }
+            if(String(field.id) == 'E'){
+                input.style.textAlign = 'left';
             }
 
             if (field.id === 'B') { 
@@ -372,6 +376,9 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const clientAddress = invoice.fields['D'] ? invoice.fields['D'].stringValue : 'null';
             row.appendChild(createCell(clientAddress)); // Client Address
+
+            const clientEmail = invoice.fields['E'] ? invoice.fields['E'].stringValue : 'null';
+            row.appendChild(createCell(clientEmail)); // Client email
             
             const totalCharges = calculateTotalPrice(invoice.fields.invoiceDetails.mapValue);
             row.appendChild(createCell(totalCharges.toFixed(2))); // Total Charges

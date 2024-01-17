@@ -125,6 +125,7 @@ async function interactWithFirestore(whatAreWeDoing, data) {
                         B: formatFirestoreValue(data.B),
                         C: formatFirestoreValue(data.C),
                         D: formatFirestoreValue(data.D),
+                        E: formatFirestoreValue(data.E),
                         creationDate: formatFirestoreValue(new Date()), // Current date
                         invoiceDetails: formatFirestoreValue(data.invoiceDetails) // Nested map of invoice values
                     };
@@ -204,6 +205,7 @@ module.exports = { interactWithFirestore };
 //       B: "any string value",
 //       C: "any string value",
 //       D: "any string value",
+//       E: "any string value",
 //       invoiceDetails: {
 //         "key1": "value1",
 //         "key2": "value2",
@@ -221,6 +223,7 @@ module.exports = { interactWithFirestore };
 //               B: "any string value",
 //               C: "any string value",
 //               D: "any string value",
+//               E: "any string value",
 //               invoiceDetails: {
 //                 "key1": "value1",
 //                 "key2": "value2",

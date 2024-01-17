@@ -22,7 +22,7 @@ function validateAndTransform(inboundData) {
     // Validate and populate invoiceDetails
     const keyPattern = /^\d+[A-Z]$/;
     for (let key in inboundData) {
-        if (!['A', 'B', 'C', 'D', 'creationDate'].includes(key)) {
+        if (!['A', 'B', 'C', 'D', 'E', 'creationDate'].includes(key)) {
             if (!keyPattern.test(key)) {
                 throw new Error(`Invalid key format: '${key}'. Expected format: digit(s) followed by a capital letter.`);
             }
@@ -38,7 +38,8 @@ const info = {
     'A': 'Invoice #',
     'B': 'Date',
     'C': 'Name',
-    'D': 'Address'
+    'D': 'Address',
+    'E': 'Email'
 };
 
 module.exports = { validateAndTransform };
