@@ -144,23 +144,34 @@ function flattenServerRes(serverResponse) {
     return flattenedResponse;
 }
 function calculateTotalPrice(invoiceDetails) {
-    let total = 0;
-    let excludeKeys = new Set(); 
+        console.log(invoiceDetails)
+    
+    if (obj.hasOwnProperty('fields') && typeof obj.fields === 'object'){
+        
 
-    Object.entries(invoiceDetails.fields).forEach(([key, value]) => {
-        if (key.endsWith('B') && value.stringValue.toLowerCase().includes('total')) {
-            const num = key.match(/(\d+)B$/)[1]; 
-            excludeKeys.add(num + 'C'); 
-        }
-    });
+    }else if(obj.hasOwnProperty('fields')){
+        let total = 0;
+        let excludeKeys = new Set(); 
 
-    Object.entries(invoiceDetails.fields).forEach(([key, value]) => {
-        if (key.endsWith('C') && !excludeKeys.has(key) && key !== 'C') {
-            total += parseFloat(value.stringValue) || 0;
-        }
-    });
+        Object.entries(invoiceDetails.fields).forEach(([key, value]) => {
+            if (key.endsWith('B') && value.stringValue.toLowerCase().includes('total')) {
+                const num = key.match(/(\d+)B$/)[1]; 
+                excludeKeys.add(num + 'C'); 
+            }
+        });
 
-    return total;
+        Object.entries(invoiceDetails.fields).forEach(([key, value]) => {
+            if (key.endsWith('C') && !excludeKeys.has(key) && key !== 'C') {
+                total += parseFloat(value.stringValue) || 0;
+            }
+        });
+
+        return total;
+    }else{
+        console.log("Error with the calculate total Price")
+        return null;
+    }
+
 }
 function emptyFormFields() {
     const inputs = document.querySelectorAll('#invoice-form .dynamic-input');
