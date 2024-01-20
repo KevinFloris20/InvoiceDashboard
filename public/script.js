@@ -144,39 +144,75 @@ function flattenServerRes(serverResponse) {
     return flattenedResponse;
 }
 function calculateTotalPrice(invoiceDetails) {
-        console.log(invoiceDetails)
-    
-    if (obj.hasOwnProperty('fields') && typeof obj.fields === 'object'){
-        
-
-    }else if(obj.hasOwnProperty('fields')){
-        let total = 0;
-        let excludeKeys = new Set(); 
-
-        Object.entries(invoiceDetails.fields).forEach(([key, value]) => {
-            if (key.endsWith('B') && value.stringValue.toLowerCase().includes('total')) {
-                const num = key.match(/(\d+)B$/)[1]; 
-                excludeKeys.add(num + 'C'); 
-            }
-        });
-
-        Object.entries(invoiceDetails.fields).forEach(([key, value]) => {
-            if (key.endsWith('C') && !excludeKeys.has(key) && key !== 'C') {
-                total += parseFloat(value.stringValue) || 0;
-            }
-        });
-
-        return total;
-    }else{
-        console.log("Error with the calculate total Price")
-        return null;
+    if (!invoiceDetails) {
+        return 0.00;
     }
 
+    let total = 0;
+    let total2 = 0;
+    let excludeKeys = new Set();
+
+    if (!invoiceDetails.hasOwnProperty('fields')) {
+        Object.entries(invoiceDetails).forEach(([key, value]) => {
+            if (value.toLowerCase().includes('total') && key.endsWith('B')) {
+                var adjacentKey = key.replace('B', 'C');
+                let invoiceDetailsClone = JSON.parse(JSON.stringify(invoiceDetails));
+                delete invoiceDetailsClone[adjacentKey];
+                var fakeTotal = 0;
+                for (const [key2, value2] of Object.entries(invoiceDetailsClone)) {
+                    if (key2.endsWith('C') && typeof value2 === 'string') {
+                        fakeTotal += parseFloat(value2) || 0;
+                    }
+                }
+                if (invoiceDetails[adjacentKey] == fakeTotal.toString()) {
+                    total2 = fakeTotal;
+                }
+            }
+        });
+
+        for (const [key, value] of Object.entries(invoiceDetails)) {
+            if (key.endsWith('C') && typeof value === 'string') {
+                total += parseFloat(value) || 0;
+            }
+        }
+        if (total2 != 0) {
+            return total2.toFixed(2)
+        }
+        return total.toFixed(2);
+    } else {
+        for (const [key, value] of Object.entries(invoiceDetails.fields)) {
+            if (key.endsWith('B') && typeof value.stringValue === 'string' && value.stringValue.toLowerCase().includes('total')) {
+                const num = key.match(/(\d+)B$/)[1];
+                excludeKeys.add(num + 'C');
+            }
+        }
+
+        for (const [key, value] of Object.entries(invoiceDetails.fields)) {
+            if (key.endsWith('C') && !excludeKeys.has(key) && key !== 'C' && typeof value.stringValue === 'string') {
+                total += parseFloat(value.stringValue) || 0;
+            }
+        }
+    }
+
+    return total
 }
 function emptyFormFields() {
     const inputs = document.querySelectorAll('#invoice-form .dynamic-input');
     inputs.forEach(input => input.value = '');
+    document.getElementById('totalMSG').innerText = 'Total: $0.00';
 }
+function validateDecimalInput(event) {
+    const inputElement = event.target;
+    let value = inputElement.value;
+
+    const regex = /^\d*\.?\d{0,2}$/;
+
+    if (!regex.test(value) && value.length > 0) {
+        value = value.slice(0, -1);
+        inputElement.value = value;
+    }
+}
+
 
 
 
@@ -268,6 +304,7 @@ document.addEventListener('DOMContentLoaded', function() {
             fieldDiv.style.height = `${scaledHeight}px`;
     
             const input = document.createElement('input');
+            input.setAttribute('autocomplete', 'off');
             input.classList.add('dynamic-input');
             input.type = 'text';
             input.name = field.id; 
@@ -282,6 +319,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             if((String(field.id) != 'C') && (String(field.id).includes('C'))){
                 input.style.textAlign = 'right';
+                
             }
             if(String(field.id) == 'C'){
                 input.style.textAlign = 'center';
@@ -345,12 +383,11 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('resize', reloadFields);
 
     //calculate total charges (Make New Invoice)
-    document.getElementById('invoice-form').addEventListener('blur', function() {
+    document.getElementById('invoice-form').addEventListener('input', function(event) {
+        validateDecimalInput(event);
         const formData = collectFormData();
-        console.log('Form data:', formData);
         const total = calculateTotalPrice(formData);
-        console.log('Total:', total);
-        document.getElementById('totalMSG').innerText = total;
+        document.getElementById('totalMSG').innerText = 'Total: $' + total.toString();
     }, true);
 
     //auto fill textbox (Make New Invoice)
@@ -379,6 +416,12 @@ document.addEventListener('DOMContentLoaded', function() {
         invoices.forEach(invoice => {
             const downloadPDFdata = JSON.stringify(flattenServerRes(invoice));
 
+            for (const [key, value] of Object.entries(invoice.fields)) {
+                if (value.stringValue) {
+                    invoice.fields[key].stringValue = value.stringValue.replace(/\s+/g, ' ');
+                }
+            }
+
             const row = document.createElement('tr');
             row.id = `invoice-row-${invoice.id}`;
     
@@ -394,10 +437,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const clientName = invoice.fields['C'] ? invoice.fields['C'].stringValue : 'null';
             row.appendChild(createCell(clientName)); // Client Name
             
-            const clientAddress = invoice.fields['D'] ? invoice.fields['D'].stringValue : 'null';
+            const clientAddress = invoice.fields['D'] ? invoice.fields['D'].stringValue : '';
             row.appendChild(createCell(clientAddress)); // Client Address
 
-            const clientEmail = invoice.fields['E'] ? invoice.fields['E'].stringValue : 'null';
+            const clientEmail = invoice.fields['E'] ? invoice.fields['E'].stringValue : '';
             row.appendChild(createCell(clientEmail)); // Client email
             
             const totalCharges = calculateTotalPrice(invoice.fields.invoiceDetails.mapValue);

@@ -14,8 +14,9 @@ function validateAndTransform(inboundData) {
         A: inboundData.A,
         B: inboundData.B,
         C: inboundData.C,
-        D: inboundData.D || '',  // 'D' can be empty
-        creationDate: new Date().toISOString(), // ISO string for the Firestore timestamp
+        D: inboundData.D || '',  
+        E: inboundData.E || '', 
+        creationDate: new Date().toISOString(),
         invoiceDetails: {}
     };
 
