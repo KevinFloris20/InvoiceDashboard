@@ -75,6 +75,8 @@ div{
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     border-radius: 5px;
     padding: 8px 0;
+
+
 }
 
 .ui.dropdown.active .menu {
@@ -167,5 +169,8 @@ div{
         width: 100%;
     }
 
+    .ui.floating.dropdown.icon.button{
+        left: 50%;
+    }
 
 }
