@@ -384,11 +384,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     //calculate total charges (Make New Invoice)
     document.getElementById('invoice-form').addEventListener('input', function(event) {
-        validateDecimalInput(event);
-        const formData = collectFormData();
-        const total = calculateTotalPrice(formData);
-        document.getElementById('totalMSG').innerText = 'Total: $' + total.toString();
+        if(event.target.name.includes('C') && (event.target.name !== 'C')){
+            validateDecimalInput(event);
+            const formData = collectFormData();
+            const total = calculateTotalPrice(formData);
+            document.getElementById('totalMSG').innerText = 'Total: $' + total.toString();
+        }
     }, true);
+
 
     //auto fill textbox (Make New Invoice)
 
