@@ -313,6 +313,7 @@ document.addEventListener('DOMContentLoaded', function() {
             input.style.border = 'none'; 
             input.style.padding = '0'; 
             input.style.margin = '0'; 
+            input.style.fontFamily = 'Times New Roman';
     
             if((String(field.id) != 'A') && (String(field.id).includes('A'))){
                 input.style.textAlign = 'center';

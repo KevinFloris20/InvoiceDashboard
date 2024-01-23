@@ -1,6 +1,6 @@
 const fs = require('fs');
 const PDFParser = require('pdf2json');
-const { PDFDocument } = require('pdf-lib');
+const { PDFDocument, StandardFonts } = require('pdf-lib');
 
 function extractFormFields(pdfPath) {
     return new Promise((resolve, reject) => {
@@ -35,6 +35,8 @@ async function newInvoicePDF(data, pdfPath) {
     const existingPdfBytes = fs.readFileSync(pdfPath);
     const pdfDoc = await PDFDocument.load(existingPdfBytes);
 
+    const timesRomanFont = await pdfDoc.embedFont(StandardFonts.TimesRoman);
+
     const form = pdfDoc.getForm();
 
     // Fill each field with data
@@ -42,13 +44,14 @@ async function newInvoicePDF(data, pdfPath) {
         const formField = form.getField(key);
         if (formField) {
             formField.setText(data[key]);
+            formField.updateAppearances(timesRomanFont);
         }
     }
 
-    form.flatten(); // This makes the form fields no longer editable
+    form.flatten();
 
     const pdfBytes = await pdfDoc.save();
-    return pdfBytes; // Returns a buffer
+    return pdfBytes;
 }
 
 module.exports = { extractFormFields, newInvoicePDF};

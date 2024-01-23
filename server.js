@@ -12,6 +12,9 @@ app.use((err, req, res, next) => {
   res.status(500).send('Something broke! Error:', err);
 });
 
+
+//make the login page the home page
+
 //routes
 const routes = require("./server/routes.js");
 app.use(routes);
