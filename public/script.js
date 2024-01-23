@@ -412,7 +412,6 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Error:', error);
         }
     }
-    document.getElementById('menuSearch').addEventListener('click', fetchAndDisplayInvoices);
     function renderInvoicesTable(invoices) {
         const tbody = document.getElementById('invoiceTable').querySelector('tbody');
         tbody.innerHTML = ''; 
@@ -514,11 +513,52 @@ document.addEventListener('DOMContentLoaded', function() {
         )});
 
     }
-
+    document.getElementById('menuSearch').addEventListener('click', fetchAndDisplayInvoices);
+    
     //submit num of most recent amt of invoices (Search Invoices)
 
     //dropdown filters for the columns (Search Invoices)
-
+    document.getElementById('searchInvoiceId').addEventListener('input', filterTable);
+    document.getElementById('searchInvoiceNumber').addEventListener('input', filterTable);
+    document.getElementById('searchInvoiceDate').addEventListener('input', filterTable);
+    document.getElementById('searchClientName').addEventListener('input', filterTable);
+    document.getElementById('searchClientAddress').addEventListener('input', filterTable);
+    document.getElementById('searchClientEmail').addEventListener('input', filterTable);
+    
+    function filterTable() {
+        const idValue = document.getElementById('searchInvoiceId').value.toLowerCase();
+        const numberValue = document.getElementById('searchInvoiceNumber').value.toLowerCase();
+        const dateValue = document.getElementById('searchInvoiceDate').value.toLowerCase();
+        const clientNameValue = document.getElementById('searchClientName').value.toLowerCase();
+        const clientAddressValue = document.getElementById('searchClientAddress').value.toLowerCase();
+        const clientEmailValue = document.getElementById('searchClientEmail').value.toLowerCase();
+    
+        const table = document.getElementById('invoiceTable');
+        const rows = table.getElementsByTagName('tr');
+    
+        for (let i = 2; i < rows.length; i++) { // Start from 2 to skip header rows
+            let idCell = rows[i].getElementsByTagName('td')[0];
+            let numberCell = rows[i].getElementsByTagName('td')[1];
+            let dateCell = rows[i].getElementsByTagName('td')[2];
+            let clientNameCell = rows[i].getElementsByTagName('td')[3];
+            let clientAddressCell = rows[i].getElementsByTagName('td')[4];
+            let clientEmailCell = rows[i].getElementsByTagName('td')[5];
+    
+            // Check if row should be displayed
+            if (idCell && numberCell && dateCell && clientNameCell && clientAddressCell && clientEmailCell) {
+                if (idCell.textContent.toLowerCase().indexOf(idValue) > -1 &&
+                    numberCell.textContent.toLowerCase().indexOf(numberValue) > -1 &&
+                    dateCell.textContent.toLowerCase().indexOf(dateValue) > -1 &&
+                    clientNameCell.textContent.toLowerCase().indexOf(clientNameValue) > -1 &&
+                    clientAddressCell.textContent.toLowerCase().indexOf(clientAddressValue) > -1 &&
+                    clientEmailCell.textContent.toLowerCase().indexOf(clientEmailValue) > -1) {
+                    rows[i].style.display = '';
+                } else {
+                    rows[i].style.display = 'none';
+                }
+            }
+        }
+    }
     //search bar (Search Invoices)
         
     

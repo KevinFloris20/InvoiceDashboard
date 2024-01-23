@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        html, body {
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #fff; 
+        }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #D50000;
+        }
+        .login-form {
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+            padding: 40px;
+            background: #fff; 
+            border-radius: 8px;
+            width: 100%;
+            max-width: 320px;
+            position: relative;
+        }
+        .login-form h1 {
+            text-align: center;
+            margin-bottom: 24px;
+            color: #D50000;
+            font-size: 2em;
+        }
+        .login-form label {
+            color: #333; 
+        }
+        .login-form input[type='text'],
+        .login-form input[type='password'] {
+            border: 1px solid #ddd;
+            padding: 10px;
+            width: calc(100% - 20px);
+            margin-bottom: 20px;
+        }
+        .login-form button {
+            width: 100%;
+            padding: 10px;
+            background-color: #333; 
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .login-form button:hover {
+            background-color: #d51e1e; 
+        }
+        .eye-icon {
+            cursor: pointer;
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .field {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        @media (max-width: 480px) {
+            .login-form {
+                padding: 20px;
+                margin: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-form">
+        <h1>FCR Login</h1>
+        <form action="/login" method="post">
+            <div class="field">
+                <label>Username</label>
+                <input type="text" name="username" required>
+            </div>
+            <div class="field" style="position: relative;">
+              <label>Password</label>
+              <input type="password" name="password" id="password" required>
+              <span class="eye-icon" onclick="togglePasswordVisibility()">👁️</span>
+            </div>          
+            <button type="submit">Login</button>
+        </form>
+    </div>
+    <script>
+        function togglePasswordVisibility() {
+            var passwordInput = document.getElementById("password");
+            var passStatus = passwordInput.getAttribute('type');
+            passwordInput.setAttribute('type', passStatus === 'password' ? 'text' : 'password');
+        }
+    </script>
+</body>
+</html>
