@@ -196,6 +196,10 @@ async function interactWithFirestore(whatAreWeDoing, data) {
                     let queryPayload = {
                         structuredQuery: {
                             from: [{ collectionId: collection_Id }],
+                            orderBy: [{
+                                field: { fieldPath: 'creationDate' },
+                                direction: 'DESCENDING'
+                            }],
                             where: {
                                 compositeFilter: {
                                     op: 'AND',
