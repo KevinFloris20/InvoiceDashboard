@@ -710,3 +710,22 @@ Stack Trace: RangeError: Invalid time value
   "endDate": "2024-01-01"
 }
 
+[2024-01-24T01:46:37.159Z] Error in readAdvancedData
+Error Details: Request failed with status code 400
+Response Data: [
+  {
+    "error": {
+      "code": 400,
+      "message": "The query requires an index. You can create it here: https://console.firebase.google.com/v1/r/project/invoicedashboardfcr/firestore/databases/invoicedatastore/indexes?create_composite=Cltwcm9qZWN0cy9pbnZvaWNlZGFzaGJvYXJkZmNyL2RhdGFiYXNlcy9pbnZvaWNlZGF0YXN0b3JlL2NvbGxlY3Rpb25Hcm91cHMvaW52b2ljZXMvaW5kZXhlcy9fEAEaBQoBQxABGhAKDGNyZWF0aW9uRGF0ZRACGgwKCF9fbmFtZV9fEAI",
+      "status": "FAILED_PRECONDITION"
+    }
+  }
+]
+Stack Trace: AxiosError: Request failed with status code 400
+    at settle (C:\Users\theus\yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:1967:12)
+    at Unzip.handleStreamEnd (C:\Users\theus\yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:3062:11)
+    at Unzip.emit (node:events:527:35)
+    at endReadableNT (node:internal/streams/readable:1589:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+"{\n  \"numberOfResults\": \"5\",\n  \"fromAccount\": \"test\",\n  \"startDate\": \"\",\n  \"endDate\": \"\"\n}"
+

@@ -35,7 +35,6 @@ async function printInvoice(invoiceData) {
         console.error('Error fetching or printing the invoice:', error);
     }
 }
-
 async function deleteInvoice(documentId) {
     const userConfirmed = confirm(`Are you sure you want to delete this invoice? ${documentId}`);
     if (!userConfirmed) {
@@ -65,7 +64,6 @@ async function deleteInvoice(documentId) {
         displayMessage(`Error deleting invoice: ${error.message}`, 'error');
     }
 }
-
 async function fetchBlob(invoiceData){
     const response = await fetch('/download-invoice', {
         method: 'POST',
@@ -86,7 +84,6 @@ async function fetchBlob(invoiceData){
     }
     return blob;
 }
-
 async function downloadInvoice(invoiceData, resID, invoiceNum) {
     var invoiceName = 'invoice.pdf'; 
     if (resID) {
@@ -160,23 +157,23 @@ function calculateTotalPrice(invoiceDetails) {
                 delete invoiceDetailsClone[adjacentKey];
                 var fakeTotal = 0;
                 for (const [key2, value2] of Object.entries(invoiceDetailsClone)) {
-                    if (key2.endsWith('C') && typeof value2 === 'string') {
-                        fakeTotal += parseFloat(value2) || 0;
+                    if (key2.endsWith('C') && !isNaN(value2) && value2.trim() !== '') {
+                        fakeTotal += parseFloat(value2);
                     }
                 }
-                if (invoiceDetails[adjacentKey] == fakeTotal.toString()) {
+                if (parseFloat(invoiceDetails[adjacentKey]) === fakeTotal) {
                     total2 = fakeTotal;
                 }
             }
         });
 
         for (const [key, value] of Object.entries(invoiceDetails)) {
-            if (key.endsWith('C') && typeof value === 'string') {
-                total += parseFloat(value) || 0;
+            if (key.endsWith('C') && !isNaN(value) && value.trim() !== '') {
+                total += parseFloat(value);
             }
         }
         if (total2 != 0) {
-            return total2.toFixed(2)
+            return total2.toFixed(2);
         }
         return total.toFixed(2);
     } else {
@@ -189,12 +186,15 @@ function calculateTotalPrice(invoiceDetails) {
 
         for (const [key, value] of Object.entries(invoiceDetails.fields)) {
             if (key.endsWith('C') && !excludeKeys.has(key) && key !== 'C' && typeof value.stringValue === 'string') {
-                total += parseFloat(value.stringValue) || 0;
+                const numValue = parseFloat(value.stringValue);
+                if (!isNaN(numValue)) {
+                    total += numValue;
+                }
             }
         }
     }
 
-    return total
+    return total.toFixed(2);
 }
 function emptyFormFields() {
     const inputs = document.querySelectorAll('#invoice-form .dynamic-input');
@@ -204,12 +204,9 @@ function emptyFormFields() {
 function validateDecimalInput(event) {
     const inputElement = event.target;
     let value = inputElement.value;
-
-    const regex = /^\d*\.?\d{0,2}$/;
-
-    if (!regex.test(value) && value.length > 0) {
-        value = value.slice(0, -1);
-        inputElement.value = value;
+    const regex = /^-?\d*\.?\d{0,2}$/;
+    if (!regex.test(value)) {
+        inputElement.value = value.slice(0, -1);
     }
 }
 function convertToMMDDYYYY(dateStr) {
@@ -220,6 +217,34 @@ function convertToMMDDYYYY(dateStr) {
     const day = utcDate.getDate();
     const year = utcDate.getFullYear();
     return `${month.toString().padStart(2, '0')}/${day.toString().padStart(2, '0')}/${year}`;
+}
+function toggleButtonState(buttonId, isLoading) {
+    const button = document.getElementById(buttonId);
+    if (isLoading) {
+        button.classList.add("loading");
+        button.disabled = true;
+    } else {
+        button.classList.remove("loading");
+        button.disabled = false;
+    }
+}
+function handleTotalChargesCalculation(event) {
+    var x;
+    try{
+        x = event.target.name.includes('C') 
+    }catch(err){
+        x = false;
+    }
+    if(x && (event.target.name !== 'C')){
+        validateDecimalInput(event);
+        const formData = collectFormData();
+        const total = calculateTotalPrice(formData);
+        document.getElementById('totalMSG').innerText = 'Total: $' + total.toString();
+    }else{
+        const formData = collectFormData();
+        const total = calculateTotalPrice(formData);
+        document.getElementById('totalMSG').innerText = 'Total: $' + total.toString();
+    }
 }
 
 
@@ -265,21 +290,38 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     document.getElementById('saveButton').addEventListener('click', async function() {
-        const [data, name] = await submitFormData()
-        if (data && name) {
-            emptyFormFields();
+        toggleButtonState('saveButton', true);
+        try {
+            const [data, name] = await submitFormData();
+            if (data && name) {
+                emptyFormFields();
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            displayMessage(`Error: ${error.message}`, 'error');
+        } finally {
+            toggleButtonState('saveButton', false);
         }
     });
-
+    
     //save and download button (Make New Invoice)
     document.getElementById('saveDownloadButton').addEventListener('click', async function() {
+        toggleButtonState('saveDownloadButton', true);
         const invoiceData = collectFormData();
-        const [res, invName] = await submitFormData();
-        if (res && res.result) {
-            await downloadInvoice(invoiceData, res, invName).then(emptyFormFields());
-        } else {
-            console.error('Error: Invalid response from submitFormData');
-            displayMessage('Error: Invalid response from submitFormData', 'error');
+        try {
+            const [res, invName] = await submitFormData();
+            if (res && res.result) {
+                await downloadInvoice(invoiceData, res, invName);
+                emptyFormFields();
+            } else {
+                console.error('Error: Invalid response from submitFormData');
+                displayMessage('Error: Invalid response from submitFormData', 'error');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            displayMessage(`Error: ${error.message}`, 'error');
+        } finally {
+            toggleButtonState('saveDownloadButton', false);
         }
     });
     
@@ -392,15 +434,8 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('resize', reloadFields);
 
     //calculate total charges (Make New Invoice)
-    document.getElementById('invoice-form').addEventListener('input', function(event) {
-        if(event.target.name.includes('C') && (event.target.name !== 'C')){
-            validateDecimalInput(event);
-            const formData = collectFormData();
-            const total = calculateTotalPrice(formData);
-            document.getElementById('totalMSG').innerText = 'Total: $' + total.toString();
-        }
-    }, true);
-
+    document.getElementById('invoice-form').addEventListener('input', handleTotalChargesCalculation, true);
+    document.getElementById('newInv').addEventListener('click', handleTotalChargesCalculation, true);
 
     //auto fill textbox (Make New Invoice)
 
