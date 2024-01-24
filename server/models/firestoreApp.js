@@ -1,38 +1,13 @@
 const axios = require('axios');
 const { GoogleAuth } = require('google-auth-library');
 const fs = require('fs');
-const path = require('path');
-// require('dotenv').config({ path: path.join(__dirname, '..', '..', 'cred.env') });
-
-// const collection_Id = process.env.COLLECTIONID;
-// const db_name = process.env.DB2NAME;
-// const keyFilename = path.join(__dirname, '..', '..', process.env.KEYFILE); // Assuming KEYFILE is a path to a file
-// const project_Id = process.env.PROJECTID;
-// const logFile = path.join(__dirname, '..', '..', 'log.txt'); 
-
-//just in case ;)
-// require('dotenv').config({ path: 'cred.env' });
-
-
-// // Set the paths conditionally based on the current directory
-// const isTestDir = __dirname.includes('tests');
-// console.log("__dirname: ", __dirname);
-// console.log("isTestDir: ", isTestDir);
-// const collection_Id = isTestDir ? path.join(__dirname, '..',process.env.COLLECTIONID.toString()) : process.env.COLLECTIONID.toString();
-// const db_name = isTestDir ? path.join(__dirname, '..',process.env.DB2NAME.toString()) : process.env.DB2NAME.toString();
-// const keyFilename = isTestDir ? path.join(__dirname, '..',process.env.KEYFILE.toString()) : process.env.KEYFILE.toString();
-// const project_Id = isTestDir ? path.join(__dirname, '..',process.env.PROJECTID.toString()) : process.env.PROJECTID.toString();
-// const logFile = 'log.txt';
-
-//original
 require('dotenv').config({ path: 'cred.env' });
 
 const collection_Id = process.env.COLLECTIONID.toString();
 const db_name = process.env.DB2NAME.toString();
 const keyFilename = process.env.KEYFILE.toString();
 const project_Id = process.env.PROJECTID.toString();
-const logFile = 'log.txt'
-
+const logFile = 'log.txt';
 
 // Helper function for logging
 function logToFile(message, data) {
@@ -43,12 +18,9 @@ function logToFile(message, data) {
 // Helper function for error handling
 function handleError(error, customMessage, data) {
     let detailedError = `${customMessage}\nError Details: ${error.message}`;
-
-    // Include server response if available
     if (error.response) {
         detailedError += `\nResponse Data: ${safeStringify(error.response.data)}`;
     }
-
     detailedError += `\nStack Trace: ${error.stack}`;
     logToFile(detailedError, data);
     console.error(detailedError);
@@ -61,45 +33,80 @@ function safeStringify(obj, indent = 2) {
     const retVal = JSON.stringify(obj, (key, value) =>
         typeof value === 'object' && value !== null
             ? cache.includes(value)
-                ? undefined // Duplicate reference found, discard key
-                : cache.push(value) && value // Store value in our collection
+                ? undefined
+                : cache.push(value) && value
             : value,
         indent
     );
-    cache = null; // Enable garbage collection
+    cache = null;
     return retVal;
+}
+
+// Convert MM/DD/YYYY to ISO format
+function convertToISO(dateStr) {
+    if (!dateStr) return null;
+    let isoStr;
+
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+        isoStr = dateStr; 
+    } else {
+        const [month, day, year] = dateStr.split('/');
+        isoStr = `${year}-${month}-${day}`;
+    }
+
+    const date = new Date(isoStr);
+    if (isNaN(date.getTime())) {
+        throw new Error(`Invalid date: ${dateStr}`);
+    }
+
+    return date.toISOString();
+}
+
+// Convert ISO format to MM/DD/YYYY
+function convertToMMDDYYYY(dateStr) {
+    if (!dateStr) return '';
+    const date = new Date(dateStr);
+    const utcDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
+    const month = utcDate.getMonth() + 1; 
+    const day = utcDate.getDate();
+    const year = utcDate.getFullYear();
+    return `${month.toString().padStart(2, '0')}/${day.toString().padStart(2, '0')}/${year}`;
 }
 
 // Function to format data for Firestore
 function formatFirestoreValue(value) {
     if (value instanceof Date) {
         return { timestampValue: value.toISOString() };
-    } else if (typeof value === 'string') {
+    }
+    else if (typeof value === 'string' && /^\d{2}\/\d{2}\/\d{4}$/.test(value)) {
+        return { timestampValue: convertToISO(value) };
+    } 
+    else if (typeof value === 'string') {
         return { stringValue: value };
-    } else if (typeof value === 'boolean') {
+    } 
+    else if (typeof value === 'boolean') {
         return { booleanValue: value };
-    } else if (typeof value === 'number') {
+    } 
+    else if (typeof value === 'number') {
         return { integerValue: value.toString() };
-    } else if (Array.isArray(value)) {
+    } 
+    else if (Array.isArray(value)) {
         return { arrayValue: { values: value.map(formatFirestoreValue) } };
-    } else if (typeof value === 'object' && value !== null) {
+    } 
+    else if (typeof value === 'object' && value !== null) {
         const fields = {};
         for (const [key, val] of Object.entries(value)) {
             fields[key] = formatFirestoreValue(val);
         }
         return { mapValue: { fields } };
-    } else {
+    } 
+    else {
         console.error("Unsupported data type for Firestore:", typeof value);
-        // No default return for unsupported types
     }
 }
 
 // Main function to interact with Firestore
 async function interactWithFirestore(whatAreWeDoing, data) {
-    if (!data && whatAreWeDoing !== 'readData') {
-        throw new Error('No data provided to interactWithFirestore function');
-    }
-
     try {
         const auth = new GoogleAuth({
             keyFilename: keyFilename,
@@ -126,13 +133,13 @@ async function interactWithFirestore(whatAreWeDoing, data) {
                         C: formatFirestoreValue(data.C),
                         D: formatFirestoreValue(data.D),
                         E: formatFirestoreValue(data.E),
-                        creationDate: formatFirestoreValue(new Date()), // Current date
-                        invoiceDetails: formatFirestoreValue(data.invoiceDetails) // Nested map of invoice values
+                        creationDate: formatFirestoreValue(new Date()),
+                        invoiceDetails: formatFirestoreValue(data.invoiceDetails) 
                     };
+                    console.log("Submitting this object: ", formattedData)
                     const createResponse = await axios.post(createUrl, { fields: formattedData }, { headers });
                     console.log('New invoice document created:', createResponse.data);
 
-                    // Extracting document ID from the response
                     const createdDocumentPath = createResponse.data.name;
                     const documentId = createdDocumentPath.split('/').pop();
 
@@ -147,18 +154,15 @@ async function interactWithFirestore(whatAreWeDoing, data) {
                 try {
                     const updateUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/${db_name}/documents/${collection_Id}/${data.documentId}?updateMask.fieldPaths=${Object.keys(data.updateFields).join('&updateMask.fieldPaths=')}`;
                     
-                    // Remove creationDate if it exists in updateFields
                     if (data.updateFields.creationDate) {
                         console.warn("Warning: 'creationDate' field is being excluded from the update.");
                         delete data.updateFields.creationDate;
                     }
 
-                    // Prepare the update payload
                     const updatePayload = {
                         fields: Object.fromEntries(Object.entries(data.updateFields).map(([k, v]) => [k, formatFirestoreValue(v)]))
                     };
 
-                    // Perform the update
                     const updateResponse = await axios.patch(updateUrl, updatePayload, { headers });
                     console.log('Invoice document updated:', updateResponse.data);
                     return updateResponse;
@@ -178,8 +182,8 @@ async function interactWithFirestore(whatAreWeDoing, data) {
                 break;
             case 'readData':
                 try {
-                    const pageSize = (Number.isFinite(data) && data > 0) ? data : 5; // Number of documents to retrieve
-                    const orderBy = encodeURIComponent('creationDate desc'); // Order by 'createdAt' field in descending order
+                    const pageSize = (Number.isFinite(data) && data > 0) ? data : 5; 
+                    const orderBy = encodeURIComponent('creationDate desc'); 
                     const readUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/${db_name}/documents/${collection_Id}?pageSize=${pageSize}&orderBy=${orderBy}`;
                     const readResponse = await axios.get(readUrl, { headers });
                     return readResponse;
@@ -187,8 +191,71 @@ async function interactWithFirestore(whatAreWeDoing, data) {
                     return handleError(error, 'Error in readData', safeStringify(data));
                 }
                 break;
+            case 'readAdvancedData':
+                try{
+                    let queryPayload = {
+                        structuredQuery: {
+                            from: [{ collectionId: collection_Id }],
+                            where: {
+                                compositeFilter: {
+                                    op: 'AND',
+                                    filters: []
+                                }
+                            }
+                        }
+                    };
+                    if (data.fromAccount && data.fromAccount !== 'ALL') {
+                        queryPayload.structuredQuery.where.compositeFilter.filters.push({
+                            fieldFilter: {
+                                field: { fieldPath: 'C' },
+                                op: 'EQUAL',
+                                value: { stringValue: data.fromAccount }
+                            }
+                        });
+                    }
+                    if (data.startDate) {
+                        queryPayload.structuredQuery.where.compositeFilter.filters.push({
+                            fieldFilter: {
+                                field: { fieldPath: 'B' },
+                                op: 'GREATER_THAN_OR_EQUAL',
+                                value: { timestampValue: convertToISO(data.startDate) }
+                            }
+                        });
+                    }
+                    if (data.endDate) {
+                        queryPayload.structuredQuery.where.compositeFilter.filters.push({
+                            fieldFilter: {
+                                field: { fieldPath: 'B' },
+                                op: 'LESS_THAN_OR_EQUAL',
+                                value: { timestampValue: convertToISO(data.endDate) }
+                            }
+                        });
+                    }
+
+                    if (data.numberOfResults !== 'ALL' && !isNaN(parseInt(data.numberOfResults))) {
+                        queryPayload.structuredQuery.limit = parseInt(data.numberOfResults);
+                    }
+
+                    const queryUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/${db_name}/documents:runQuery`;
+                    const queryResponse = await axios.post(queryUrl, queryPayload, { headers });
+                    const processedData = queryResponse.data.map(item => {
+                        if (item.document) {
+                            const document = item.document;
+                            const doc = item.document.fields;
+                            if (doc.B && doc.B.timestampValue) {
+                                document.fields.B = { stringValue: convertToMMDDYYYY(doc.B.timestampValue) };
+                            }
+                            document.id = document.name.split('/').pop();
+                            return document;
+                        }
+                        return null;
+                    }).filter(item => item !== null); 
             
-            
+                    return processedData;
+                } catch (error) {
+                    return handleError(error, 'Error in readAdvancedData', safeStringify(data));
+                }
+                break;
             default:
                 throw new Error('Unsupported operation: ' + whatAreWeDoing);
         }
@@ -198,6 +265,211 @@ async function interactWithFirestore(whatAreWeDoing, data) {
 }
 
 module.exports = { interactWithFirestore };
+
+
+
+
+// const axios = require('axios');
+// const { GoogleAuth } = require('google-auth-library');
+// const fs = require('fs');
+// const path = require('path');
+// // require('dotenv').config({ path: path.join(__dirname, '..', '..', 'cred.env') });
+
+// // const collection_Id = process.env.COLLECTIONID;
+// // const db_name = process.env.DB2NAME;
+// // const keyFilename = path.join(__dirname, '..', '..', process.env.KEYFILE); // Assuming KEYFILE is a path to a file
+// // const project_Id = process.env.PROJECTID;
+// // const logFile = path.join(__dirname, '..', '..', 'log.txt'); 
+
+// //just in case ;)
+// // require('dotenv').config({ path: 'cred.env' });
+
+
+// // // Set the paths conditionally based on the current directory
+// // const isTestDir = __dirname.includes('tests');
+// // console.log("__dirname: ", __dirname);
+// // console.log("isTestDir: ", isTestDir);
+// // const collection_Id = isTestDir ? path.join(__dirname, '..',process.env.COLLECTIONID.toString()) : process.env.COLLECTIONID.toString();
+// // const db_name = isTestDir ? path.join(__dirname, '..',process.env.DB2NAME.toString()) : process.env.DB2NAME.toString();
+// // const keyFilename = isTestDir ? path.join(__dirname, '..',process.env.KEYFILE.toString()) : process.env.KEYFILE.toString();
+// // const project_Id = isTestDir ? path.join(__dirname, '..',process.env.PROJECTID.toString()) : process.env.PROJECTID.toString();
+// // const logFile = 'log.txt';
+
+// //original
+// require('dotenv').config({ path: 'cred.env' });
+
+// const collection_Id = process.env.COLLECTIONID.toString();
+// const db_name = process.env.DB2NAME.toString();
+// const keyFilename = process.env.KEYFILE.toString();
+// const project_Id = process.env.PROJECTID.toString();
+// const logFile = 'log.txt'
+
+
+// // Helper function for logging
+// function logToFile(message, data) {
+//     const timestamp = new Date().toISOString();
+//     fs.appendFileSync(logFile, `[${timestamp}] ${message}\n${data ? JSON.stringify(data, null, 2) : ''}\n\n`);
+// }
+
+// // Helper function for error handling
+// function handleError(error, customMessage, data) {
+//     let detailedError = `${customMessage}\nError Details: ${error.message}`;
+
+//     // Include server response if available
+//     if (error.response) {
+//         detailedError += `\nResponse Data: ${safeStringify(error.response.data)}`;
+//     }
+
+//     detailedError += `\nStack Trace: ${error.stack}`;
+//     logToFile(detailedError, data);
+//     console.error(detailedError);
+//     return detailedError;
+// }
+
+// // Function to safely stringify error objects
+// function safeStringify(obj, indent = 2) {
+//     let cache = [];
+//     const retVal = JSON.stringify(obj, (key, value) =>
+//         typeof value === 'object' && value !== null
+//             ? cache.includes(value)
+//                 ? undefined // Duplicate reference found, discard key
+//                 : cache.push(value) && value // Store value in our collection
+//             : value,
+//         indent
+//     );
+//     cache = null; // Enable garbage collection
+//     return retVal;
+// }
+
+// // Function to format data for Firestore
+// function formatFirestoreValue(value) {
+//     if (value instanceof Date) {
+//         return { timestampValue: value.toISOString() };
+//     } else if (typeof value === 'string') {
+//         return { stringValue: value };
+//     } else if (typeof value === 'boolean') {
+//         return { booleanValue: value };
+//     } else if (typeof value === 'number') {
+//         return { integerValue: value.toString() };
+//     } else if (Array.isArray(value)) {
+//         return { arrayValue: { values: value.map(formatFirestoreValue) } };
+//     } else if (typeof value === 'object' && value !== null) {
+//         const fields = {};
+//         for (const [key, val] of Object.entries(value)) {
+//             fields[key] = formatFirestoreValue(val);
+//         }
+//         return { mapValue: { fields } };
+//     } else {
+//         console.error("Unsupported data type for Firestore:", typeof value);
+//         // No default return for unsupported types
+//     }
+// }
+
+// // Main function to interact with Firestore
+// async function interactWithFirestore(whatAreWeDoing, data) {
+//     if (!data && whatAreWeDoing !== 'readData') {
+//         throw new Error('No data provided to interactWithFirestore function');
+//     }
+
+//     try {
+//         const auth = new GoogleAuth({
+//             keyFilename: keyFilename,
+//             scopes: 'https://www.googleapis.com/auth/datastore'
+//         });
+
+//         const client = await auth.getClient();
+//         const projectId = project_Id;
+//         const accessToken = (await client.getAccessToken()).token;
+
+//         let headers = {
+//             Authorization: `Bearer ${accessToken}`,
+//             'Content-Type': 'application/json',
+//             'x-goog-request-params': `project_id=${projectId}&database_id=${db_name}`
+//         };
+
+//         switch (whatAreWeDoing) {
+//             case 'writeData':
+//                 try {
+//                     const createUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/${db_name}/documents/${collection_Id}`;
+//                     let formattedData = {
+//                         A: formatFirestoreValue(data.A),
+//                         B: formatFirestoreValue(data.B),
+//                         C: formatFirestoreValue(data.C),
+//                         D: formatFirestoreValue(data.D),
+//                         E: formatFirestoreValue(data.E),
+//                         creationDate: formatFirestoreValue(new Date()), // Current date
+//                         invoiceDetails: formatFirestoreValue(data.invoiceDetails) // Nested map of invoice values
+//                     };
+//                     const createResponse = await axios.post(createUrl, { fields: formattedData }, { headers });
+//                     console.log('New invoice document created:', createResponse.data);
+
+//                     // Extracting document ID from the response
+//                     const createdDocumentPath = createResponse.data.name;
+//                     const documentId = createdDocumentPath.split('/').pop();
+
+//                     console.log('New invoice document created with ID:', documentId);
+//                     return documentId;
+                    
+//                 } catch (error) {
+//                     return handleError(error, 'Error in writeInvoice', safeStringify(data));
+//                 }
+//                 break;
+//             case 'updateData':
+//                 try {
+//                     const updateUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/${db_name}/documents/${collection_Id}/${data.documentId}?updateMask.fieldPaths=${Object.keys(data.updateFields).join('&updateMask.fieldPaths=')}`;
+                    
+//                     // Remove creationDate if it exists in updateFields
+//                     if (data.updateFields.creationDate) {
+//                         console.warn("Warning: 'creationDate' field is being excluded from the update.");
+//                         delete data.updateFields.creationDate;
+//                     }
+
+//                     // Prepare the update payload
+//                     const updatePayload = {
+//                         fields: Object.fromEntries(Object.entries(data.updateFields).map(([k, v]) => [k, formatFirestoreValue(v)]))
+//                     };
+
+//                     // Perform the update
+//                     const updateResponse = await axios.patch(updateUrl, updatePayload, { headers });
+//                     console.log('Invoice document updated:', updateResponse.data);
+//                     return updateResponse;
+//                 } catch (error) {
+//                     return handleError(error, 'Error in updateData', safeStringify(data));
+//                 }
+//                 break;
+//             case 'deleteData':
+//                 try {
+//                     const deleteUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/${db_name}/documents/${collection_Id}/${data.documentId}`;
+//                     const deleteResponse = await axios.delete(deleteUrl, { headers });
+//                     console.log('Invoice document deleted:', data.documentId , deleteResponse.data);
+//                     return deleteResponse.data;
+//                 } catch (error) {
+//                    return handleError(error, 'Error in deleteData', safeStringify(data));
+//                 }
+//                 break;
+//             case 'readData':
+//                 try {
+//                     const pageSize = (Number.isFinite(data) && data > 0) ? data : 5; // Number of documents to retrieve
+//                     const orderBy = encodeURIComponent('creationDate desc'); // Order by 'createdAt' field in descending order
+//                     const readUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/${db_name}/documents/${collection_Id}?pageSize=${pageSize}&orderBy=${orderBy}`;
+//                     const readResponse = await axios.get(readUrl, { headers });
+//                     return readResponse;
+//                 } catch (error) {
+//                     return handleError(error, 'Error in readData', safeStringify(data));
+//                 }
+//                 break;
+//             case 'readAdvancedData':
+//                 try {} catch (error) {return}
+//                 break;
+//             default:
+//                 throw new Error('Unsupported operation: ' + whatAreWeDoing);
+//         }
+//     } catch (error) {
+//         handleError(error, 'Error in interactWithFirestore', data);
+//     }
+// }
+
+// module.exports = { interactWithFirestore };
 
 
 // interactWithFirestore('writeData', {

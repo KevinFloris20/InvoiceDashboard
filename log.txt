@@ -636,3 +636,77 @@ Stack Trace: AxiosError: Request failed with status code 404
     at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
 "{}"
 
+[2024-01-23T22:47:40.877Z] Error in interactWithFirestore
+Error Details: request to https://www.googleapis.com/oauth2/v4/token failed, reason: getaddrinfo ENOTFOUND www.googleapis.com
+Stack Trace: Error: request to https://www.googleapis.com/oauth2/v4/token failed, reason: getaddrinfo ENOTFOUND www.googleapis.com
+    at Gaxios._request (C:\Users\theus\yeaa\FCRdashboard\node_modules\gaxios\build\src\gaxios.js:148:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async GoogleToken.requestToken (C:\Users\theus\yeaa\FCRdashboard\node_modules\gtoken\build\src\index.js:230:23)
+    at async GoogleToken.getTokenAsync (C:\Users\theus\yeaa\FCRdashboard\node_modules\gtoken\build\src\index.js:137:20)
+    at async JWT.refreshTokenNoCache (C:\Users\theus\yeaa\FCRdashboard\node_modules\google-auth-library\build\src\auth\jwtclient.js:165:23)
+    at async JWT.refreshAccessTokenAsync (C:\Users\theus\yeaa\FCRdashboard\node_modules\google-auth-library\build\src\auth\oauth2client.js:209:19)
+    at async JWT.getAccessTokenAsync (C:\Users\theus\yeaa\FCRdashboard\node_modules\google-auth-library\build\src\auth\oauth2client.js:238:23)
+    at async interactWithFirestore (C:\Users\theus\yeaa\FCRdashboard\server\models\firestoreApp.js:111:30)
+    at async C:\Users\theus\yeaa\FCRdashboard\server\routes.js:70:31
+100
+
+[2024-01-23T23:32:22.390Z] Error in interactWithFirestore
+Error Details: Invalid time value
+Stack Trace: RangeError: Invalid time value
+    at Date.toISOString (<anonymous>)
+    at convertToISO (C:\Users\theus\yeaa\FCRdashboard\server\models\firestoreApp.js:49:48)
+    at interactWithFirestore (C:\Users\theus\yeaa\FCRdashboard\server\models\firestoreApp.js:214:54)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async C:\Users\theus\yeaa\FCRdashboard\server\routes.js:93:24
+{
+  "numberOfResults": "ALL",
+  "fromAccount": "ALL",
+  "startDate": "2023-12-01",
+  "endDate": "2024-01-01"
+}
+
+[2024-01-23T23:32:26.024Z] Error in interactWithFirestore
+Error Details: Invalid time value
+Stack Trace: RangeError: Invalid time value
+    at Date.toISOString (<anonymous>)
+    at convertToISO (C:\Users\theus\yeaa\FCRdashboard\server\models\firestoreApp.js:49:48)
+    at interactWithFirestore (C:\Users\theus\yeaa\FCRdashboard\server\models\firestoreApp.js:214:54)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async C:\Users\theus\yeaa\FCRdashboard\server\routes.js:93:24
+{
+  "numberOfResults": "ALL",
+  "fromAccount": "ALL",
+  "startDate": "2023-12-01",
+  "endDate": "2024-01-01"
+}
+
+[2024-01-23T23:32:35.747Z] Error in interactWithFirestore
+Error Details: Invalid time value
+Stack Trace: RangeError: Invalid time value
+    at Date.toISOString (<anonymous>)
+    at convertToISO (C:\Users\theus\yeaa\FCRdashboard\server\models\firestoreApp.js:49:48)
+    at interactWithFirestore (C:\Users\theus\yeaa\FCRdashboard\server\models\firestoreApp.js:214:54)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async C:\Users\theus\yeaa\FCRdashboard\server\routes.js:93:24
+{
+  "numberOfResults": "ALL",
+  "fromAccount": "ALL",
+  "startDate": "2023-12-01",
+  "endDate": "2024-01-01"
+}
+
+[2024-01-23T23:34:42.495Z] Error in interactWithFirestore
+Error Details: Invalid time value
+Stack Trace: RangeError: Invalid time value
+    at Date.toISOString (<anonymous>)
+    at convertToISO (C:\Users\theus\yeaa\FCRdashboard\server\models\firestoreApp.js:49:48)
+    at interactWithFirestore (C:\Users\theus\yeaa\FCRdashboard\server\models\firestoreApp.js:214:54)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async C:\Users\theus\yeaa\FCRdashboard\server\routes.js:93:24
+{
+  "numberOfResults": "ALL",
+  "fromAccount": "ALL",
+  "startDate": "2023-12-01",
+  "endDate": "2024-01-01"
+}
+

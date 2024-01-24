@@ -3,7 +3,7 @@ const { interactWithFirestore } = require('./server/models/firestoreApp');
 async function runTests() {
     const testData = {
         A: "Test A",
-        B: "Test B",
+        B: "12/12/2020",
         C: "Test C",
         D: "Test D",
         E: "Test E",

@@ -59,7 +59,41 @@
 
     <div class="ui segment" id="searchSection" style="display: none;">
         <div class="ui segment">
-            <h1>Search Invoices</h1>
+            <div style="display: flex; align-items: center; margin-bottom: 1rem;justify-content: space-between">
+                <h1 style="margin-right: 1rem;">Search Invoices</h1>
+                <button id="toggleAdvancedSearch" class="ui button" style="right:0;"><i id="caretIcon" class="dropdown icon" style="margin:0;"></i></button>
+            </div>
+            <div id="advancedSearch" style="margin:1rem; background-color: #f9fafb; overflow: hidden;">
+                <div class="ui container" style="margin:0;">
+                    <form id="advSearchForm" class="ui form">
+                        <div class="ui grid">
+                            <div class="four wide column">
+                                <label>Number of Results</label>
+                                <input type="text" name="numberOfResults" placeholder="Search" class="advSearch" value="ALL">
+                            </div>
+            
+                            <div class="four wide column">
+                                <label>From Account</label>
+                                <input type="text" name="fromAccount" placeholder="Search" class="advSearch" value="ALL">
+                            </div>
+            
+                            <div class="three wide column">
+                                <label>From Date</label>
+                                <input type="date" name="startDate" id="startDate">
+                            </div>
+            
+                            <div class="three wide column">
+                                <label>To Date</label>
+                                <input type="date" name="endDate" id="endDate">
+                            </div>
+            
+                            <div class="two wide column">
+                                <button class="ui button" type="submit" style="margin-top: 24px;">Search</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>            
             <div id="searchTable">
                 <table id="invoiceTable" class="ui celled table">
                     <thead>

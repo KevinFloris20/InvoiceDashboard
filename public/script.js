@@ -212,7 +212,15 @@ function validateDecimalInput(event) {
         inputElement.value = value;
     }
 }
-
+function convertToMMDDYYYY(dateStr) {
+    if (!dateStr) return '';
+    const date = new Date(dateStr);
+    const utcDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
+    const month = utcDate.getMonth() + 1; // Months are zero-indexed
+    const day = utcDate.getDate();
+    const year = utcDate.getFullYear();
+    return `${month.toString().padStart(2, '0')}/${day.toString().padStart(2, '0')}/${year}`;
+}
 
 
 
@@ -434,7 +442,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const invoiceNumber = invoice.fields['A'] ? invoice.fields['A'].stringValue : 'null';
             row.appendChild(createCell(invoiceNumber)); // Invoice #
             
-            const invoiceDate = invoice.fields['B'] ? invoice.fields['B'].stringValue : 'null';
+            const invoiceDate = invoice.fields['B'] ? (invoice.fields['B'].timestampValue  ? convertToMMDDYYYY(invoice.fields['B'].timestampValue) : invoice.fields['B'].stringValue) : 'null';
             row.appendChild(createCell(invoiceDate)); // Invoice Date
             
             const clientName = invoice.fields['C'] ? invoice.fields['C'].stringValue : 'null';
@@ -448,7 +456,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const totalCharges = calculateTotalPrice(invoice.fields.invoiceDetails.mapValue);
             row.appendChild(createCell(totalCharges.toFixed(2))); // Total Charges
-            
+
             const creationDate = invoice.fields.creationDate ? new Date(invoice.fields.creationDate.timestampValue).toLocaleString() : 'null';
             row.appendChild(createCell(creationDate)); // Created Invoice Date
     
@@ -561,10 +569,32 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     //search bar (Search Invoices)
-        
-    
-    
-    
-    
+
+    //advanced search (Search Invoices)
+    const toggleBtn = document.getElementById('toggleAdvancedSearch');
+    const advSearchDiv = document.getElementById('advancedSearch');
+    const caretIcon = document.getElementById('caretIcon');
+
+    toggleBtn.addEventListener('click', function() {
+        // caretIcon.classList.toggle('rotated'); 
+        advSearchDiv.classList.toggle('active');
+        caretIcon.classList.toggle('rotated'); 
+    });
+    document.getElementById('advSearchForm').addEventListener('submit', async function(event) {
+        event.preventDefault();
+        const formData = new FormData(this);
+        const searchParams = new URLSearchParams(formData);
+        const queryString = searchParams.toString();
+        console.log(queryString);
+        try {
+            const response = await fetch(`/getAdvancedInvoice?${queryString}`);
+            console.log(response);
+            if (!response.ok) throw new Error('Failed to fetch invoices');
+            const invoices = await response.json();
+            renderInvoicesTable(invoices);
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    });
 });
 

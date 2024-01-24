@@ -67,7 +67,7 @@ router.post('/download-invoice', async (req, res) => {
 router.get('/getInvoices', async (req, res) => {
     try {
         const data = req.body;
-        const firestoreData = await interactWithFirestore('readData', 10);
+        const firestoreData = await interactWithFirestore('readData', 100);
 
         if (firestoreData && firestoreData.data && firestoreData.data.documents) {
             const documents = firestoreData.data.documents.map(doc => ({
@@ -76,10 +76,24 @@ router.get('/getInvoices', async (req, res) => {
                 createTime: doc.createTime,
                 updateTime: doc.updateTime
             }));
+            console.log(documents);
             res.json(documents);
         } else {
             res.status(404).json({ message: 'No invoices found' });
         }
+    } catch (error) {
+        console.error(error);
+        res.status(400).json({ message: 'Error fetching invoices', error: error.message });
+    }
+});
+
+router.get('/getAdvancedInvoice', async (req, res) => {
+    try {
+        const data = req.query;
+        console.log('Received query:', data);
+        const result = await interactWithFirestore('readAdvancedData', data);
+        console.log('Result:', result);
+        res.json(result);
     } catch (error) {
         console.error(error);
         res.status(400).json({ message: 'Error fetching invoices', error: error.message });
