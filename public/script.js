@@ -204,9 +204,12 @@ function emptyFormFields() {
 function validateDecimalInput(event) {
     const inputElement = event.target;
     let value = inputElement.value;
-    const regex = /^-?\d*\.?\d{0,2}$/;
-    if (!regex.test(value)) {
-        inputElement.value = value.slice(0, -1);
+    if (!isNaN(value)) {
+        const regex = /^\d*\.?\d{0,2}$/;
+        if (!regex.test(value)) {
+            value = value.slice(0, -1);
+            inputElement.value = value;
+        }
     }
 }
 function convertToMMDDYYYY(dateStr) {
