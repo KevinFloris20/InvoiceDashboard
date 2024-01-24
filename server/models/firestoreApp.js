@@ -45,33 +45,25 @@ function safeStringify(obj, indent = 2) {
 // Convert MM/DD/YYYY to ISO format
 function convertToISO(dateStr) {
     if (!dateStr) return null;
-    let isoStr;
-
-    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
-        isoStr = dateStr; 
-    } else {
-        const [month, day, year] = dateStr.split('/');
-        isoStr = `${year}-${month}-${day}`;
-    }
-
-    const date = new Date(isoStr);
-    if (isNaN(date.getTime())) {
-        throw new Error(`Invalid date: ${dateStr}`);
-    }
-
-    return date.toISOString();
+    const [month, day, year] = dateStr.split('/');
+    const localDate = new Date(year, month - 1, day);
+    const estDateString = localDate.toLocaleString("en-US", { timeZone: "America/New_York" });
+    const estDate = new Date(estDateString);
+    return estDate.toISOString();
 }
+
 
 // Convert ISO format to MM/DD/YYYY
 function convertToMMDDYYYY(dateStr) {
     if (!dateStr) return '';
     const date = new Date(dateStr);
-    const utcDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
-    const month = utcDate.getMonth() + 1; 
-    const day = utcDate.getDate();
-    const year = utcDate.getFullYear();
+    const estDate = new Date(date.toLocaleString("en-US", { timeZone: "America/New_York" }));
+    const month = estDate.getMonth() + 1; 
+    const day = estDate.getDate();
+    const year = estDate.getFullYear();
     return `${month.toString().padStart(2, '0')}/${day.toString().padStart(2, '0')}/${year}`;
 }
+
 
 // Function to format data for Firestore
 function formatFirestoreValue(value) {
@@ -186,6 +178,15 @@ async function interactWithFirestore(whatAreWeDoing, data) {
                     const orderBy = encodeURIComponent('creationDate desc'); 
                     const readUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/${db_name}/documents/${collection_Id}?pageSize=${pageSize}&orderBy=${orderBy}`;
                     const readResponse = await axios.get(readUrl, { headers });
+
+                    if (readResponse.data && readResponse.data.documents) {
+                        readResponse.data.documents.forEach(doc => {
+                            if (doc.fields.B && doc.fields.B.timestampValue) {
+                                doc.fields.B = {stringValue: convertToMMDDYYYY(doc.fields.B.timestampValue)};
+                            }
+                        });
+                    }
+
                     return readResponse;
                 } catch (error) {
                     return handleError(error, 'Error in readData', safeStringify(data));

@@ -76,7 +76,6 @@ router.get('/getInvoices', async (req, res) => {
                 createTime: doc.createTime,
                 updateTime: doc.updateTime
             }));
-            console.log(documents);
             res.json(documents);
         } else {
             res.status(404).json({ message: 'No invoices found' });

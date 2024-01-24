@@ -65,6 +65,7 @@ async function deleteInvoice(documentId) {
     }
 }
 async function fetchBlob(invoiceData){
+    console.log('Fetching invoice:', invoiceData);
     const response = await fetch('/download-invoice', {
         method: 'POST',
         headers: {
@@ -194,7 +195,7 @@ function calculateTotalPrice(invoiceDetails) {
         }
     }
 
-    return total.toFixed(2);
+    return total;
 }
 function emptyFormFields() {
     const inputs = document.querySelectorAll('#invoice-form .dynamic-input');
@@ -460,6 +461,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     function renderInvoicesTable(invoices) {
+        console.log('Invoices:', invoices);
         const tbody = document.getElementById('invoiceTable').querySelector('tbody');
         tbody.innerHTML = ''; 
         invoices.forEach(invoice => {
