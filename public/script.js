@@ -250,7 +250,14 @@ function handleTotalChargesCalculation(event) {
         document.getElementById('totalMSG').innerText = 'Total: $' + total.toString();
     }
 }
-
+function toggleLoadingAnimation(show) {
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    if (show) {
+        loadingSpinner.style.display = 'block';
+    } else {
+        loadingSpinner.style.display = 'none';
+    }
+}
 
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -372,6 +379,9 @@ document.addEventListener('DOMContentLoaded', function() {
             if((String(field.id) != 'A') && (String(field.id).includes('A'))){
                 input.style.textAlign = 'center';
             }
+            if(String(field.id) === 'A'){
+                input.style.textAlign = 'center';
+            }
             if((String(field.id) != 'C') && (String(field.id).includes('C'))){
                 input.style.textAlign = 'right';
                 
@@ -451,6 +461,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     //show initial interactive table of invoices (Search Invoices)
     async function fetchAndDisplayInvoices() {
+        toggleLoadingAnimation(true);
         try {
             const response = await fetch('/getInvoices');
             if (!response.ok) throw new Error('Failed to fetch invoices');
@@ -458,6 +469,8 @@ document.addEventListener('DOMContentLoaded', function() {
             renderInvoicesTable(invoices);
         } catch (error) {
             console.error('Error:', error);
+        } finally {
+            toggleLoadingAnimation(false);
         }
     }
     function renderInvoicesTable(invoices) {

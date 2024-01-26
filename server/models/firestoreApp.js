@@ -2,6 +2,7 @@ const axios = require('axios');
 const { GoogleAuth } = require('google-auth-library');
 const fs = require('fs');
 require('dotenv').config({ path: 'cred.env' });
+const moment = require('moment-timezone');
 
 const collection_Id = process.env.COLLECTIONID.toString();
 const db_name = process.env.DB2NAME.toString();
@@ -45,25 +46,17 @@ function safeStringify(obj, indent = 2) {
 // Convert MM/DD/YYYY to ISO format
 function convertToISO(dateStr) {
     if (!dateStr) return null;
-    const [month, day, year] = dateStr.split('/');
-    const localDate = new Date(year, month - 1, day);
-    const estDateString = localDate.toLocaleString("en-US", { timeZone: "America/New_York" });
-    const estDate = new Date(estDateString);
-    return estDate.toISOString();
+    const isoDate = moment.tz(dateStr, "MM/DD/YYYY", "UTC").toISOString();
+    return isoDate;
 }
-
 
 // Convert ISO format to MM/DD/YYYY
 function convertToMMDDYYYY(dateStr) {
     if (!dateStr) return '';
-    const date = new Date(dateStr);
-    const estDate = new Date(date.toLocaleString("en-US", { timeZone: "America/New_York" }));
-    const month = estDate.getMonth() + 1; 
-    const day = estDate.getDate();
-    const year = estDate.getFullYear();
-    return `${month.toString().padStart(2, '0')}/${day.toString().padStart(2, '0')}/${year}`;
+    const dateInUTC = moment.tz(dateStr, "UTC");
+    const formattedDate = dateInUTC.format("MM/DD/YYYY");
+    return formattedDate;
 }
-
 
 // Function to format data for Firestore
 function formatFirestoreValue(value) {

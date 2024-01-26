@@ -61,12 +61,18 @@ div{
 
 
 #advancedSearch {
+    display: none;
+    overflow: hidden;
     max-height: 0;
-    transition: max-height 0.5s ease-out;
+    /* transition: max-height 0.5s ease-out; */
 }
 #advancedSearch.active {
+    display: block;
+    margin:1rem;
+    padding: 1rem;
+    background-color: #f9fafb; 
     max-height: 500px; 
-    transition: max-height 0.5s ease-in;
+    /* transition: max-height 0.5s ease-in; */
 }
 #caretIcon.rotated {
     transform: rotate(180deg);

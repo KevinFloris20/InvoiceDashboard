@@ -63,7 +63,7 @@
                 <h1 style="margin-right: 1rem;">Search Invoices</h1>
                 <button id="toggleAdvancedSearch" class="ui button" style="right:0;"><i id="caretIcon" class="dropdown icon" style="margin:0;"></i></button>
             </div>
-            <div id="advancedSearch" style="margin:1rem; background-color: #f9fafb; overflow: hidden;">
+            <div id="advancedSearch">
                 <div class="ui container" style="margin:0;">
                     <form id="advSearchForm" class="ui form">
                         <div class="ui grid">
@@ -96,6 +96,9 @@
             </div>            
             <div id="searchTable">
                 <table id="invoiceTable" class="ui celled table">
+                    <div id="loadingSpinner" class="ui active inverted dimmer" style="display:none;">
+                        <div class="ui text loader">Loading</div>
+                    </div>
                     <thead>
                         <tr>
                             <th>
