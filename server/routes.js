@@ -25,18 +25,8 @@ const { newInvoicePDF } = require('./models/PDFDataApp.js');
 router.post('/submit-form', async (req, res) => {
     try {
         const submitData = req.body;
-        var result;
         const validatedData = validateAndTransform(submitData);
-
-        if (!validatedData.invoiceid) {
-            result = await interactWithFirestore('writeData', validatedData);
-        } else {
-            result = await interactWithFirestore('updateData', {
-                documentId: validatedData.invoiceid,
-                updateFields: validatedData
-            });
-        }
-
+        const result = await interactWithFirestore('writeData', validatedData);
         res.json({ message: 'Invoice submitted successfully', result: result });
     } catch (error) {
         res.status(400).json({ error: error.message });
@@ -113,6 +103,25 @@ router.post('/deleteInvoice', async (req, res) => {
     }
 });
 
+router.post('/updateInvoice', async (req, res) => {
+    try {
+        const updatedData = req.body;
+        const documentId = updatedData.docID;
+        delete updatedData.docID;
+        if (!documentId) {
+            throw new Error("Document ID is required for updating data.");
+        }
+        const validatedData = validateAndTransform(updatedData);
+        const result = await interactWithFirestore('updateData', {
+            documentId: documentId,
+            updateFields: validatedData
+        });
+        res.json({ message: 'Invoice updated successfully', result: result });
+    } catch (error) {
+        console.error('Error updating invoice:', error);
+        res.status(400).json({ error: error.message });
+    }
+});
 
 
 //export

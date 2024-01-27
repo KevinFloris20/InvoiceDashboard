@@ -29,18 +29,19 @@ function handleError(error, customMessage, data) {
 }
 
 // Function to safely stringify error objects
-function safeStringify(obj, indent = 2) {
-    let cache = [];
-    const retVal = JSON.stringify(obj, (key, value) =>
-        typeof value === 'object' && value !== null
-            ? cache.includes(value)
-                ? undefined
-                : cache.push(value) && value
-            : value,
-        indent
-    );
-    cache = null;
-    return retVal;
+function safeStringify(obj) {
+    // let cache = [];
+    // const retVal = JSON.stringify(obj, (key, value) =>
+    //     typeof value === 'object' && value !== null
+    //         ? cache.includes(value)
+    //             ? undefined
+    //             : cache.push(value) && value
+    //         : value,
+    //     indent
+    // );
+    // cache = null;
+    // return retVal;
+    return obj
 }
 
 // Convert MM/DD/YYYY to ISO format
@@ -137,20 +138,23 @@ async function interactWithFirestore(whatAreWeDoing, data) {
                 break;
             case 'updateData':
                 try {
-                    const updateUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/${db_name}/documents/${collection_Id}/${data.documentId}?updateMask.fieldPaths=${Object.keys(data.updateFields).join('&updateMask.fieldPaths=')}`;
-                    
-                    if (data.updateFields.creationDate) {
-                        console.warn("Warning: 'creationDate' field is being excluded from the update.");
-                        delete data.updateFields.creationDate;
+                    const documentId = data.documentId;
+                    if (!documentId) {
+                        throw new Error("Document ID is required for updating data.");
                     }
-
+                    const formattedData = {};
+                    for (const [key, value] of Object.entries(data.updateFields)) {
+                        formattedData[key] = formatFirestoreValue(value);
+                    }
+                    delete formattedData.creationDate;
+                    const fieldPaths = Object.keys(formattedData).join('&updateMask.fieldPaths=');
+                    const updateUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/${db_name}/documents/${collection_Id}/${documentId}?updateMask.fieldPaths=${fieldPaths}`;
                     const updatePayload = {
-                        fields: Object.fromEntries(Object.entries(data.updateFields).map(([k, v]) => [k, formatFirestoreValue(v)]))
+                        fields: formattedData
                     };
-
                     const updateResponse = await axios.patch(updateUrl, updatePayload, { headers });
                     console.log('Invoice document updated:', updateResponse.data);
-                    return updateResponse;
+                    return updateResponse.data;
                 } catch (error) {
                     return handleError(error, 'Error in updateData', safeStringify(data));
                 }

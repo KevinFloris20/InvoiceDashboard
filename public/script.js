@@ -107,11 +107,39 @@ async function downloadInvoice(invoiceData, resID, invoiceNum) {
         displayMessage(`Error: ${error.message}`, 'error');
     }
 }
+async function editFormData(docId) {
+    const submitData = collectFormData();
+    submitData.docID = docId;
+    try {
+        const response = await fetch('/updateInvoice', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(submitData)
+        });
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || 'Error updating invoice');
+        }
+
+        console.log('Form Updated:', data, submitData);
+        displayMessage(`Success: ${data.message}`, 'success');
+        const messageBox = document.getElementById('editModeMessageChild');
+        if (messageBox) {
+            messageBox.parentNode.removeChild(messageBox);
+        }
+        return [data, submitData.A];
+    } catch (error) {
+        console.error('Error updating form:', error);
+        displayMessage(`Error: ${error.message}`, 'error');
+    }
+}
 
 
 
 //other helper logic
-
 function createCell(text) {
     const cell = document.createElement('td');
     cell.textContent = text;
@@ -258,7 +286,44 @@ function toggleLoadingAnimation(show) {
         loadingSpinner.style.display = 'none';
     }
 }
+function displayEditModeMessage(invoiceId) {
+    let messageBox;
+    messageBox = document.createElement('div');
+    messageBox.id = 'editModeMessageChild';
+    messageBox.name= invoiceId;
+    messageBox.style.backgroundColor = 'orange';
+    messageBox.style.color = 'white';
+    messageBox.style.padding = '10px';
+    messageBox.style.marginTop = '10px';
+    messageBox.style.textAlign = 'center';
+    messageBox.className = 'ui segment';
 
+    const cancelButton = document.createElement('button');
+    cancelButton.textContent = 'Cancel Editing';
+    cancelButton.className = 'fluid ui button'
+    cancelButton.onclick = cancelEditMode;
+
+    messageBox.appendChild(document.createTextNode(`Editing Invoice ID: ${invoiceId}`));
+    messageBox.appendChild(cancelButton);
+
+    document.getElementById('editModeMessage').appendChild(messageBox);
+}
+function cancelEditMode() {
+    emptyFormFields();
+    const messageBox = document.getElementById('editModeMessageChild');
+    if (messageBox) {
+        messageBox.parentNode.removeChild(messageBox);
+    }
+    document.getElementById('menuSearch').click(); 
+}
+function populateFormForUpdate(invoice, id) {
+    document.getElementById('menuNewInv').click(); 
+    emptyFormFields(); 
+    document.querySelectorAll('.dynamic-input').forEach(input => {
+        input.value = invoice[input.name] ? invoice[input.name] : '';
+    })
+    displayEditModeMessage(id); 
+}
 
 document.addEventListener('DOMContentLoaded', function() {
     //this is the stuff for the header menu
@@ -300,10 +365,17 @@ document.addEventListener('DOMContentLoaded', function() {
             displayMessage(`Error: ${error.message}`, 'error');
         }
     }
+
     document.getElementById('saveButton').addEventListener('click', async function() {
         toggleButtonState('saveButton', true);
         try {
-            const [data, name] = await submitFormData();
+            let data, name
+            const docId = document.getElementById('editModeMessageChild').name
+            if(docId){
+                [data, name] = await editFormData(docId);
+            }else{
+                [data, name] = await submitFormData();
+            }
             if (data && name) {
                 emptyFormFields();
             }
@@ -319,8 +391,14 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('saveDownloadButton').addEventListener('click', async function() {
         toggleButtonState('saveDownloadButton', true);
         const invoiceData = collectFormData();
+        const docId = document.getElementById('editModeMessageChild').name
         try {
-            const [res, invName] = await submitFormData();
+            let res, invName
+            if(docId){
+                [res, invName] = await editFormData(docId);
+            }else{
+                [res, invName] = await submitFormData();
+            }
             if (res && res.result) {
                 await downloadInvoice(invoiceData, res, invName);
                 emptyFormFields();
@@ -479,8 +557,12 @@ document.addEventListener('DOMContentLoaded', function() {
         tbody.innerHTML = ''; 
         invoices.forEach(invoice => {
             const downloadPDFdata = JSON.stringify(flattenServerRes(invoice));
-
             for (const [key, value] of Object.entries(invoice.fields)) {
+                for (const [key, value] of Object.entries(invoice.fields.invoiceDetails.mapValue.fields)){
+                    if(key == '4D'){
+                        console.log(invoice.id)
+                    }
+                }
                 if (value.stringValue) {
                     invoice.fields[key].stringValue = value.stringValue.replace(/\s+/g, ' ');
                 }
@@ -522,6 +604,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="item itemOptions" id="${invoiceId}" invnum='${invoice.fields.A.stringValue}' attr="downloadInvoice">Download Invoice</div>
                         <div class="item itemOptions" id="${invoiceId}" attr="printInvoice">Print Invoice</div>
                         <div class="item itemOptions" id="${invoiceId}" attr="delInvoice">Delete Invoice</div>
+                        <div class="item itemOptions" id="${invoiceId}" attr="editInvoice">Edit Invoice</div>
                     </div>
                 </div>
             `;
@@ -570,6 +653,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     printInvoice(data, opp.id);
                 } else if (opp.getAttribute('attr') === 'delInvoice') {
                     deleteInvoice(opp.id);
+                } else if (opp.getAttribute('attr') === 'editInvoice') {
+                    populateFormForUpdate(data, opp.id);
                 }
             }
         )});
