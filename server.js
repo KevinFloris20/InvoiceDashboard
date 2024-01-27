@@ -19,7 +19,7 @@ passport.use(new LocalStrategy(
             console.log("User not logged in:", username);
             return done(null, false, { message: 'Incorrect username or password.' });
         }
-        console.log("User logged in:", user);
+        console.log("User logged in: ", username);
         return done(null, user);
     }
 ));
@@ -41,6 +41,7 @@ app.use(limiter);
 
 
 // Session configuration
+app.set('trust proxy', 1);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(session({
