@@ -11,6 +11,7 @@ async function viewInvoice(invoiceData) {
             URL.revokeObjectURL(blobUrl);
         } catch (error) {
             console.error('Error viewing the PDF:', error);
+            displayMessage(`Error Viewing Invoice: ${error.message}`,'error')
         }
     };
 
@@ -29,10 +30,12 @@ async function printInvoice(invoiceData) {
                 URL.revokeObjectURL(blobUrl);
             } catch (error) {
                 console.error('Error printing the PDF:', error);
+                throw error;
             }
         };
     } catch (error) {
         console.error('Error fetching or printing the invoice:', error);
+        displayMessage(`Error Printing Invoice: ${error.message}`,'error')
     }
 }
 async function deleteInvoice(documentId) {
@@ -65,25 +68,28 @@ async function deleteInvoice(documentId) {
     }
 }
 async function fetchBlob(invoiceData){
-    console.log('Fetching invoice:', invoiceData);
-    const response = await fetch('/download-invoice', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(invoiceData)
-    });
+    try{
+        const response = await fetch('/download-invoice', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(invoiceData)
+        });
 
-    if (!response.ok) {
-        throw new Error(`Error downloading invoice: ${response.statusText}`);
-    }
+        if (!response.ok) {
+            throw new Error(`Error getting pdf blob from server: ${response.statusText}`);
+        }
 
-    const blob = await response.blob();
-    console.log(`Blob Type: ${blob.type}, Blob Size: ${blob.size}`);
-    if (blob.type !== 'application/pdf' || blob.size === 0) {
-        throw new Error('Received invalid PDF data');
+        const blob = await response.blob();
+        console.log(`Blob Type: ${blob.type}, Blob Size: ${blob.size}`);
+        if (blob.type !== 'application/pdf' || blob.size === 0) {
+            throw new Error('Received invalid PDF data');
+        }
+        return blob;
+    }catch(error){
+        throw error;
     }
-    return blob;
 }
 async function downloadInvoice(invoiceData, resID, invoiceNum) {
     var invoiceName = 'invoice.pdf'; 
@@ -104,7 +110,7 @@ async function downloadInvoice(invoiceData, resID, invoiceNum) {
         window.URL.revokeObjectURL(url);
     } catch (error) {
         console.error('Error downloading invoice:', error);
-        displayMessage(`Error: ${error.message}`, 'error');
+        displayMessage(`Error Downloading Invoice: ${error.message}`, 'error');
     }
 }
 async function editFormData(docId) {
@@ -133,13 +139,14 @@ async function editFormData(docId) {
         return [data, submitData.A];
     } catch (error) {
         console.error('Error updating form:', error);
-        displayMessage(`Error: ${error.message}`, 'error');
+        displayMessage(`Error updating form: ${error.message}`, 'error');
+        throw error;
     }
 }
 
 
 
-//other helper logic
+//other helper logic for the entire front end opperations
 function createCell(text) {
     const cell = document.createElement('td');
     cell.textContent = text;
@@ -324,8 +331,23 @@ function populateFormForUpdate(invoice, id) {
     })
     displayEditModeMessage(id); 
 }
+function handleImageError() {
+    var image = document.getElementById('invoice-image');
+    var fallbackAttempted = false; 
+    image.onerror = function() {
+        if (!fallbackAttempted) {
+            image.src = 'FCRInvoiceTemplateNull.png';
+            fallbackAttempted = true; 
+        } else {
+            console.error('Both primary and fallback images failed to load.');
+        }
+    };
+    image.src = 'FCRInvoiceTemplate.png';
+}
+
 
 document.addEventListener('DOMContentLoaded', function() {
+    handleImageError()
     //this is the stuff for the header menu
     document.getElementById('menuNewInv').addEventListener('click', function() {
         document.getElementById('newInv').style.display = '';
@@ -336,6 +358,11 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('newInv').style.display = 'none';
         document.getElementById('searchSection').style.display = '';
     });
+
+
+
+
+    ///////////////(Make New Invoice)///////////////
 
 
 
@@ -351,28 +378,26 @@ document.addEventListener('DOMContentLoaded', function() {
                 body: JSON.stringify(submitData)
             });
             const data = await response.json();
-
             if (!response.ok) {
                 throw new Error(data.error || 'Unknown error');
             }
 
             console.log('Form submitted:', data, submitData);
             displayMessage(`Success: ${data.message}. New ID: ${data.result}`, 'success');
-
             return [data, submitData.A];
         } catch (error) {
             console.error('Error submitting form:', error);
             displayMessage(`Error: ${error.message}`, 'error');
+            throw error;
         }
     }
-
     document.getElementById('saveButton').addEventListener('click', async function() {
         toggleButtonState('saveButton', true);
         try {
             let data, name
-            const docId = document.getElementById('editModeMessageChild').name
+            const docId = document.getElementById('editModeMessageChild')
             if(docId){
-                [data, name] = await editFormData(docId);
+                [data, name] = await editFormData(docId.name);
             }else{
                 [data, name] = await submitFormData();
             }
@@ -381,7 +406,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         } catch (error) {
             console.error('Error:', error);
-            displayMessage(`Error: ${error.message}`, 'error');
+            // displayMessage(`Error: ${error.message}`, 'error');
         } finally {
             toggleButtonState('saveButton', false);
         }
@@ -391,11 +416,11 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('saveDownloadButton').addEventListener('click', async function() {
         toggleButtonState('saveDownloadButton', true);
         const invoiceData = collectFormData();
-        const docId = document.getElementById('editModeMessageChild').name
+        const docId = document.getElementById('editModeMessageChild')
         try {
             let res, invName
             if(docId){
-                [res, invName] = await editFormData(docId);
+                [res, invName] = await editFormData(docId.name);
             }else{
                 [res, invName] = await submitFormData();
             }
@@ -408,7 +433,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         } catch (error) {
             console.error('Error:', error);
-            displayMessage(`Error: ${error.message}`, 'error');
+            // displayMessage(`Error: ${error.message}`, 'error');
         } finally {
             toggleButtonState('saveDownloadButton', false);
         }
@@ -515,14 +540,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const scaleFactor = pngWidth / formData.pdfWidth;
         createFormFields(formData.fields, scaleFactor);
     }
-    fetch('/formdata')
-        .then(response => response.json())
-        .then(data => {
+    fetch('/formdata').then(response => response.json()).then(data => {
             formData = data; 
             reloadFields();
-        })
-        .catch(error => console.error('Error fetching data:', error));
-    
+        }).catch(error => console.error('Error fetching data:', error));
     window.addEventListener('resize', reloadFields);
 
     //calculate total charges (Make New Invoice)
@@ -535,6 +556,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
 
 
+    ///////////////(Search Invoices)///////////////
+
 
 
     //show initial interactive table of invoices (Search Invoices)
@@ -542,27 +565,21 @@ document.addEventListener('DOMContentLoaded', function() {
         toggleLoadingAnimation(true);
         try {
             const response = await fetch('/getInvoices');
-            if (!response.ok) throw new Error('Failed to fetch invoices');
+            if (!response.ok) throw new Error(`Failed to fetch invoices: ${response}`);
             const invoices = await response.json();
             renderInvoicesTable(invoices);
         } catch (error) {
-            console.error('Error:', error);
+            console.error(`Error: ${error}`, error);
         } finally {
             toggleLoadingAnimation(false);
         }
     }
     function renderInvoicesTable(invoices) {
-        console.log('Invoices:', invoices);
         const tbody = document.getElementById('invoiceTable').querySelector('tbody');
         tbody.innerHTML = ''; 
         invoices.forEach(invoice => {
             const downloadPDFdata = JSON.stringify(flattenServerRes(invoice));
             for (const [key, value] of Object.entries(invoice.fields)) {
-                for (const [key, value] of Object.entries(invoice.fields.invoiceDetails.mapValue.fields)){
-                    if(key == '4D'){
-                        console.log(invoice.id)
-                    }
-                }
                 if (value.stringValue) {
                     invoice.fields[key].stringValue = value.stringValue.replace(/\s+/g, ' ');
                 }
@@ -661,8 +678,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     }
     document.getElementById('menuSearch').addEventListener('click', fetchAndDisplayInvoices);
-    
-    //submit num of most recent amt of invoices (Search Invoices)
 
     //dropdown filters for the columns (Search Invoices)
     document.getElementById('searchInvoiceId').addEventListener('input', filterTable);
@@ -671,7 +686,6 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('searchClientName').addEventListener('input', filterTable);
     document.getElementById('searchClientAddress').addEventListener('input', filterTable);
     document.getElementById('searchClientEmail').addEventListener('input', filterTable);
-    
     function filterTable() {
         const idValue = document.getElementById('searchInvoiceId').value.toLowerCase();
         const numberValue = document.getElementById('searchInvoiceNumber').value.toLowerCase();
@@ -683,7 +697,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const table = document.getElementById('invoiceTable');
         const rows = table.getElementsByTagName('tr');
     
-        for (let i = 2; i < rows.length; i++) { // Start from 2 to skip header rows
+        for (let i = 2; i < rows.length; i++) { 
             let idCell = rows[i].getElementsByTagName('td')[0];
             let numberCell = rows[i].getElementsByTagName('td')[1];
             let dateCell = rows[i].getElementsByTagName('td')[2];
@@ -706,13 +720,11 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     }
-    //search bar (Search Invoices)
 
     //advanced search (Search Invoices)
     const toggleBtn = document.getElementById('toggleAdvancedSearch');
     const advSearchDiv = document.getElementById('advancedSearch');
     const caretIcon = document.getElementById('caretIcon');
-
     toggleBtn.addEventListener('click', function() {
         // caretIcon.classList.toggle('rotated'); 
         advSearchDiv.classList.toggle('active');
@@ -727,12 +739,20 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             const response = await fetch(`/getAdvancedInvoice?${queryString}`);
             console.log(response);
-            if (!response.ok) throw new Error('Failed to fetch invoices');
+            if (!response.ok) throw new Error(`Failed to fetch invoices: ${response}`);
             const invoices = await response.json();
             renderInvoicesTable(invoices);
         } catch (error) {
             console.error('Error:', error);
+
         }
     });
+
+    //submit num of most recent amt of invoices by number (Search Invoices)
+
+
+    //search bar (Search Invoices)
+
+
 });
 

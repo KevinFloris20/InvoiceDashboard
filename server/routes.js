@@ -2,11 +2,66 @@
 const express = require('express');
 const router = express.Router();
 const fs = require('fs');
+const path = require('path');
+
+
+//server the public dir files
+///////////////////////////////////////
+const isAuthenticated = (req, res, next) => {
+    if (req.isAuthenticated()) {
+        return next();
+    }
+    res.redirect('/login');
+};
+function isAuthenticatedAjax(req, res, next) {
+    if (req.isAuthenticated()) {
+        return next();
+    }
+    res.status(401).json({ error: 'User not authenticated' });
+}
+
+// Serve the login page. It should be accessible without authentication.
+router.get('/login', (req, res) => {
+    if (req.isAuthenticated()) {
+        return res.redirect('/');
+    }
+    res.sendFile(path.join(__dirname, '..', 'public/login.html'));
+});
+
+// Serve the main page after authentication
+router.get('/', isAuthenticated, (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'public/index.html'));
+});
+
+// Serve static files after authentication
+router.get('/style.css', isAuthenticated, (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'public/style.css'));
+});
+
+router.get('/script.js', isAuthenticated, (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'public/script.js'));
+});
+
+router.get('/backgroundImg.png', isAuthenticated, (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'public/backgroundImg.png'));
+});
+
+router.get('/FCRInvoiceTemplate.png', isAuthenticated, (req, res) => {
+    const imagePath = path.join(__dirname, '../FCRInvoiceTemplate.png');
+    if (fs.existsSync(imagePath)) {
+        res.sendFile(imagePath);
+    } else {
+        res.status(404).send('Image not found');
+    }
+});
+///////////////////////////////////////
+
+
 
 
 //get the pdfdata
 const { extractFormFields } = require('./models/PDFDataApp.js');
-router.get('/formdata', async (req, res) => {
+router.get('/formdata', isAuthenticatedAjax, async (req, res) => {
     try {
         const pdfPath = 'FCRInvoiceTemplateNull.pdf';
         const fieldData = await extractFormFields(pdfPath);
@@ -22,9 +77,10 @@ const { validateAndTransform } = require('./models/validation.js');
 
 const { newInvoicePDF } = require('./models/PDFDataApp.js');
 
-router.post('/submit-form', async (req, res) => {
+router.post('/submit-form', isAuthenticatedAjax, async (req, res) => {
     try {
         const submitData = req.body;
+        console.log(submitData)
         const validatedData = validateAndTransform(submitData);
         const result = await interactWithFirestore('writeData', validatedData);
         res.json({ message: 'Invoice submitted successfully', result: result });
@@ -33,7 +89,7 @@ router.post('/submit-form', async (req, res) => {
     }
 });
 
-router.post('/download-invoice', async (req, res) => {
+router.post('/download-invoice', isAuthenticatedAjax, async (req, res) => {
     try {
         const data = req.body; 
         var pdfPath;
@@ -54,7 +110,7 @@ router.post('/download-invoice', async (req, res) => {
     }
 });
 
-router.get('/getInvoices', async (req, res) => {
+router.get('/getInvoices', isAuthenticatedAjax, async (req, res) => {
     try {
         const data = req.body;
         const firestoreData = await interactWithFirestore('readData', 100);
@@ -76,7 +132,7 @@ router.get('/getInvoices', async (req, res) => {
     }
 });
 
-router.get('/getAdvancedInvoice', async (req, res) => {
+router.get('/getAdvancedInvoice', isAuthenticatedAjax, async (req, res) => {
     try {
         const data = req.query;
         console.log('Received query:', data);
@@ -89,7 +145,7 @@ router.get('/getAdvancedInvoice', async (req, res) => {
     }
 });
 
-router.post('/deleteInvoice', async (req, res) => {
+router.post('/deleteInvoice', isAuthenticatedAjax, async (req, res) => {
     try {
         const data = req.body.id;
         if (!data) {
@@ -103,7 +159,7 @@ router.post('/deleteInvoice', async (req, res) => {
     }
 });
 
-router.post('/updateInvoice', async (req, res) => {
+router.post('/updateInvoice', isAuthenticatedAjax, async (req, res) => {
     try {
         const updatedData = req.body;
         const documentId = updatedData.docID;
