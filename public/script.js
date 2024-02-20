@@ -350,13 +350,20 @@ document.addEventListener('DOMContentLoaded', function() {
     handleImageError()
     //this is the stuff for the header menu
     document.getElementById('menuNewInv').addEventListener('click', function() {
-        document.getElementById('newInv').style.display = '';
         document.getElementById('searchSection').style.display = 'none';
+        document.getElementById('addWorkItemSection').style.display = 'none';
+        document.getElementById('newInv').style.display = '';
         reloadFields();
     });
     document.getElementById('menuSearch').addEventListener('click', function() {
         document.getElementById('newInv').style.display = 'none';
+        document.getElementById('addWorkItemSection').style.display = 'none';
         document.getElementById('searchSection').style.display = '';
+    });
+    document.getElementById('menuAddWorkItem').addEventListener('click', function() {
+        document.getElementById('newInv').style.display = 'none';
+        document.getElementById('searchSection').style.display = 'none';
+        document.getElementById('addWorkItemSection').style.display = '';
     });
 
 
@@ -552,7 +559,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     //auto fill textbox (Make New Invoice)
 
-
+    //add the auto detect for each of the work items on the invoice (Make New Invoice)
     
 
 
@@ -752,6 +759,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     //search bar (Search Invoices)
+
+
+
+
+    ///////////////(Add work Items)///////////////
+
+
+
+
+
+    //initialize the form for adding work items (Add work Items)
+    
+
+
+
 
 
 });

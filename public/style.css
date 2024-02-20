@@ -120,8 +120,54 @@ div{
 
 
 
-
-
+.AWIFormTable {
+    display: table;
+    width: 100%;
+    margin-top: 20px; 
+}
+.AWIFormRow {
+    display: table-row;
+}
+.AWIInput {
+    overflow: visible;
+    width: 100%;
+    padding: 2.5px;
+}
+.AWIFormCell {
+    display: table-cell;
+}
+.AWIFormCell.large {
+    width: 70%; 
+}
+#AWIAddClientBtn {
+    cursor: pointer;
+    margin-left: 0%;
+    margin-right:2.5px;
+}
+#AWIClientDropdown {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+#addWorkItemSection{
+    padding-left:20px;
+    padding-right:20px;
+}
+#addWorkItemSection .ui.form .fields .field > .input, 
+#addWorkItemSection .ui.form .fields .field > input {
+    border-radius: 0 !important; 
+}
+#addWorkItemSection .ui.form .fields {
+    margin-bottom: 0 !important;
+}
+#addWorkItemSection .ui.form .fields .field {
+    padding-right: 0 !important; 
+    padding-left: 0 !important;
+}
+#AWISaveBtn{
+    margin:10px;
+    position: relative;
+}
 
 
 

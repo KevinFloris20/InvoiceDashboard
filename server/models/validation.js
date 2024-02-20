@@ -25,7 +25,7 @@ function validateAndTransform(inboundData) {
     for (let key in inboundData) {
         if (!['A', 'B', 'C', 'D', 'E', 'creationDate'].includes(key)) {
             if (!keyPattern.test(key)) {
-                throw new Error(`Invalid key format: '${key}'. Expected format: digit(s) followed by a capital letter.`);
+                throw new Error(`Invalid key format: '${key}'. Expected format: digit followed by a capital letter.`);
             }
             outboundData.invoiceDetails[key] = inboundData[key];
         }

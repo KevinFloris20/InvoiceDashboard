@@ -21,10 +21,14 @@
             <a id="menuSearch" class="item">
                 Search Invoices
             </a>
+            <a id="menuAddWorkItem" class="item">
+                Add Work Item
+            </a>
         </div>
     </div>
     
 
+    <!-- Make new invoice -->
     <div class="container" id="newInv">
 
         <!-- button list -->
@@ -58,6 +62,7 @@
     </div>
 
 
+    <!-- Search all invoices -->
     <div class="ui segment" id="searchSection" style="display: none;">
         <div class="ui segment">
             <div style="display: flex; align-items: center; margin-bottom: 1rem;justify-content: space-between">
@@ -139,7 +144,53 @@
         </div>
     </div>
 
+
+    <!-- Add work items -->
+    <div class="ui segment" id="addWorkItemSection" style="display: none;">
+        <div class="ui form" style="margin-top: 20px;">
+            <div class="fields">
+                <div class="eight wide field">
+                    <label>Client</label>
+                    <div class="ui action input">
+                        <input type="text" placeholder="Type a client name" autocomplete="off" name="Client" id="AWIClientInput">
+                        <button class="ui icon button" id="AWIAddClientBtn">
+                            <i class="plus icon"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="eight wide field">
+                    <label>Work Date</label>
+                    <input type="date" autocomplete="off" name="date" id="AWIDateInput">
+                </div>
+            </div>
+            
+            <div class="fields">
+                <div class="four wide field">
+                    <label>Unit Number</label>
+                    <input type="text" autocomplete="off" name="1A">
+                </div>
+                <div class="nine wide field">
+                    <label>Description</label>
+                    <input type="text" autocomplete="off" name="1B">
+                </div>
+                <div class="three wide field">
+                    <label>Price</label>
+                    <input type="text" autocomplete="off" name="1C">
+                </div>
+            </div>
+            <div class="field" style="width:100%;justify-content:right;display:flex;">
+                <button class="ui right green button" type="submit" id="AWISaveBtn">Save</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Search work items -->
+    <div class="ui segment" id="searchWorkItemSection" style="display: none;">
+
+    </div>
     
     <script src="script.js"></script>
+    <style></style>
 </body>
 </html>
