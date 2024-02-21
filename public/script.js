@@ -769,8 +769,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
-    //initialize the form for adding work items (Add work Items)
-    
+    //this will always add one row to the form to make sure there is always one row (Add work Items)
+
+
+    // Handle form submission (Add work Items)
+    document.getElementById('AWISaveBtn').addEventListener('click', function(event) {
+        event.preventDefault(); 
+        alert('Form data would be submitted here.');
+    });
 
 
 
