@@ -214,6 +214,33 @@
             </div>
         </div>
     </div>
+    <!-- popup form for new client -->
+    <div class="ui modal" id="clientModal">
+        <i class="close icon"></i>
+        <div class="header">
+            Add New Client
+        </div>
+        <div class="content">
+            <form class="ui form" id="addClientForm">
+                <div class="field">
+                    <label>Client Name</label>
+                    <input type="text" name="clientName" placeholder="Client Name">
+                </div>
+                <div class="field">
+                    <label>Client Address</label>
+                    <input type="text" name="clientAddress" placeholder="Client Address">
+                </div>
+                <div class="field">
+                    <label>Client Email</label>
+                    <input type="text" name="clientEmail" placeholder="Client Email">
+                </div>
+            </form>
+        </div>
+        <div class="actions">
+            <div class="ui button" id="addClientCancel" >Cancel</div>
+            <button class="ui button primary" id="addClientSave">Save Client</button>
+        </div>
+    </div>
 
 
     <!-- Search work items -->

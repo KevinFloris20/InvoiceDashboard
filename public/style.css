@@ -64,7 +64,6 @@ div{
     display: none;
     overflow: hidden;
     max-height: 0;
-    /* transition: max-height 0.5s ease-out; */
 }
 #advancedSearch.active {
     display: block;
@@ -72,7 +71,6 @@ div{
     padding: 1rem;
     background-color: #f9fafb; 
     max-height: 500px; 
-    /* transition: max-height 0.5s ease-in; */
 }
 #caretIcon.rotated {
     transform: rotate(180deg);
@@ -88,29 +86,23 @@ div{
 .tableheadBar{
     width:100%;
 }
-
 .ui.dropdown .menu {
     display: none;
     position: absolute;
-    z-index: 1000;
+    z-index: 2000;
     background: white;
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     border-radius: 5px;
     padding: 6px 0;
-
-
 }
-
 .ui.dropdown.active .menu {
     display: block;
 }
-
 .ui.dropdown .menu .item {
     padding: 8px 16px;
     cursor: pointer;
     transition: background 0.3s;
 }
-
 .ui.dropdown .menu .item:hover {
     background: #f4f4f4;
 }
@@ -173,7 +165,27 @@ div{
     margin:10px;
     position: relative;
 }
-
+.modal-overlay {
+    display: none;
+    position: fixed; 
+    z-index: 100;
+    left: 0;
+    top: 0;
+    width: 100%; 
+    height: 100%;
+    overflow: auto; 
+    background-color: rgb(0,0,0);
+    background-color: rgba(0,0,0,0.4);
+}
+.ui.modal {
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 60%;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+    position: relative;
+    transform: translateY(-120%);
+}
 
 
 

@@ -778,9 +778,42 @@ document.addEventListener('DOMContentLoaded', function() {
         alert('Form data would be submitted here.');
     });
 
-
-
-
+    //add new client (Add work Items)
+    var modal = document.getElementById('clientModal');
+    var overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    document.body.appendChild(overlay);
+    function openModal() {
+        overlay.style.display = 'block';
+        modal.style.display = 'block';
+    }
+    function closeModal() {
+        overlay.style.display = 'none';
+        modal.style.display = 'none';
+    }
+    document.getElementById('AWIAddClientBtn').addEventListener('click', function(event) {
+        event.preventDefault();
+        openModal();
+    });
+    modal.querySelector('.close.icon').addEventListener('click', function(event) {
+        event.preventDefault();
+        closeModal();
+    });
+    document.getElementById('addClientCancel').addEventListener('click', function(event) {
+        closeModal();
+    });
+    overlay.addEventListener('click', closeModal);
+    modal.addEventListener('click', function(event) {
+        event.stopPropagation();
+    });
+    document.getElementById('addClientSave').addEventListener('click', function(event) {
+        event.preventDefault();
+        submitClientForm();
+    });
+    function submitClientForm() {
+        console.log('Client form data handled');
+        closeModal(); 
+    }
 
 });
 
