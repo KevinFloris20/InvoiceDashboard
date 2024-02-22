@@ -179,6 +179,17 @@ router.post('/updateInvoice', isAuthenticatedAjax, async (req, res) => {
     }
 });
 
+router.get('/newClient', isAuthenticatedAjax, async (req, res) => {
+    try {
+        // const result = await interactWithFirestore('newClient', {});
+        console.log('New client:', req);
+        res.json({ message: 'New client created successfully'});
+    } catch (error) {
+        console.error('Error creating new client:', error);
+        res.status(400).json({ error: error.message });
+    }
+});
+
 
 //export
 module.exports = router;

@@ -791,6 +791,21 @@ document.addEventListener('DOMContentLoaded', function() {
         overlay.style.display = 'none';
         modal.style.display = 'none';
     }
+    async function submitNewClientForm(formData) {
+        try {
+            const response = await fetch(`/newClient?${formData}`);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data = await response.json();
+            console.log(response, data);
+            //clear form fields
+            document.getElementById('addClientForm').reset();
+            closeModal();
+        } catch (error) {
+            console.error('Fetch error:', error.message);
+        }
+    }
     document.getElementById('AWIAddClientBtn').addEventListener('click', function(event) {
         event.preventDefault();
         openModal();
@@ -806,14 +821,13 @@ document.addEventListener('DOMContentLoaded', function() {
     modal.addEventListener('click', function(event) {
         event.stopPropagation();
     });
-    document.getElementById('addClientSave').addEventListener('click', function(event) {
+    document.getElementById('addClientSave').addEventListener('click', async function(event) {
         event.preventDefault();
-        submitClientForm();
+        const formData = new URLSearchParams(new FormData(document.getElementById('addClientForm'))).toString();
+        console.log(formData);
+        submitNewClientForm(formData);
     });
-    function submitClientForm() {
-        console.log('Client form data handled');
-        closeModal(); 
-    }
+
 
 });
 
