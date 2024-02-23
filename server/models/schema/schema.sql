@@ -17,6 +17,18 @@ CREATE TABLE IF NOT EXISTS unit_numbers (
     FOREIGN KEY (client_id) REFERENCES clients(client_id)
 )$$
 
+CREATE TABLE IF NOT EXISTS invoices (
+    invoice_id INT AUTO_INCREMENT PRIMARY KEY,
+    external_id VARCHAR(255) NOT NULL,
+    regular_string VARCHAR(255) NOT NULL,
+    invoice_date DATE NOT NULL,
+    date_created DATETIME,
+    total DECIMAL(10, 2),
+    client_id INT,
+    FOREIGN KEY (client_id) REFERENCES clients(client_id)
+)$$
+
+
 CREATE TABLE IF NOT EXISTS workItems (
     workItem_id INT AUTO_INCREMENT PRIMARY KEY,
     client_id INT,
@@ -29,16 +41,6 @@ CREATE TABLE IF NOT EXISTS workItems (
     FOREIGN KEY (invoice_id) REFERENCES invoices(invoice_id)
 )$$
 
-CREATE TABLE IF NOT EXISTS invoices (
-    invoice_id INT AUTO_INCREMENT PRIMARY KEY,
-    external_id VARCHAR(255) NOT NULL,
-    regular_string VARCHAR(255) NOT NULL,
-    invoice_date DATE NOT NULL,
-    date_created DATETIME,
-    total DECIMAL(10, 2),
-    client_id INT,
-    FOREIGN KEY (client_id) REFERENCES clients(client_id)
-)$$
 
 -- Stored Procedure: InsertWorkItemWithChassis
 CREATE PROCEDURE InsertWorkItemWithChassis(

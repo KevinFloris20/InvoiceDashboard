@@ -153,7 +153,9 @@
                     <label>Client</label>
                     <div>
                         <div class="ui action input">
-                            <input type="text" placeholder="Type a client name" autocomplete="off" name="Client" id="AWIClientInput">
+                            <select name="Client" id="AWIClientDropdown" class="ui search dropdown">
+                                <option value="">Select a client</option>
+                            </select>
                             <button class="ui icon button" id="AWIAddClientBtn">
                                 <i class="plus icon"></i>
                             </button>
@@ -224,15 +226,15 @@
             <form class="ui form" id="addClientForm">
                 <div class="field">
                     <label>Client Name</label>
-                    <input type="text" name="clientName" placeholder="Client Name">
+                    <input type="text" name="clientName" placeholder="Client Name" autocomplete="off">
                 </div>
                 <div class="field">
                     <label>Client Address</label>
-                    <input type="text" name="clientAddress" placeholder="Client Address">
+                    <input type="text" name="clientAddress" placeholder="Client Address" autocomplete="off">
                 </div>
                 <div class="field">
                     <label>Client Email</label>
-                    <input type="text" name="clientEmail" placeholder="Client Email">
+                    <input type="text" name="clientEmail" placeholder="Client Email" autocomplete="off">
                 </div>
             </form>
         </div>
@@ -240,6 +242,7 @@
             <div class="ui button" id="addClientCancel" >Cancel</div>
             <button type="submit" class="ui button primary" id="addClientSave">Save Client</button>
         </div>
+        <div class="ui error message" id="errorDisplay" style="display: none;"></div>
     </div>
 
 
@@ -247,8 +250,8 @@
     <div class="ui segment" id="searchWorkItemSection" style="display: none;">
 
     </div>
-    
+    <!-- <script src="https://cdn.jsdelivr.net/npm/semantic-ui/dist/semantic.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
     <script src="script.js"></script>
-    <style></style>
 </body>
 </html>

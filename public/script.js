@@ -1,4 +1,4 @@
-//for the onclick options menu on all of the rows (Search Invoices)
+//async helper functions for the front end opperations
 async function viewInvoice(invoiceData) {
     const blob = await fetchBlob(invoiceData);
 
@@ -143,7 +143,24 @@ async function editFormData(docId) {
         throw error;
     }
 }
-
+async function fetchClientsAndPopulateDropdown() {
+    try {
+        const response = await fetch('/getClients');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const clients = await response.json();
+        const dropdown = document.getElementById('AWIClientDropdown');
+        console.log(clients);
+        dropdown.length = 1; 
+        clients.forEach(client => {
+            let option = new Option(`${client.client_id} - ${client.client_name} `);
+            dropdown.add(option);
+        });
+    } catch (error) {
+        console.error('Fetch error:', error.message);
+    }
+}
 
 
 //other helper logic for the entire front end opperations
@@ -779,6 +796,8 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     //add new client (Add work Items)
+    fetchClientsAndPopulateDropdown();
+    // $('#AWIClientDropdown').dropdown();
     var modal = document.getElementById('clientModal');
     var overlay = document.createElement('div');
     overlay.className = 'modal-overlay';
@@ -795,15 +814,19 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             const response = await fetch(`/newClient?${formData}`);
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                const errorData = await response.json(); 
+                throw new Error(errorData.error || `Error: ${response.status}`);
             }
             const data = await response.json();
             console.log(response, data);
-            //clear form fields
             document.getElementById('addClientForm').reset();
+            document.getElementById('errorDisplay').style.display = 'none';
             closeModal();
         } catch (error) {
             console.error('Fetch error:', error.message);
+            const errorDisplay = document.getElementById('errorDisplay');
+            errorDisplay.textContent = error.message; 
+            errorDisplay.style.display = ''; 
         }
     }
     document.getElementById('AWIAddClientBtn').addEventListener('click', function(event) {

@@ -77,6 +77,9 @@ const { validateAndTransform } = require('./models/validation.js');
 
 const { newInvoicePDF } = require('./models/PDFDataApp.js');
 
+const { getClients, addClients } = require('./models/mySqlApp.js');
+
+
 router.post('/submit-form', isAuthenticatedAjax, async (req, res) => {
     try {
         const submitData = req.body;
@@ -107,6 +110,30 @@ router.post('/download-invoice', isAuthenticatedAjax, async (req, res) => {
         console.error(error);
         console.log(error.message)
         res.status(500).json({message:'Error generating invoice', error:error.message});
+    }
+});
+
+router.get('/newClient', isAuthenticatedAjax, async (req, res) => {
+    try {
+        const { clientName, clientAddress, clientEmail } = req.query;
+        if (!clientName) {
+            return res.status(400).json({ error: 'Missing required client name' });
+        }
+        const result = await addClients(clientName, clientAddress, clientEmail );
+        res.json({ message: 'New client added successfully', client_id: result.insertId });
+    } catch (error) {
+        console.error('Error creating new client:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+router.get('/getClients', isAuthenticatedAjax, async (req, res) => {
+    try {
+        const clients = await getClients();
+        res.json(clients);
+    } catch (error) {
+        console.error('Error fetching clients:', error);
+        res.status(500).json({ error: error.message });
     }
 });
 
@@ -179,16 +206,7 @@ router.post('/updateInvoice', isAuthenticatedAjax, async (req, res) => {
     }
 });
 
-router.get('/newClient', isAuthenticatedAjax, async (req, res) => {
-    try {
-        // const result = await interactWithFirestore('newClient', {});
-        console.log('New client:', req);
-        res.json({ message: 'New client created successfully'});
-    } catch (error) {
-        console.error('Error creating new client:', error);
-        res.status(400).json({ error: error.message });
-    }
-});
+
 
 
 //export
