@@ -8,13 +8,13 @@ const path = require('path');
 //server the public dir files
 ///////////////////////////////////////
 const isAuthenticated = (req, res, next) => {
-    if (req.isAuthenticated() || true) {
+    if (req.isAuthenticated()) {
         return next();
     }
     res.redirect('/login');
 };
 function isAuthenticatedAjax(req, res, next) {
-    if (req.isAuthenticated() || true) {
+    if (req.isAuthenticated()) {
         return next();
     }
     res.status(401).json({ error: 'User not authenticated' });
