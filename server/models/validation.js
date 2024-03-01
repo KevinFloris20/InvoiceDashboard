@@ -34,6 +34,61 @@ function validateAndTransform(inboundData) {
     return outboundData;
 }
 
+function validateWorkItem(data) {
+    let errors = [];
+    let unitID = null;
+    let clientName = data.client ? data.client.trim() : '';
+    let workDate = data.date ? data.date.trim() : '';
+    let description = {};
+    let hasValidRows = false;
+
+    if (!clientName) errors.push("Error: Client name is required");
+    if (!workDate) errors.push("Error: Work date is required");
+
+    Object.keys(data).forEach(key => {
+        const value = data[key].trim();
+        const rowNumber = key.match(/\d+$/)?.[0];
+        
+        if (rowNumber) {
+            if (!description[rowNumber]) description[rowNumber] = { A: "", B: "", C: "" };
+
+            if (key.startsWith('A') && value) {
+                unitID = value;
+                hasValidRows = true;
+            }
+            if (key.startsWith('B') && value) {
+                description[rowNumber].B = value;
+                hasValidRows = true;
+            }
+            if (key.startsWith('C') && value) {
+                if (!/^\d+\.\d{2}$/.test(value)) errors.push(`Error: Price in row ${rowNumber} must have two decimal places`);
+                description[rowNumber].C = value;
+                hasValidRows = true;
+            }
+        }
+    });
+
+    const filteredDescription = Object.entries(description).reduce((acc, [row, {A, B, C}]) => {
+        if (A || B || C) acc[row] = { A, B, C };
+        return acc;
+    }, {});
+
+    if (!unitID) errors.push("Error: Missing Equipment ID");
+    if (!hasValidRows) errors.push("Error: At least one row must have values");
+
+    const descriptionPrice = JSON.stringify(filteredDescription);
+
+    const isValid = errors.length === 0;
+    const transformedData = isValid ? {
+        unitID,
+        clientName,
+        workDate,
+        description: descriptionPrice
+    } : null;
+
+    return { isValid, errors, data: transformedData };
+}
+
 // Info object to provide more context in error messages
 const info = {
     'A': 'Invoice #',
@@ -43,7 +98,7 @@ const info = {
     'E': 'Email'
 };
 
-module.exports = { validateAndTransform };
+module.exports = { validateAndTransform, validateWorkItem };
 
 // // Example usage
 // try {

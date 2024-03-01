@@ -151,7 +151,6 @@ async function fetchClientsAndPopulateDropdown() {
         }
         const clients = await response.json();
         const dropdown = document.getElementById('AWIClientDropdown');
-        console.log(clients);
         dropdown.length = 1; 
         clients.forEach(client => {
             let option = new Option(`${client.client_id} - ${client.client_name} `);
@@ -360,6 +359,65 @@ function handleImageError() {
         }
     };
     image.src = 'FCRInvoiceTemplate.png';
+}
+function displayAWIMessage(message, type) {
+    const messageDisplay = document.getElementById('AWImessageDisplay');
+    messageDisplay.style.display = 'block'; 
+    messageDisplay.className = `ui message ${type}`; 
+    messageDisplay.innerHTML = message; 
+}
+function addWorkItemValidation(formData) {
+    const messageDisplay = document.getElementById('AWImessageDisplay');
+    messageDisplay.innerHTML = '';
+    messageDisplay.style.display = 'none';
+    let columnAWithoutParenthesesCount = 0;
+    let hasDescriptionInB = false;
+    let hasPriceInC = false;
+    let errors = [];
+
+    for (let pair of formData.entries()) {
+        let [key, value] = pair;
+        const column = key.slice(-1); 
+
+        if (key === "Client" && value === "") {
+            errors.push(`Error: Missing client`);
+        } else if (key === "date" && value === "") {
+            errors.push(`Error: Missing date`);
+        }
+
+        if (column === 'A') {
+            if (value.trim() !== "" && (!value.startsWith('(') || !value.endsWith(')'))) columnAWithoutParenthesesCount++;
+        } else if (column === 'B') {
+            if (value.trim() !== "") {
+                hasDescriptionInB = true;
+                if (!value.startsWith('-')) errors.push(`Error: Each description must start with a dash: " - "`);
+            }
+        }else if (column === 'C') {
+            if (value.trim() !== "") {
+                const numericValue = parseFloat(value);
+                if (isNaN(numericValue)) {
+                    errors.push(`Error: Price must be a number`);
+                } else {
+                    if (!/^\d+\.\d{2}$/.test(value)) {
+                        errors.push(`Error: Price must have up to two decimal places: "0.00"`);
+                    } else {
+                        hasPriceInC = true;
+                    }
+                }
+            }
+        }
+    }
+
+    if (columnAWithoutParenthesesCount === 0) errors.push(`Error: Missing Equipment ID`);
+    if (columnAWithoutParenthesesCount > 1) errors.push(`Error: Only one Equipment ID is allowed per work item, please use parentheses: "( )"`);
+    if (!hasDescriptionInB) errors.push(`Error: Missing Description`);
+    if (!hasPriceInC) errors.push(`Error: Missing Price`);
+
+    if (errors.length > 0) {
+        displayAWIMessage(errors.join('<br>'), 'error');
+        return false;
+    }
+    return true;
 }
 
 
@@ -790,14 +848,70 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     // Handle form submission (Add work Items)
+    function addWorkItemForm(event, saveNext){
+        const form = document.getElementById('addWorkItemForm');
+        const formData = new FormData(form);
+        const jsonFormData = Object.fromEntries(formData.entries());
+
+        if (addWorkItemValidation(formData)) {
+            try{
+                const saveBtn = event.target;
+                saveBtn.classList.add('loading');
+                saveBtn.disabled = true;
+                fetch('/addWorkItem',{
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(jsonFormData)
+                }).then(response => response.json()).then(data => {
+                    if (data.error) {
+                        console.error('Error:', data.error);
+                        displayAWIMessage(`Error: ${data.error}`, 'error');
+                    } else {
+                        console.log('Success:', data.message);
+                        displayAWIMessage(`Success: ${data.message}`, 'success');
+                        saveBtn.classList.remove('loading');
+                        saveBtn.disabled = false;
+                        if (saveNext) {
+                            document.getElementById('inputAWIFields').querySelectorAll('input[type="text"]').forEach(input => {
+                                input.value = '';
+                            });
+                            document.querySelector('[name="1A"]').click();
+                        }else{
+                            form.reset();
+                        }
+
+                    }
+                }).catch(error => console.error('Error:', error));
+            }catch(error){
+                displayAWIMessage(`Error: ${error.message}`, 'error');
+                saveBtn.classList.remove('loading');
+                saveBtn.disabled = false;
+            }
+        }
+    }
     document.getElementById('AWISaveBtn').addEventListener('click', function(event) {
         event.preventDefault(); 
-        alert('Form data would be submitted here.');
+        addWorkItemForm(event, false);
+    });
+    document.getElementById('AWIsaveNextBtn').addEventListener('click', function(event) {
+        event.preventDefault(); 
+        addWorkItemForm(event, true);
+    });
+    document.getElementById('addWorkItemForm').addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault(); 
+            if (event.shiftKey) {
+                document.getElementById('AWISaveBtn').click();
+            } else {
+                document.getElementById('AWIsaveNextBtn').click();
+            }
+        }
     });
 
     //add new client (Add work Items)
     fetchClientsAndPopulateDropdown();
-    // $('#AWIClientDropdown').dropdown();
     var modal = document.getElementById('clientModal');
     var overlay = document.createElement('div');
     overlay.className = 'modal-overlay';
@@ -822,6 +936,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('addClientForm').reset();
             document.getElementById('errorDisplay').style.display = 'none';
             closeModal();
+            fetchClientsAndPopulateDropdown();            
         } catch (error) {
             console.error('Fetch error:', error.message);
             const errorDisplay = document.getElementById('errorDisplay');
