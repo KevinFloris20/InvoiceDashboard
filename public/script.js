@@ -414,7 +414,7 @@ function addWorkItemValidation(formData) {
     if (!hasPriceInC) errors.push(`Error: Missing Price`);
 
     if (errors.length > 0) {
-        displayAWIMessage(errors.join('<br>'), 'error');
+        displayAWIMessage(errors.join('<br>'), 'red error');
         return false;
     }
     return true;
@@ -866,18 +866,20 @@ document.addEventListener('DOMContentLoaded', function() {
                     body: JSON.stringify(jsonFormData)
                 }).then(response => response.json()).then(data => {
                     if (data.error) {
-                        console.error('Error:', data.error);
-                        displayAWIMessage(`Error: ${data.error}`, 'error');
+                        console.error('Error: ', data.error);
+                        displayAWIMessage(`${data.error.join('<br>')}`, 'red error');
+                        saveBtn.classList.remove('loading');
+                        saveBtn.disabled = false;
                     } else {
                         console.log('Success:', data.message);
-                        displayAWIMessage(`Success: ${data.message}`, 'success');
+                        displayAWIMessage(`Success: ${data.message}`, 'green success');
                         saveBtn.classList.remove('loading');
                         saveBtn.disabled = false;
                         if (saveNext) {
                             document.getElementById('inputAWIFields').querySelectorAll('input[type="text"]').forEach(input => {
                                 input.value = '';
                             });
-                            document.querySelector('[name="1A"]').click();
+                            document.querySelector("[id='AWI1A']").focus();
                         }else{
                             form.reset();
                         }
@@ -885,7 +887,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }).catch(error => console.error('Error:', error));
             }catch(error){
-                displayAWIMessage(`Error: ${error.message}`, 'error');
+                displayAWIMessage(`Error: ${error.message}`, 'red error');
                 saveBtn.classList.remove('loading');
                 saveBtn.disabled = false;
             }

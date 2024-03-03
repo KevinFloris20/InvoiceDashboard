@@ -73,11 +73,12 @@ router.get('/formdata', isAuthenticatedAjax, async (req, res) => {
 
 const { interactWithFirestore } = require('./models/firestoreApp.js');
 
-const { validateAndTransform } = require('./models/validation.js');
+const { validateAndTransform, validateWorkItem } = require('./models/validation.js');
 
 const { newInvoicePDF } = require('./models/PDFDataApp.js');
 
 const { getClients, addClients } = require('./models/mySqlApp.js');
+const e = require('express');
 
 
 router.post('/submit-form', isAuthenticatedAjax, async (req, res) => {
@@ -208,19 +209,14 @@ router.post('/updateInvoice', isAuthenticatedAjax, async (req, res) => {
 
 router.post('/addWorkItem', isAuthenticatedAjax, async (req, res) => {
     try {
-        // const { isValid, errors, data } = validateAndTransformWorkItem(req.body);
+        const { isValid, errors, data } = validateWorkItem(req.body);
 
-        // if (!isValid) {
-        //     return res.status(400).json({ error: errors.join('; ') });
-        // }
-
-        // await executeStoredProcedure('InsertWorkItemWithChassis', [
-        //     data.clientName,
-        //     data.unitID,
-        //     data.description,
-        //     data.workDate
-        // ]);
         console.log(req.body);
+        console.log(data, errors, isValid);
+
+        if (!isValid) {
+            return res.status(400).json({ error: errors });
+        }
 
         res.json({ message: 'Work item added successfully' });
     } catch (error) {

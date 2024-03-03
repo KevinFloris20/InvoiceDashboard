@@ -36,58 +36,89 @@ function validateAndTransform(inboundData) {
 
 function validateWorkItem(data) {
     let errors = [];
-    let unitID = null;
-    let clientName = data.client ? data.client.trim() : '';
-    let workDate = data.date ? data.date.trim() : '';
-    let description = {};
     let hasValidRows = false;
 
-    if (!clientName) errors.push("Error: Client name is required");
-    if (!workDate) errors.push("Error: Work date is required");
+    let clientName = data['Client'] ? data['Client'].trim() : '';
+    if (!clientName) {
+        errors.push("Error: Client name is required");
+    }
+
+    let workDate = data['date'] ? data['date'].trim() : '';
+    if (!workDate) {
+        errors.push("Error: Work date is required");
+    }
+
+    let description = {};
+    let columnAWithoutParenthesesCount = 0;
+    let hasDescriptionInB = false;
+    let hasPriceInC = false;
 
     Object.keys(data).forEach(key => {
-        const value = data[key].trim();
-        const rowNumber = key.match(/\d+$/)?.[0];
-        
-        if (rowNumber) {
-            if (!description[rowNumber]) description[rowNumber] = { A: "", B: "", C: "" };
+        if (typeof data[key] !== 'string') return;
+        let value = data[key].trim();
+        if (key === 'Client' || key === 'date') return;
 
-            if (key.startsWith('A') && value) {
-                unitID = value;
-                hasValidRows = true;
+        let match = key.match(/^(\d+)([ABC])$/);
+        if (match) {
+            let rowNumber = match[1];
+            let column = match[2];
+            if (!description[rowNumber]) {
+                description[rowNumber] = { A: "", B: "", C: "" };
             }
-            if (key.startsWith('B') && value) {
-                description[rowNumber].B = value;
+            description[rowNumber][column] = value;
+
+            if (value) {
                 hasValidRows = true;
-            }
-            if (key.startsWith('C') && value) {
-                if (!/^\d+\.\d{2}$/.test(value)) errors.push(`Error: Price in row ${rowNumber} must have two decimal places`);
-                description[rowNumber].C = value;
-                hasValidRows = true;
+                if (column === 'A') {
+                    if (!value.startsWith('(') && !value.endsWith(')')) {
+                        columnAWithoutParenthesesCount++;
+                    }
+                } else if (column === 'B' && value.startsWith('-')) {
+                    hasDescriptionInB = true;
+                } else if (column === 'C' && /^\d+\.\d{2}$/.test(value)) {
+                    hasPriceInC = true;
+                }
             }
         }
     });
 
-    const filteredDescription = Object.entries(description).reduce((acc, [row, {A, B, C}]) => {
-        if (A || B || C) acc[row] = { A, B, C };
+    if (columnAWithoutParenthesesCount === 0) {
+        errors.push("Error: Missing Equipment ID");
+    }
+    if (columnAWithoutParenthesesCount > 1) {
+        errors.push("Error: Only one Equipment ID is allowed per work item, please use parentheses: \"( )\"");
+    }
+    if (!hasDescriptionInB) {
+        errors.push("Error: Missing Description, or invalid format (- XYZ");
+    }
+    if (!hasPriceInC) {
+        errors.push("Error: Missing Price, or invalid format (123.45)");
+    }
+
+    let filteredDescription = Object.entries(description).reduce((acc, [key, row]) => {
+        if (row.A || row.B || row.C) {
+            acc[key] = row;
+        }
         return acc;
     }, {});
 
-    if (!unitID) errors.push("Error: Missing Equipment ID");
-    if (!hasValidRows) errors.push("Error: At least one row must have values");
+    if (!hasValidRows) {
+        errors.push("Error: At least one row must have values");
+    }
 
-    const descriptionPrice = JSON.stringify(filteredDescription);
-
-    const isValid = errors.length === 0;
-    const transformedData = isValid ? {
-        unitID,
-        clientName,
-        workDate,
-        description: descriptionPrice
-    } : null;
+    let isValid = errors.length === 0;
+    let transformedData = null;
+    if (isValid) {
+        transformedData = {
+            clientName,
+            workDate,
+            description: JSON.stringify(filteredDescription)
+        };
+    }
 
     return { isValid, errors, data: transformedData };
 }
+
 
 // Info object to provide more context in error messages
 const info = {
