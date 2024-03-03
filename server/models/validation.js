@@ -37,11 +37,18 @@ function validateAndTransform(inboundData) {
 function validateWorkItem(data) {
     let errors = [];
     let hasValidRows = false;
+    let unitNum = '';
 
     let clientName = data['Client'] ? data['Client'].trim() : '';
     if (!clientName) {
         errors.push("Error: Client name is required");
     }
+    let clientIdMatch = clientName.match(/^(\d+)/);
+    let clientId = clientIdMatch ? clientIdMatch[1] : null;
+    if (!clientId) {
+        errors.push("Error: Client ID is required and must be a number");
+    }
+    clientId = parseInt(clientId);
 
     let workDate = data['date'] ? data['date'].trim() : '';
     if (!workDate) {
@@ -66,6 +73,10 @@ function validateWorkItem(data) {
                 description[rowNumber] = { A: "", B: "", C: "" };
             }
             description[rowNumber][column] = value;
+
+            if (column === 'A' && value && !value.startsWith('(') && !value.endsWith(')') && !unitNum) {
+                unitNum = value;
+            }
 
             if (value) {
                 hasValidRows = true;
@@ -110,7 +121,8 @@ function validateWorkItem(data) {
     let transformedData = null;
     if (isValid) {
         transformedData = {
-            clientName,
+            clientId,
+            unitNum,
             workDate,
             description: JSON.stringify(filteredDescription)
         };

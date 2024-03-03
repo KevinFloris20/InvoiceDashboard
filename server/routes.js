@@ -77,8 +77,7 @@ const { validateAndTransform, validateWorkItem } = require('./models/validation.
 
 const { newInvoicePDF } = require('./models/PDFDataApp.js');
 
-const { getClients, addClients } = require('./models/mySqlApp.js');
-const e = require('express');
+const { getClients, addClients, addWorkItem } = require('./models/mySqlApp.js');
 
 
 router.post('/submit-form', isAuthenticatedAjax, async (req, res) => {
@@ -210,21 +209,22 @@ router.post('/updateInvoice', isAuthenticatedAjax, async (req, res) => {
 router.post('/addWorkItem', isAuthenticatedAjax, async (req, res) => {
     try {
         const { isValid, errors, data } = validateWorkItem(req.body);
-
-        console.log(req.body);
-        console.log(data, errors, isValid);
-
         if (!isValid) {
             return res.status(400).json({ error: errors });
         }
-
-        res.json({ message: 'Work item added successfully' });
+        try {
+            await addWorkItem(data.clientId, data.unitNum, data.description, data.workDate);
+            console.log(data)
+            res.json({ message: 'Work item added successfully' });
+        } catch (error) {
+            console.error('Error adding work item:', error);
+            res.status(500).json({ error: error.message });
+        }
     } catch (error) {
-        console.error('Error adding work item:', error);
+        console.error('Error in adding work item:', error);
         res.status(500).json({ error: error.message });
     }
 });
-
 
 
 

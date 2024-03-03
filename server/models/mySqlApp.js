@@ -60,7 +60,51 @@ async function addClients(client_name, client_address, email) {
     }
 }
 
+async function addWorkItem(clientName, unitName, descriptionPrice, workDate) {
+    const sql = `CALL InsertWorkItemWithChassis(?,?,?,?)`;
+    return new Promise((resolve, reject) => {
+        db.query(sql, [clientName, unitName, descriptionPrice, workDate], (error, results) => {
+            if (error) reject(error);
+            else resolve(results);
+        });
+    });
+}
+
+async function updateWorkItem(workItemId, newDescriptionPrice, newWorkDate) {
+    const sql = `UPDATE workItems SET description_price = ?, work_date = ? WHERE workItem_id = ?`;
+    return new Promise((resolve, reject) => {
+        db.query(sql, [newDescriptionPrice, newWorkDate, workItemId], (error, results) => {
+            if (error) reject(error);
+            else resolve(results);
+        });
+    });
+}
+
+async function deleteWorkItem(workItemId) {
+    const sql = `DELETE FROM workItems WHERE workItem_id = ?`;
+    return new Promise((resolve, reject) => {
+        db.query(sql, [workItemId], (error, results) => {
+            if (error) reject(error);
+            else resolve(results);
+        });
+    });
+}
+
+async function getAllWorkItems() {
+    const sql = `SELECT * FROM workItems`;
+    return new Promise((resolve, reject) => {
+        db.query(sql, (error, results) => {
+            if (error) reject(error);
+            else resolve(results);
+        });
+    });
+}
+
 module.exports = {
     getClients,
-    addClients
+    addClients,
+    addWorkItem,
+    updateWorkItem,
+    deleteWorkItem,
+    getAllWorkItems
 };
