@@ -16,13 +16,13 @@ const db = mysql.createConnection(gdbConfig);
 try{
     db.connect((err) => {
         if (err) {
-            console.log('Error connecting to DB:', err);
+            console.log('Error connecting to SQL DB:', err);
             return;
         }
-        console.log('Connected to DB');
+        console.log('Connected to SQL DB');
     });
 } catch (error) {
-    console.log('Error connecting to DB:', error);
+    console.log('Error connecting to SQL DB:', error);
 }
 
 async function getClients() {

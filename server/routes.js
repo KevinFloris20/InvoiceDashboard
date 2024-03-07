@@ -213,8 +213,8 @@ router.post('/addWorkItem', isAuthenticatedAjax, async (req, res) => {
             return res.status(400).json({ error: errors });
         }
         try {
-            await addWorkItem(data.clientId, data.unitNum, data.description, data.workDate);
             console.log(data)
+            await addWorkItem(data.clientsName, data.unitNum, data.description, data.workDate);
             res.json({ message: 'Work item added successfully' });
         } catch (error) {
             console.error('Error adding work item:', error);

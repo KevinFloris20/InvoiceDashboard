@@ -49,6 +49,8 @@ function validateWorkItem(data) {
         errors.push("Error: Client ID is required and must be a number");
     }
     clientId = parseInt(clientId);
+    let clientsName = clientName.replace(clientId, '').trim();
+    clientsName = clientsName.replace(/[^a-zA-Z0-9\s]/g, '').trim();
 
     let workDate = data['date'] ? data['date'].trim() : '';
     if (!workDate) {
@@ -122,6 +124,7 @@ function validateWorkItem(data) {
     if (isValid) {
         transformedData = {
             clientId,
+            clientsName,
             unitNum,
             workDate,
             description: JSON.stringify(filteredDescription)
