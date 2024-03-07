@@ -25,6 +25,40 @@ try{
     console.log('Error connecting to SQL DB:', error);
 }
 
+async function getTables() {
+    try {
+        return new Promise((resolve, reject) => {
+            db.query('SHOW TABLES', (err, rows, fields) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(rows);
+                }
+            });
+        });
+    } catch (error) {
+        console.log('Error getting tables:', error);
+        return [];
+    }
+}
+
+async function getTableData(table) {
+    try {
+        return new Promise((resolve, reject) => {
+            db.query(`SELECT * FROM ${table}`, (err, rows, fields) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(rows);
+                }
+            });
+        });
+    } catch (error) {
+        console.log('Error getting table data:', error);
+        return [];
+    }
+}
+
 async function getClients() {
     try {
         return new Promise((resolve, reject) => {
@@ -100,7 +134,10 @@ async function getAllWorkItems() {
     });
 }
 
+
 module.exports = {
+    getTables,
+    getTableData,
     getClients,
     addClients,
     addWorkItem,

@@ -77,7 +77,7 @@ const { validateAndTransform, validateWorkItem } = require('./models/validation.
 
 const { newInvoicePDF } = require('./models/PDFDataApp.js');
 
-const { getClients, addClients, addWorkItem } = require('./models/mySqlApp.js');
+const { getClients, addClients, addWorkItem, getTables, getTableData } = require('./models/mySqlApp.js');
 
 
 router.post('/submit-form', isAuthenticatedAjax, async (req, res) => {
@@ -208,6 +208,15 @@ router.post('/updateInvoice', isAuthenticatedAjax, async (req, res) => {
 
 router.post('/addWorkItem', isAuthenticatedAjax, async (req, res) => {
     try {
+        // to see what im doing
+        // let d = await getTables();
+        // console.log(d)
+        // for (let i = 0; i < d.length; i++) {
+        //     let x = d[i].Tables_in_workItemDB
+        //     console.log(x);
+        //     let tableData = await getTableData(x);
+        //     console.log(tableData);
+        // }
         const { isValid, errors, data } = validateWorkItem(req.body);
         if (!isValid) {
             return res.status(400).json({ error: errors });
