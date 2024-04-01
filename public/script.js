@@ -424,21 +424,32 @@ function addWorkItemValidation(formData) {
 document.addEventListener('DOMContentLoaded', function() {
     handleImageError()
     //this is the stuff for the header menu
-    document.getElementById('menuNewInv').addEventListener('click', function() {
-        document.getElementById('searchSection').style.display = 'none';
-        document.getElementById('addWorkItemSection').style.display = 'none';
-        document.getElementById('newInv').style.display = '';
-        reloadFields();
-    });
-    document.getElementById('menuSearch').addEventListener('click', function() {
-        document.getElementById('newInv').style.display = 'none';
-        document.getElementById('addWorkItemSection').style.display = 'none';
-        document.getElementById('searchSection').style.display = '';
-    });
-    document.getElementById('menuAddWorkItem').addEventListener('click', function() {
-        document.getElementById('newInv').style.display = 'none';
-        document.getElementById('searchSection').style.display = 'none';
-        document.getElementById('addWorkItemSection').style.display = '';
+    // document.getElementById('menuNewInv').addEventListener('click', function() {
+    //     document.getElementById('searchSection').style.display = 'none';
+    //     document.getElementById('addWorkItemSection').style.display = 'none';
+    //     document.getElementById('newInv').style.display = '';
+    //     reloadFields();
+    // });
+    // document.getElementById('menuSearch').addEventListener('click', function() {
+    //     document.getElementById('newInv').style.display = 'none';
+    //     document.getElementById('addWorkItemSection').style.display = 'none';
+    //     document.getElementById('searchSection').style.display = '';
+    // });
+    // document.getElementById('menuAddWorkItem').addEventListener('click', function() {
+    //     document.getElementById('newInv').style.display = 'none';
+    //     document.getElementById('searchSection').style.display = 'none';
+    //     document.getElementById('addWorkItemSection').style.display = '';
+    // });
+    document.getElementById('headBtns').addEventListener('click', function(e) {
+        if (e.target.dataset.target) {
+            document.querySelectorAll('.sect').forEach(function(section) {
+                section.style.display = 'none';
+            });
+            const targetSection = document.getElementById(e.target.dataset.target);
+            if (targetSection) {
+                targetSection.style.display = '';
+            }
+        }
     });
 
 
@@ -1001,6 +1012,19 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log(formData);
         submitNewClientForm(formData);
     });
+
+
+
+
+    ////////////////////////Search Work Items////////////////////////
+
+    //search bar (Search Work Items)
+
+
+    //Display Work Items Table (Search Work Items)
+
+
+    //make the table interactive (Search Work Items)
 
 
 });

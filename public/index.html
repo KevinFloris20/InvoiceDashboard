@@ -14,22 +14,25 @@
                 <h1 id="fonts" style="color:white">FCR Invoice Dashboard</h1>
             </div>
         </div>
-        <div class="ui inverted menu" style="margin-bottom: 1%;padding:.5%;">
-            <a id="menuNewInv" class="item">
+        <div id="headBtns" class="ui inverted menu" style="margin-bottom: 1%;padding:.5%;">
+            <a id="menuNewInv" class="item" data-target="newInv">
                 Make New Invoice
             </a>
-            <a id="menuSearch" class="item">
+            <a id="menuSearch" class="item" data-target="searchSection">
                 Search Invoices
             </a>
-            <a id="menuAddWorkItem" class="item">
+            <a id="menuAddWorkItem" class="item" data-target="addWorkItemSection">
                 Add Work Item
+            </a>
+            <a id="menuSearchWorkItem" class ="item" data-target="searchWorkItemSection">
+                Search Work Item
             </a>
         </div>
     </div>
     
 
     <!-- Make new invoice -->
-    <div class="container" id="newInv">
+    <div class="container sect" id="newInv">
 
         <!-- button list -->
         <div class="button-list" state="submit">
@@ -63,7 +66,7 @@
 
 
     <!-- Search all invoices -->
-    <div class="ui segment" id="searchSection" style="display: none;">
+    <div class="ui segment sect" id="searchSection" style="display: none;">
         <div class="ui segment">
             <div style="display: flex; align-items: center; margin-bottom: 1rem;justify-content: space-between">
                 <h1 style="margin-right: 1rem;">Search Invoices</h1>
@@ -146,7 +149,7 @@
 
 
     <!-- Add work items -->
-    <div class="ui segment" id="addWorkItemSection" style="display: none;">
+    <div class="ui segment sect" id="addWorkItemSection" style="display: none;">
         <form class="ui form" style="margin-top: 20px;" id="addWorkItemForm">
             <div class="fields" style="margin-bottom:10px;">
                 <div class="three wide field">
@@ -248,8 +251,10 @@
     </div>
 
 
+
+
     <!-- Search work items -->
-    <div class="ui segment" id="searchWorkItemSection" style="display: none;">
+    <div class="ui segment sect" id="searchWorkItemSection" style="display: none;">
 
     </div>
     <!-- <script src="https://cdn.jsdelivr.net/npm/semantic-ui/dist/semantic.min.js"></script>
