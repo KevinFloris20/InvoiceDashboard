@@ -107,8 +107,27 @@ div{
     background: #f4f4f4;
 }
 
-
-
+/* reapeated for search work items */
+#advancedSearchWI {
+    display: none;
+    overflow: hidden;
+    max-height: 0;
+}
+#advancedSearchWI.active {
+    display: block;
+    margin:1rem;
+    padding: 1rem;
+    background-color: #f9fafb; 
+    max-height: 500px; 
+}
+#caretIcon2.rotated {
+    transform: rotate(180deg);
+    transition: transform 0.3s ease;
+}
+#workItemTable .ui.dropdown .menu {
+    right: 0;
+    left: auto; 
+}
 
 
 

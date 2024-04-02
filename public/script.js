@@ -301,8 +301,8 @@ function handleTotalChargesCalculation(event) {
         document.getElementById('totalMSG').innerText = 'Total: $' + total.toString();
     }
 }
-function toggleLoadingAnimation(show) {
-    const loadingSpinner = document.getElementById('loadingSpinner');
+function toggleLoadingAnimation(show, elementId) {
+    const loadingSpinner = document.getElementById(elementId || 'loadingSpinner');
     if (show) {
         loadingSpinner.style.display = 'block';
     } else {
@@ -1022,7 +1022,91 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     //Display Work Items Table (Search Work Items)
-
+    async function fetchAndDisplayWorkItems() {
+        toggleLoadingAnimation(true, 'loadingSpinnerWI');
+        try {
+            const response = await fetch('/getWorkItems'); //////////////////////////////////////////////
+            if (!response.ok) throw new Error(`Failed to fetch work items: ${response.statusText}`);
+            const workItems = await response.json();
+            renderWorkItemsTable(workItems);
+        } catch (error) {
+            console.error(`Error: ${error.message}`, error);
+        } finally {
+            toggleLoadingAnimation(false, 'loadingSpinnerWI');
+        }
+    }
+    
+    function renderWorkItemsTable(workItems) {
+        const tbody = document.getElementById('workItemTable').querySelector('tbody');
+        tbody.innerHTML = '';
+        workItems.forEach(item => {
+            const row = document.createElement('tr');
+            row.id = `work-item-row-${item.id}`;
+            row.appendChild(createCell(item.workItemId));
+            row.appendChild(createCell(item.equipmentId));
+            row.appendChild(createCell(item.workDate));
+            row.appendChild(createCell(item.clientName));
+            row.appendChild(createCell(item.totalCharges.toFixed(2)));
+            row.appendChild(createCell(item.assignedToInvoice ? 'Yes' : 'No'));
+            const optionsCell = document.createElement('td');
+            optionsCell.innerHTML = `<button onclick="editWorkItem('${item.id}')">Edit</button>`;
+            row.appendChild(optionsCell);
+            tbody.appendChild(row);
+        });
+    }
+    
+    document.getElementById('advSearchFormWI').addEventListener('submit', async function(event) {
+        event.preventDefault();
+        const formData = new FormData(this);
+        const searchParams = new URLSearchParams(formData);
+        const queryString = searchParams.toString();
+        console.log(`Searching Work Items with query: ${queryString}`);
+    });
+    
+    const toggleBtnWI = document.getElementById('toggleAdvancedSearchWI');
+    const advSearchDivWI = document.getElementById('advancedSearchWI');
+    const caretIconWI = document.getElementById('caretIconWI');
+    toggleBtnWI.addEventListener('click', function() {
+        advSearchDivWI.classList.toggle('active');
+        caretIconWI.classList.toggle('rotated');
+    });
+    
+    document.getElementById('menuSearchWorkItem').addEventListener('click', fetchAndDisplayWorkItems);
+    
+    function filterWorkItemsTable() {
+        const idValue = document.getElementById('searchWorkItemId').value.toLowerCase();
+        const equipmentIdValue = document.getElementById('searchWorkItemEquipmentId').value.toLowerCase();
+        const workDateValue = document.getElementById('searchWorkItemDate').value.toLowerCase();
+        const clientNameValue = document.getElementById('searchWorkItemName').value.toLowerCase();
+        const assignedValue = document.getElementById('searchAssigned').value.toLowerCase();
+        const table = document.getElementById('workItemTable');
+        const rows = table.getElementsByTagName('tr');
+        for (let i = 1; i < rows.length; i++) {
+            let idCell = rows[i].getElementsByTagName('td')[0];
+            let equipmentIdCell = rows[i].getElementsByTagName('td')[1];
+            let workDateCell = rows[i].getElementsByTagName('td')[2];
+            let clientNameCell = rows[i].getElementsByTagName('td')[3];
+            let assignedCell = rows[i].getElementsByTagName('td')[5];
+            if (idCell && equipmentIdCell && workDateCell && clientNameCell && assignedCell) {
+                if (idCell.textContent.toLowerCase().indexOf(idValue) > -1 &&
+                    equipmentIdCell.textContent.toLowerCase().indexOf(equipmentIdValue) > -1 &&
+                    workDateCell.textContent.toLowerCase().indexOf(workDateValue) > -1 &&
+                    clientNameCell.textContent.toLowerCase().indexOf(clientNameValue) > -1 &&
+                    assignedCell.textContent.toLowerCase().indexOf(assignedValue) > -1) {
+                    rows[i].style.display = '';
+                } else {
+                    rows[i].style.display = 'none';
+                }
+            }
+        }
+    }
+    
+    document.getElementById('searchWorkItemId').addEventListener('input', filterWorkItemsTable);
+    document.getElementById('searchWorkItemEquipmentId').addEventListener('input', filterWorkItemsTable);
+    document.getElementById('searchWorkItemDate').addEventListener('input', filterWorkItemsTable);
+    document.getElementById('searchWorkItemName').addEventListener('input', filterWorkItemsTable);
+    document.getElementById('searchAssigned').addEventListener('input', filterWorkItemsTable);
+    
 
     //make the table interactive (Search Work Items)
 
