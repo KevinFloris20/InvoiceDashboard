@@ -77,41 +77,9 @@ const { validateAndTransform, validateWorkItem } = require('./models/validation.
 
 const { newInvoicePDF } = require('./models/PDFDataApp.js');
 
-const { getClients, addClients, addWorkItem, getTables, getTableData } = require('./models/mySqlApp.js');
+const { getClients, addClients, addWorkItem, getTables, getTableData, getAllWorkItems, displayWorkItems, deleteWorkItem } = require('./models/mySqlApp.js');
 
 
-router.post('/submit-form', isAuthenticatedAjax, async (req, res) => {
-    try {
-        const submitData = req.body;
-        console.log(submitData)
-        const validatedData = validateAndTransform(submitData);
-        const result = await interactWithFirestore('writeData', validatedData);
-        res.json({ message: 'Invoice submitted successfully', result: result });
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
-});
-
-router.post('/download-invoice', isAuthenticatedAjax, async (req, res) => {
-    try {
-        const data = req.body; 
-        var pdfPath;
-        if (fs.existsSync('FCRInvoiceTemplate.pdf')) {
-            pdfPath = 'FCRInvoiceTemplate.pdf';
-        } else {
-            pdfPath = 'FCRInvoiceTemplateNull.pdf';
-        }
-        const pdfBytes = await newInvoicePDF(data, pdfPath);
-        res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', 'attachment; filename=invoice.pdf');
-        res.setHeader('Content-Length', pdfBytes.length);
-        res.end(pdfBytes);
-    } catch (error) {
-        console.error(error);
-        console.log(error.message)
-        res.status(500).json({message:'Error generating invoice', error:error.message});
-    }
-});
 
 router.get('/newClient', isAuthenticatedAjax, async (req, res) => {
     try {
@@ -169,6 +137,49 @@ router.get('/getAdvancedInvoice', isAuthenticatedAjax, async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(400).json({ message: 'Error fetching invoices', error: error.message });
+    }
+});
+
+router.get('/displayWorkItems', isAuthenticatedAjax, async (req, res) => {
+    try {
+        const result = await displayWorkItems(100);
+        res.json(result);
+    } catch (error) {
+        console.error(error);
+        res.status(400).json({ message: 'Error fetching work items', error: error.message });
+    }
+});
+
+router.post('/submit-form', isAuthenticatedAjax, async (req, res) => {
+    try {
+        const submitData = req.body;
+        console.log(submitData)
+        const validatedData = validateAndTransform(submitData);
+        const result = await interactWithFirestore('writeData', validatedData);
+        res.json({ message: 'Invoice submitted successfully', result: result });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
+
+router.post('/download-invoice', isAuthenticatedAjax, async (req, res) => {
+    try {
+        const data = req.body; 
+        var pdfPath;
+        if (fs.existsSync('FCRInvoiceTemplate.pdf')) {
+            pdfPath = 'FCRInvoiceTemplate.pdf';
+        } else {
+            pdfPath = 'FCRInvoiceTemplateNull.pdf';
+        }
+        const pdfBytes = await newInvoicePDF(data, pdfPath);
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'attachment; filename=invoice.pdf');
+        res.setHeader('Content-Length', pdfBytes.length);
+        res.end(pdfBytes);
+    } catch (error) {
+        console.error(error);
+        console.log(error.message)
+        res.status(500).json({message:'Error generating invoice', error:error.message});
     }
 });
 
@@ -235,7 +246,20 @@ router.post('/addWorkItem', isAuthenticatedAjax, async (req, res) => {
     }
 });
 
-
+// delete work item
+router.post('/deleteWorkItem', isAuthenticatedAjax, async (req, res) => {
+    try {
+        const data = req.body.id;
+        if (!data) {
+            return res.status(400).json({ message: 'Work item id not provided' });
+        }
+        const result = await deleteWorkItem(data);
+        res.json({ message: 'Work item deleted successfully', result: result });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error deleting work item', error: error.message });
+    }
+});
 
 //export
 module.exports = router;

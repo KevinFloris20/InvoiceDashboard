@@ -59,10 +59,12 @@ async function getTableData(table) {
     }
 }
 
-async function getClients() {
+async function getClients(clientID) {
     try {
         return new Promise((resolve, reject) => {
-            db.query('SELECT * FROM clients', (err, rows, fields) => {
+            const query = clientID ? 'SELECT * FROM clients WHERE client_id = ?' : 'SELECT * FROM clients';
+            const params = clientID ? [clientID] : [];
+            db.query(query, params, (err, rows, fields) => {
                 if (err) {
                     reject(err);
                 } else {
@@ -124,8 +126,8 @@ async function deleteWorkItem(workItemId) {
     });
 }
 
-async function getAllWorkItems() {
-    const sql = `SELECT * FROM workItems`;
+async function getAllWorkItems(numItems) {
+    const sql = `SELECT * FROM workItems ORDER BY workItem_id DESC LIMIT ${numItems}`;
     return new Promise((resolve, reject) => {
         db.query(sql, (error, results) => {
             if (error) reject(error);
@@ -133,6 +135,70 @@ async function getAllWorkItems() {
         });
     });
 }
+
+async function getUnitNumbers(unitID){
+    try {
+        return new Promise((resolve, reject) => {
+            const query = unitID ? 'SELECT * FROM unit_numbers WHERE unit_id = ?' : 'SELECT * FROM unit_numbers';
+            const params = unitID ? [unitID] : [];
+            db.query(query, params, (err, rows, fields) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(rows);
+                }
+            });
+        });
+    } catch (error) {
+        console.log('Error getting units:', error);
+        return [];
+    }
+}
+
+async function displayWorkItems(numItems) {
+    try {
+        const workitemsRes = await getAllWorkItems(numItems);
+        const workItems = [];
+        for (const item of workitemsRes) {
+            const clientsRes = await getClients(item.client_id);
+            const unitsRes = await getUnitNumbers(item.unit_id);
+
+            const descriptionPriceObj = JSON.parse(item.description_price);
+            let totalCharges = 0;
+            let descriptionPriceObject = {};
+            for (const key in descriptionPriceObj) {
+                const entry = descriptionPriceObj[key];
+                const price = parseFloat(entry.C);
+            
+                if (!isNaN(price)) {
+                    totalCharges += price;
+                }
+                descriptionPriceObject[`${key}A`] = entry.A;
+                descriptionPriceObject[`${key}B`] = entry.B;
+                descriptionPriceObject[`${key}C`] = entry.C;
+            }
+
+
+            workItems.push({
+                workItemID: item.workItem_id,
+                clientID: item.client_id,
+                clientName: clientsRes[0].client_name,
+                unitID: item.unit_id,
+                unitName: unitsRes[0].unit_name,
+                descriptionPrice: descriptionPriceObject,
+                totalCharges: totalCharges.toFixed(2), 
+                workDate: item.work_date,
+                invoiceID: item.invoice_id
+            });
+        }
+        return workItems;
+    } catch (error) {
+        console.log('Error displaying work items:', error);
+        throw error;
+    }
+}
+
+
 
 
 module.exports = {
@@ -143,5 +209,6 @@ module.exports = {
     addWorkItem,
     updateWorkItem,
     deleteWorkItem,
-    getAllWorkItems
+    getAllWorkItems,
+    displayWorkItems
 };

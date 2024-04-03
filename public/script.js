@@ -160,6 +160,39 @@ async function fetchClientsAndPopulateDropdown() {
         console.error('Fetch error:', error.message);
     }
 }
+async function delWorkItem(workItemId, data) {
+    const userConfirmed = confirm(`Are you sure you want to delete this work item? ${workItemId}`);
+    if (!userConfirmed) {
+        return;
+    }
+
+    try {
+        const response = await fetch('/deleteWorkItem', { 
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ id: workItemId }),
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+            console.log('Work Item deleted successfully:', data);
+            displayMessage('Work Item deleted successfully', 'success');
+            document.querySelector(`#work-item-row-${workItemId}`).remove();
+        } else {
+            throw new Error(data.message || `Unknown error occurred while deleting work item: ${data}`);
+        }
+    } catch (error) {
+        console.error('Error deleting work item:', error);
+        displayMessage(`Error deleting work item: ${error.message}`, 'error');
+    }
+    console.log("work item deleted", workItemId);
+}
+async function editWorkItem(workItemId, data) {
+    console.log("work item edited", workItemId);
+}
+
 
 
 //other helper logic for the entire front end opperations
@@ -419,27 +452,84 @@ function addWorkItemValidation(formData) {
     }
     return true;
 }
+function checkBoxValidation() {
+    const currentCheckbox = this;
+    const currentClientId = this.getAttribute('WI-data-client-id');
+    const checkboxes = document.querySelectorAll('input[type="checkbox"][WI-data-client-id]');
+
+    checkboxes.forEach(cb => {
+        if (cb.getAttribute('WI-data-client-id') !== currentClientId) {
+            cb.disabled = currentCheckbox.checked;
+        }
+    });
+}
+async function viewWorkItem(workItemId, data, editAble) {
+    console.log("data:", data, workItemId);
+    populateForm(data, true);
+    
+}
+function ensureDynamicFieldExists(index, column, containerSelector) {
+    let field = document.querySelector(`${containerSelector} [name="${index}${column}"]`);
+    if (!field) {
+        const container = document.querySelector(containerSelector);
+        field = document.createElement("input");
+        field.setAttribute("name", `${index}${column}`);
+        container.appendChild(field);
+    }
+    return field;
+}
+function displayEditModeMessage(itemId, isWorkItem = false, isViewMode = false) {
+    let messageBox = document.getElementById('editModeMessageChild');
+    if (isViewMode){
+        messageBox.innerHTML = 'You are in viewing mode: ';
+    }else(
+        messageBox.innerHTML = 'You are in editing mode: '
+    )
+    if (!messageBox) {
+        messageBox = document.createElement('div');
+        messageBox.id = 'editModeMessageChild';
+        document.getElementById('editModeMessage').appendChild(messageBox);
+    }
+
+    const itemType = isWorkItem ? 'Work Item' : 'Invoice';
+    const action = isViewMode ? 'Viewing' : 'Editing';
+    messageBox.innerHTML = `${action} ${itemType} ID: ${itemId} <button class="fluid ui button" onclick="cancelViewOrEditMode(${isViewMode})">Cancel ${action}</button>`;
+}
+function cancelViewOrEditMode(isViewMode) {
+    document.getElementById('addWorkItemForm').reset();
+    document.querySelectorAll('#addWorkItemForm input').forEach(input => {
+        input.disabled = false;
+    });
+
+    const messageBox = document.getElementById('editModeMessageChild');
+    if (messageBox) {
+        messageBox.parentNode.removeChild(messageBox);
+    }
+}
+function populateForm(workItemDetails, isViewMode) {
+    const clientSelectField = document.querySelector(`#addWorkItemForm [name="Client"]`);
+    clientSelectField.value = `${workItemDetails.clientID} - ${workItemDetails.clientName}`;
+    clientSelectField.disabled = isViewMode;
+
+    const workDateField = document.querySelector(`#addWorkItemForm [name="date"]`);
+    workDateField.value = workItemDetails.workDate.split('T')[0];
+    workDateField.disabled = isViewMode;
+
+    Object.keys(workItemDetails.descriptionPrice).forEach(key => {
+        const inputField = document.querySelector(`#addWorkItemForm [name="${key}"]`);
+        if (inputField) {
+            inputField.value = workItemDetails.descriptionPrice[key];
+        }
+    });
+    document.querySelectorAll(`#addWorkItemForm [type="text"]`).forEach(input => {
+        input.disabled = isViewMode;
+    });
+    displayEditModeMessage(workItemDetails.workItemID, true, isViewMode);
+}
 
 
 document.addEventListener('DOMContentLoaded', function() {
-    handleImageError()
-    //this is the stuff for the header menu
-    // document.getElementById('menuNewInv').addEventListener('click', function() {
-    //     document.getElementById('searchSection').style.display = 'none';
-    //     document.getElementById('addWorkItemSection').style.display = 'none';
-    //     document.getElementById('newInv').style.display = '';
-    //     reloadFields();
-    // });
-    // document.getElementById('menuSearch').addEventListener('click', function() {
-    //     document.getElementById('newInv').style.display = 'none';
-    //     document.getElementById('addWorkItemSection').style.display = 'none';
-    //     document.getElementById('searchSection').style.display = '';
-    // });
-    // document.getElementById('menuAddWorkItem').addEventListener('click', function() {
-    //     document.getElementById('newInv').style.display = 'none';
-    //     document.getElementById('searchSection').style.display = 'none';
-    //     document.getElementById('addWorkItemSection').style.display = '';
-    // });
+    handleImageError();
     document.getElementById('headBtns').addEventListener('click', function(e) {
         if (e.target.dataset.target) {
             document.querySelectorAll('.sect').forEach(function(section) {
@@ -724,7 +814,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
         initializeDropdowns();
     }
-    function initializeDropdowns() {
+    function initializeDropdowns(whichTable) {
         const dropdowns = document.querySelectorAll('.ui.dropdown');
     
         dropdowns.forEach(dropdown => {
@@ -753,7 +843,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const optionsMenu = document.querySelectorAll('.itemOptions');
         optionsMenu.forEach(opp => {
             opp.addEventListener('click', (event) => {
-                const data = JSON.parse(opp.parentElement.getAttribute('pdfData'));
+                // search Invoice
+                const data = JSON.parse(opp.parentElement.getAttribute('pdfData')) || {};
                 if (opp.getAttribute('attr') === 'viewInvoice') {
                     viewInvoice(data);
                 } else if (opp.getAttribute('attr') === 'downloadInvoice') {
@@ -765,10 +856,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     deleteInvoice(opp.id);
                 } else if (opp.getAttribute('attr') === 'editInvoice') {
                     populateFormForUpdate(data, opp.id);
+                } else if (opp.getAttribute('attr') === 'viewWorkItem') {
+                    viewWorkItem(opp.id, JSON.parse(opp.parentElement.getAttribute('data')));
+                } else if (opp.getAttribute('attr') === 'delWorkItem') {
+                    delWorkItem(opp.id, JSON.parse(opp.parentElement.getAttribute('data')));
+                } else if (opp.getAttribute('attr') === 'editWorkItem') {
+                    editWorkItem(opp.id, JSON.parse(opp.parentElement.getAttribute('data')));
                 }
+
+                // search Work items
+
             }
         )});
-
     }
     document.getElementById('menuSearch').addEventListener('click', fetchAndDisplayInvoices);
 
@@ -864,11 +963,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const formData = new FormData(form);
         const jsonFormData = Object.fromEntries(formData.entries());
         const jsonFormData2 = {
-            Client: '1 - test',
+            Client: '7 - Test Client',
             date: '2024-10-12',
-            '1A': 'miz',
-            '2A': '(miz)',
-            '3A': '',
+            '1A': 'LMIZ111222',
+            '2A': '(test)',
+            '3A': '(anythingGoesHere)',
             '4A': '',
             '5A': '',
             '6A': '',
@@ -877,7 +976,7 @@ document.addEventListener('DOMContentLoaded', function() {
             '9A': '',
             '10A': '',
             '1B': '-m',
-            '2B': '',
+            '2B': '- Description 2',
             '3B': '',
             '4B': '',
             '5B': '',
@@ -886,8 +985,8 @@ document.addEventListener('DOMContentLoaded', function() {
             '8B': '',
             '9B': '',
             '10B': '',
-            '1C': '9.00',
-            '2C': '',
+            '1C': '9.01',
+            '2C': '411.19',
             '3C': '',
             '4C': '',
             '5C': '',
@@ -1025,9 +1124,10 @@ document.addEventListener('DOMContentLoaded', function() {
     async function fetchAndDisplayWorkItems() {
         toggleLoadingAnimation(true, 'loadingSpinnerWI');
         try {
-            const response = await fetch('/getWorkItems'); //////////////////////////////////////////////
+            const response = await fetch('/displayWorkItems'); //////////////////////////////////////////////
             if (!response.ok) throw new Error(`Failed to fetch work items: ${response.statusText}`);
             const workItems = await response.json();
+            console.log(workItems);
             renderWorkItemsTable(workItems);
         } catch (error) {
             console.error(`Error: ${error.message}`, error);
@@ -1041,18 +1141,37 @@ document.addEventListener('DOMContentLoaded', function() {
         tbody.innerHTML = '';
         workItems.forEach(item => {
             const row = document.createElement('tr');
-            row.id = `work-item-row-${item.id}`;
-            row.appendChild(createCell(item.workItemId));
-            row.appendChild(createCell(item.equipmentId));
-            row.appendChild(createCell(item.workDate));
+            row.id = `work-item-row-${item.workItemID}`;
+            row.appendChild(createCell(item.workItemID));
+            row.appendChild(createCell(item.unitName));
+            row.appendChild(createCell(convertToMMDDYYYY(item.workDate)));
             row.appendChild(createCell(item.clientName));
-            row.appendChild(createCell(item.totalCharges.toFixed(2)));
-            row.appendChild(createCell(item.assignedToInvoice ? 'Yes' : 'No'));
+            row.appendChild(createCell(item.totalCharges));
+            const assignedCell = createCell(item.assignedToInvoice ? '✔️' : '');
+            assignedCell.style.textAlign = 'center'; 
+            if (!item.assignedToInvoice) {
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.setAttribute('WI-data-client-id', item.clientID); 
+                checkbox.onclick = checkBoxValidation; 
+                assignedCell.appendChild(checkbox);
+            }
+            row.appendChild(assignedCell);
             const optionsCell = document.createElement('td');
-            optionsCell.innerHTML = `<button onclick="editWorkItem('${item.id}')">Edit</button>`;
-            row.appendChild(optionsCell);
+            optionsCell.innerHTML = `
+                <div class="ui floating dropdown icon button">
+                    <i class="dropdown icon"></i>
+                    <div class="menu" data='${JSON.stringify(item)}'>
+                        <div class="item itemOptions" id="${item.workItemID}" attr="viewWorkItem">View Work Item</div>
+                        <div class="item itemOptions" id="${item.workItemID}" attr="delWorkItem">Delete Work Item</div>
+                        <div class="item itemOptions" id="${item.workItemID}" attr="editWorkItem">Edit Work Item</div>
+                    </div>
+                </div>
+            `;
+            row.appendChild(optionsCell); 
             tbody.appendChild(row);
         });
+        initializeDropdowns();
     }
     
     document.getElementById('advSearchFormWI').addEventListener('submit', async function(event) {
@@ -1105,7 +1224,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('searchWorkItemEquipmentId').addEventListener('input', filterWorkItemsTable);
     document.getElementById('searchWorkItemDate').addEventListener('input', filterWorkItemsTable);
     document.getElementById('searchWorkItemName').addEventListener('input', filterWorkItemsTable);
-    document.getElementById('searchAssigned').addEventListener('input', filterWorkItemsTable);
+    // document.getElementById('searchAssigned').addEventListener('input', filterWorkItemsTable);
     
 
     //make the table interactive (Search Work Items)
