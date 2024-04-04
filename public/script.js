@@ -396,10 +396,11 @@ function handleImageError() {
 function displayAWIMessage(message, type) {
     const messageDisplay = document.getElementById('AWImessageDisplay');
     messageDisplay.style.display = 'block'; 
-    messageDisplay.className = `ui message ${type}`; 
+    messageDisplay.className = `ui message ${type} fade-out`; 
     messageDisplay.innerHTML = message; 
 }
 function addWorkItemValidation(formData) {
+
     const messageDisplay = document.getElementById('AWImessageDisplay');
     messageDisplay.innerHTML = '';
     messageDisplay.style.display = 'none';
@@ -463,69 +464,94 @@ function checkBoxValidation() {
         }
     });
 }
-async function viewWorkItem(workItemId, data, editAble) {
-    console.log("data:", data, workItemId);
-    populateForm(data, true);
-    
-}
-function ensureDynamicFieldExists(index, column, containerSelector) {
-    let field = document.querySelector(`${containerSelector} [name="${index}${column}"]`);
-    if (!field) {
-        const container = document.querySelector(containerSelector);
-        field = document.createElement("input");
-        field.setAttribute("name", `${index}${column}`);
-        container.appendChild(field);
-    }
-    return field;
-}
-function displayEditModeMessage(itemId, isWorkItem = false, isViewMode = false) {
-    let messageBox = document.getElementById('editModeMessageChild');
-    if (isViewMode){
-        messageBox.innerHTML = 'You are in viewing mode: ';
-    }else(
-        messageBox.innerHTML = 'You are in editing mode: '
-    )
-    if (!messageBox) {
-        messageBox = document.createElement('div');
-        messageBox.id = 'editModeMessageChild';
-        document.getElementById('editModeMessage').appendChild(messageBox);
-    }
 
-    const itemType = isWorkItem ? 'Work Item' : 'Invoice';
-    const action = isViewMode ? 'Viewing' : 'Editing';
-    messageBox.innerHTML = `${action} ${itemType} ID: ${itemId} <button class="fluid ui button" onclick="cancelViewOrEditMode(${isViewMode})">Cancel ${action}</button>`;
-}
-function cancelViewOrEditMode(isViewMode) {
-    document.getElementById('addWorkItemForm').reset();
-    document.querySelectorAll('#addWorkItemForm input').forEach(input => {
-        input.disabled = false;
-    });
 
-    const messageBox = document.getElementById('editModeMessageChild');
-    if (messageBox) {
-        messageBox.parentNode.removeChild(messageBox);
-    }
+
+
+function viewWorkItem(workItemId, data) {
+    populateForm(data, true); // true for view mode
+    toggleFormButtons(true); // Disable form buttons in view mode
+    document.getElementById('addWorkItemSection').mode = 'view';
 }
+
+function editWorkItem(workItemId, data) {
+    populateForm(data, false); // false for edit mode
+    toggleFormButtons(false); // Enable form buttons in edit mode
+    document.getElementById('addWorkItemSection').mode = 'edit';
+}
+
 function populateForm(workItemDetails, isViewMode) {
+    document.getElementById('addWorkItemForm').reset();
+    document.getElementById('menuAddWorkItem').click();
+    document.getElementById('headBtns').disabled = true;
+  
+    // Populate the Client dropdown
     const clientSelectField = document.querySelector(`#addWorkItemForm [name="Client"]`);
     clientSelectField.value = `${workItemDetails.clientID} - ${workItemDetails.clientName}`;
-    clientSelectField.disabled = isViewMode;
-
+    clientSelectField.disabled = true;
+  
+    // Populate work date
     const workDateField = document.querySelector(`#addWorkItemForm [name="date"]`);
     workDateField.value = workItemDetails.workDate.split('T')[0];
     workDateField.disabled = isViewMode;
-
+  
+    // Populate descriptionPrice fields
     Object.keys(workItemDetails.descriptionPrice).forEach(key => {
         const inputField = document.querySelector(`#addWorkItemForm [name="${key}"]`);
         if (inputField) {
             inputField.value = workItemDetails.descriptionPrice[key];
         }
     });
-    document.querySelectorAll(`#addWorkItemForm [type="text"]`).forEach(input => {
+
+    //disable all form input fields
+    document.querySelectorAll('#addWorkItemForm input').forEach(input => {
         input.disabled = isViewMode;
     });
+  
+    // Insert and configure the message box
     displayEditModeMessage(workItemDetails.workItemID, true, isViewMode);
 }
+
+function displayEditModeMessage(itemId, isWorkItem, isViewMode) {
+    let messageBox = document.querySelector('#editModeMessageChild');
+    if (!messageBox) {
+        messageBox = document.createElement('div');
+        messageBox.id = 'editModeMessageChild';
+        messageBox.style = "background-color: orange; padding: 5px; text-align: center; color: white; margin-top: 10px;";
+        const messageContainer = document.getElementById('workDateFieldAWI').parentNode;
+        messageContainer.insertAdjacentElement('afterend', messageBox);
+    }
+  
+    messageBox.innerHTML = `${isViewMode ? 'You are in View mode' : 'You are in Edit mode'} 
+                            <button id="editModeButton" class="ui button" style="background-color: white; color: black;" onclick="cancelViewOrEditMode()">Exit</button>`;
+}
+
+function toggleFormButtons(disable) {
+    document.querySelector('#AWISaveBtn').disabled = disable;
+    document.querySelector('#AWIsaveNextBtn').disabled = disable;
+}
+
+function cancelViewOrEditMode() {
+    document.getElementById('addWorkItemForm').reset();
+    document.querySelectorAll('#addWorkItemForm input, #addWorkItemForm select').forEach(input => {
+        input.disabled = false;
+    });
+
+    document.getElementById('headBtns').disabled = false;
+  
+    const messageBox = document.getElementById('editModeMessageChild');
+    if (messageBox) {
+        messageBox.parentNode.removeChild(messageBox);
+    }
+
+    document.getElementById('addWorkItemSection').mode = 'normal';
+    document.getElementById('menuSearch').click();
+    
+
+    toggleFormButtons(false);
+  }
+
+
 
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -1002,34 +1028,41 @@ document.addEventListener('DOMContentLoaded', function() {
                 const saveBtn = event.target;
                 saveBtn.classList.add('loading');
                 saveBtn.disabled = true;
-                fetch('/addWorkItem',{
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(jsonFormData2)
-                }).then(response => response.json()).then(data => {
-                    if (data.error) {
-                        console.error('Error: ', data.error);
-                        displayAWIMessage(`${data.error.join('<br>')}`, 'red error');
-                        saveBtn.classList.remove('loading');
-                        saveBtn.disabled = false;
-                    } else {
-                        console.log('Success:', data.message);
-                        displayAWIMessage(`Success: ${data.message}`, 'green success');
-                        saveBtn.classList.remove('loading');
-                        saveBtn.disabled = false;
-                        if (saveNext) {
-                            document.getElementById('inputAWIFields').querySelectorAll('input[type="text"]').forEach(input => {
-                                input.value = '';
-                            });
-                            document.querySelector("[id='AWI1A']").focus();
-                        }else{
-                            form.reset();
+                function workItemForm(route){
+                    fetch(`/${route}`,{
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(jsonFormData2)
+                    }).then(response => response.json()).then(data => {
+                        if (data.error) {
+                            console.error('Error: ', data.error);
+                            displayAWIMessage(`${data.error.join('<br>')}`, 'red error');
+                            saveBtn.classList.remove('loading');
+                            saveBtn.disabled = false;
+                        } else {
+                            console.log('Success:', data.message);
+                            displayAWIMessage(`Success: ${data.message}`, 'green success');
+                            saveBtn.classList.remove('loading');
+                            saveBtn.disabled = false;
+                            if (saveNext) {
+                                document.getElementById('inputAWIFields').querySelectorAll('input[type="text"]').forEach(input => {
+                                    input.value = '';
+                                });
+                                document.querySelector("[id='AWI1A']").focus();
+                            }else{
+                                form.reset();
+                            }
+    
                         }
-
-                    }
-                }).catch(error => console.error('Error:', error));
+                    }).catch(error => console.error('Error:', error));
+                }
+                if(document.getElementById('addWorkItemSection').mode == 'normal'){
+                    workItemForm('addWorkItem');
+                }else if(document.getElementById('addWorkItemSection').mode == 'edit'){
+                    workItemForm('updateWorkItem');
+                }
             }catch(error){
                 displayAWIMessage(`Error: ${error.message}`, 'red error');
                 saveBtn.classList.remove('loading');

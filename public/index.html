@@ -148,7 +148,7 @@
 
 
     <!-- Add work items -->
-    <div class="ui segment sect" id="addWorkItemSection" style="display: none;">
+    <div class="ui segment sect" id="addWorkItemSection" style="display: none;" mode="normal">
         <form class="ui form" style="margin-top: 20px;" id="addWorkItemForm">
             <div class="fields" style="margin-bottom:10px;">
                 <div class="three wide field">
@@ -164,18 +164,20 @@
                         </div>
                     </div>
                 </div>
-                <div class="three wide field">
+                <div class="three wide field" id="workDateFieldAWI">
                     <label>Work Date</label>
                     <div>
                         <input type="date" autocomplete="off" name="date" id="">
                     </div>
                 </div>
-                <div id="editModeMessageChild" style="background-color: orange; display:none; align-items: center; color: white;"></div>
-
+                <!-- <div id="editModeMessageChild" style="background-color: orange; padding-left: 5px; padding-right: 5px; align-content:center; margin: 0 auto; color: white;">
+                    You are in Edit mode 
+                    <button id="editModeButton" class="ui button" style="background-color: white; color: black;">Exit</button>
+                </div> -->
             </div>
 
             
-            <div id="inputAWIFields" class="fields" style="margin-top:20px">
+            <div id="inputAWIFields" class="fields" style="margin-top:20px" >
                 <div class="three wide field">
                     <label>Unit Number</label>
                     <input type="text" id="AWI1A" autocomplete="off" name="1A" tabindex="1">
