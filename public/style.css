@@ -229,6 +229,10 @@ div{
 #head, .ui.inverted.menu {
     width: 100%; 
 }
+.disableBtn {
+    pointer-events: none;
+    opacity: 0.5;
+}
 
 .container {
     display: flex;

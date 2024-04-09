@@ -469,33 +469,32 @@ function checkBoxValidation() {
 
 
 function viewWorkItem(workItemId, data) {
-    populateForm(data, true); // true for view mode
-    toggleFormButtons(true); // Disable form buttons in view mode
-    document.getElementById('addWorkItemSection').mode = 'view';
+    populateForm(data, true); 
+    toggleFormButtons(true); 
 }
 
 function editWorkItem(workItemId, data) {
-    populateForm(data, false); // false for edit mode
-    toggleFormButtons(false); // Enable form buttons in edit mode
-    document.getElementById('addWorkItemSection').mode = 'edit';
+    populateForm(data, false); 
+    toggleFormButtons(false); 
 }
 
 function populateForm(workItemDetails, isViewMode) {
     document.getElementById('addWorkItemForm').reset();
     document.getElementById('menuAddWorkItem').click();
-    document.getElementById('headBtns').disabled = true;
-  
-    // Populate the Client dropdown
+    document.getElementById('addWorkItemSection').mode = isViewMode ? 'view' : 'edit';
+
+    document.querySelectorAll('#headBtns .item').forEach(button => {
+        button.classList.add('disableBtn');
+    });
+
     const clientSelectField = document.querySelector(`#addWorkItemForm [name="Client"]`);
     clientSelectField.value = `${workItemDetails.clientID} - ${workItemDetails.clientName}`;
     clientSelectField.disabled = true;
   
-    // Populate work date
     const workDateField = document.querySelector(`#addWorkItemForm [name="date"]`);
     workDateField.value = workItemDetails.workDate.split('T')[0];
     workDateField.disabled = isViewMode;
   
-    // Populate descriptionPrice fields
     Object.keys(workItemDetails.descriptionPrice).forEach(key => {
         const inputField = document.querySelector(`#addWorkItemForm [name="${key}"]`);
         if (inputField) {
@@ -503,12 +502,10 @@ function populateForm(workItemDetails, isViewMode) {
         }
     });
 
-    //disable all form input fields
     document.querySelectorAll('#addWorkItemForm input').forEach(input => {
         input.disabled = isViewMode;
     });
   
-    // Insert and configure the message box
     displayEditModeMessage(workItemDetails.workItemID, true, isViewMode);
 }
 
@@ -517,12 +514,13 @@ function displayEditModeMessage(itemId, isWorkItem, isViewMode) {
     if (!messageBox) {
         messageBox = document.createElement('div');
         messageBox.id = 'editModeMessageChild';
-        messageBox.style = "background-color: orange; padding: 5px; text-align: center; color: white; margin-top: 10px;";
-        const messageContainer = document.getElementById('workDateFieldAWI').parentNode;
-        messageContainer.insertAdjacentElement('afterend', messageBox);
+        messageBox.style = "position: absolute; z-index: 1; width: 100%; background-color: orange; text-align: center; color: white; align-self:center; font-weight: bold; inset:0;padding:10px;";
+        const headerButtons = document.getElementById('headBtns');
+        headerButtons.style.position = 'relative';
+        headerButtons.insertBefore(messageBox, headerButtons.firstChild);
     }
   
-    messageBox.innerHTML = `${isViewMode ? 'You are in View mode' : 'You are in Edit mode'} 
+    messageBox.innerHTML = `${isViewMode ? 'You are in View mode  ' : 'You are in Edit mode  '} 
                             <button id="editModeButton" class="ui button" style="background-color: white; color: black;" onclick="cancelViewOrEditMode()">Exit</button>`;
 }
 
@@ -537,17 +535,18 @@ function cancelViewOrEditMode() {
         input.disabled = false;
     });
 
-    document.getElementById('headBtns').disabled = false;
-  
+    document.querySelectorAll('#headBtns .item').forEach(button => {
+        button.classList.remove('disableBtn');
+    });
+
     const messageBox = document.getElementById('editModeMessageChild');
     if (messageBox) {
         messageBox.parentNode.removeChild(messageBox);
     }
 
     document.getElementById('addWorkItemSection').mode = 'normal';
-    document.getElementById('menuSearch').click();
+    document.getElementById('menuSearchWorkItem').click();
     
-
     toggleFormButtons(false);
   }
 
