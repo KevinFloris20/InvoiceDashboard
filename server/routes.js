@@ -77,7 +77,7 @@ const { validateAndTransform, validateWorkItem } = require('./models/validation.
 
 const { newInvoicePDF } = require('./models/PDFDataApp.js');
 
-const { getClients, addClients, addWorkItem, getTables, getTableData, getAllWorkItems, displayWorkItems, deleteWorkItem } = require('./models/mySqlApp.js');
+const { getClients, addClients, addWorkItem, getTables, getTableData, getAllWorkItems, displayWorkItems, deleteWorkItem, updateWorkItem } = require('./models/mySqlApp.js');
 
 
 
@@ -150,6 +150,31 @@ router.get('/displayWorkItems', isAuthenticatedAjax, async (req, res) => {
     }
 });
 
+//this is for the image gallery of when a unit id is typed
+// router.get('/getPictureIds', isAuthenticatedAjax, async (req, res) => {
+//     try {
+//         const data = req.query;
+//         const result = {
+//             ernbdsimakow: {
+//                 folderName: 'unitId1',
+//                 pictureIds: ['1eee23', '4511s6', 'ee37891a']
+//             },
+//             z0e112rnbdqqscakow: {
+//                 folderName: 'unitId2',
+//                 pictureIds: ['q1e23', 'v14511s6', 'ee37o91a']
+//             },
+//             njmkifrhycbdu: {
+//                 folderName: 'unitId3',
+//                 pictureIds: ['1iiiii23', '101s6', 'ee343a']
+//             },
+//         }
+//         res.json(result);
+//     } catch (error) {
+//         console.error(error);
+//         res.status(400).json({ message: 'Error fetching picture ids', error: error.message });
+//     }
+// });
+
 router.post('/submit-form', isAuthenticatedAjax, async (req, res) => {
     try {
         const submitData = req.body;
@@ -219,15 +244,6 @@ router.post('/updateInvoice', isAuthenticatedAjax, async (req, res) => {
 
 router.post('/addWorkItem', isAuthenticatedAjax, async (req, res) => {
     try {
-        // to see what im doing
-        // let d = await getTables();
-        // console.log(d)
-        // for (let i = 0; i < d.length; i++) {
-        //     let x = d[i].Tables_in_workItemDB
-        //     console.log(x);
-        //     let tableData = await getTableData(x);
-        //     console.log(tableData);
-        // }
         const { isValid, errors, data } = validateWorkItem(req.body);
         if (!isValid) {
             return res.status(400).json({ error: errors });
@@ -246,7 +262,6 @@ router.post('/addWorkItem', isAuthenticatedAjax, async (req, res) => {
     }
 });
 
-// delete work item
 router.post('/deleteWorkItem', isAuthenticatedAjax, async (req, res) => {
     try {
         const data = req.body.id;
@@ -260,6 +275,27 @@ router.post('/deleteWorkItem', isAuthenticatedAjax, async (req, res) => {
         res.status(500).json({ message: 'Error deleting work item', error: error.message });
     }
 });
+
+router.post('/updateWorkItem', isAuthenticatedAjax, async (req, res) => {
+    try {
+        const { isValid, errors, data } = validateWorkItem(req.body);
+        if (!isValid) {
+            return res.status(400).json({ error: errors });
+        }
+        try {
+            await updateWorkItem(data.workItemId, data.description, data.workDate);
+            res.json({ message: 'Work item updated successfully' });
+        } catch (error) {
+            console.error('Error updating work item:', error);
+            res.status(500).json({ error: error.message });
+        }
+    } catch (error){
+        console.error(error);
+        res.status(500).json({ message: 'Error updating work item', error: error.message });
+    }
+});
+
+
 
 //export
 module.exports = router;

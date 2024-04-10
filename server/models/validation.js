@@ -39,6 +39,8 @@ function validateWorkItem(data) {
     let hasValidRows = false;
     let unitNum = '';
 
+    let workItemId = parseInt(data['dataFieldId'] ? data['dataFieldId'].trim() : null);
+
     let clientName = data['Client'] ? data['Client'].trim() : '';
     if (!clientName) {
         errors.push("Error: Client name is required");
@@ -125,6 +127,7 @@ function validateWorkItem(data) {
         transformedData = {
             clientId,
             clientsName,
+            workItemId,
             unitNum,
             workDate,
             description: JSON.stringify(filteredDescription)

@@ -193,6 +193,39 @@ async function editWorkItem(workItemId, data) {
     console.log("work item edited", workItemId);
 }
 
+//this is for the image gallery of when a unit id is typed
+// async function fetchAndDisplayFolders() {
+//     try {
+//         const response = await fetch('/getPictureIds');
+//         if (!response.ok) throw new Error('Network response was not ok');
+//         const folders = await response.json();
+
+//         Object.entries(folders).forEach(([key, { folderName, pictureIds }]) => {
+//             const dropdown = createDropdown(folderName, pictureIds);
+//             document.getElementById('addWorkItemSection').appendChild(dropdown);
+//         });
+//     } catch (error) {
+//         console.error('Error fetching folder data:', error);
+//     }
+// }
+// async function fetchAndDisplayImage(pictureId) {
+//     try {
+//         const response = await fetch(`/getPictures?pictureId=${pictureId}`);
+//         if (!response.ok) throw new Error('Network response was not ok');
+//         const imageUrl = await response.text();
+
+//         const imageContainer = document.getElementById('addWorkItemSection');
+//         const img = document.createElement('img');
+//         img.src = imageUrl;
+//         img.style.maxWidth = '100px'; 
+//         img.onclick = () => displayPopupImage(imageUrl);
+//         imageContainer.appendChild(img);
+//     } catch (error) {
+//         console.error('Error fetching image:', error);
+//     }
+// }
+
+
 
 
 //other helper logic for the entire front end opperations
@@ -464,24 +497,22 @@ function checkBoxValidation() {
         }
     });
 }
-
-
-
-
-function viewWorkItem(workItemId, data) {
+function viewWorkItem(data) {
     populateForm(data, true); 
     toggleFormButtons(true); 
 }
-
-function editWorkItem(workItemId, data) {
+function editWorkItem(data) {
     populateForm(data, false); 
     toggleFormButtons(false); 
 }
-
 function populateForm(workItemDetails, isViewMode) {
     document.getElementById('addWorkItemForm').reset();
     document.getElementById('menuAddWorkItem').click();
-    document.getElementById('addWorkItemSection').mode = isViewMode ? 'view' : 'edit';
+    document.getElementById('addWorkItemSection').setAttribute("mode", isViewMode ? 'view' : 'edit');
+    document.getElementById('addWorkItemSection').setAttribute("data-field-id", workItemDetails.workItemID);
+    document.querySelector('#AWIsaveNextBtn').disabled = true;
+    document.querySelector('#addWorkItemSection > div > h1').style.display = 'none';
+
 
     document.querySelectorAll('#headBtns .item').forEach(button => {
         button.classList.add('disableBtn');
@@ -489,7 +520,7 @@ function populateForm(workItemDetails, isViewMode) {
 
     const clientSelectField = document.querySelector(`#addWorkItemForm [name="Client"]`);
     clientSelectField.value = `${workItemDetails.clientID} - ${workItemDetails.clientName}`;
-    clientSelectField.disabled = true;
+    clientSelectField.setAttribute('disabled', 'true');;
   
     const workDateField = document.querySelector(`#addWorkItemForm [name="date"]`);
     workDateField.value = workItemDetails.workDate.split('T')[0];
@@ -500,16 +531,19 @@ function populateForm(workItemDetails, isViewMode) {
         if (inputField) {
             inputField.value = workItemDetails.descriptionPrice[key];
         }
+        if(key.includes('A') && key !== 'A' && (!workItemDetails.descriptionPrice[key].includes('(')) && (!workItemDetails.descriptionPrice[key].includes(')'))){
+            inputField.id = 'TempAWIunitNumID';
+            document.getElementById('TempAWIunitNumID').classList.add('disableBtn');
+        }
     });
 
     document.querySelectorAll('#addWorkItemForm input').forEach(input => {
         input.disabled = isViewMode;
     });
   
-    displayEditModeMessage(workItemDetails.workItemID, true, isViewMode);
+    displayEditModeMessage(isViewMode);
 }
-
-function displayEditModeMessage(itemId, isWorkItem, isViewMode) {
+function displayEditModeMessage(isViewMode) {
     let messageBox = document.querySelector('#editModeMessageChild');
     if (!messageBox) {
         messageBox = document.createElement('div');
@@ -520,35 +554,93 @@ function displayEditModeMessage(itemId, isWorkItem, isViewMode) {
         headerButtons.insertBefore(messageBox, headerButtons.firstChild);
     }
   
-    messageBox.innerHTML = `${isViewMode ? 'You are in View mode  ' : 'You are in Edit mode  '} 
+    messageBox.innerHTML = `${isViewMode ? 'You are in View mode ---  ' : 'You are in Edit mode --- '} 
                             <button id="editModeButton" class="ui button" style="background-color: white; color: black;" onclick="cancelViewOrEditMode()">Exit</button>`;
 }
-
 function toggleFormButtons(disable) {
     document.querySelector('#AWISaveBtn').disabled = disable;
-    document.querySelector('#AWIsaveNextBtn').disabled = disable;
 }
-
 function cancelViewOrEditMode() {
+    document.querySelector('#addWorkItemSection > div > h1').style.display = 'block';
     document.getElementById('addWorkItemForm').reset();
     document.querySelectorAll('#addWorkItemForm input, #addWorkItemForm select').forEach(input => {
-        input.disabled = false;
+        input.setAttribute('disabled', 'false');
     });
+    document.querySelector('#AWIsaveNextBtn').disabled = false;
+
+    document.getElementById('addWorkItemSection').setAttribute("data-field-id", " ");
 
     document.querySelectorAll('#headBtns .item').forEach(button => {
         button.classList.remove('disableBtn');
     });
+
+    let unitIdEl = document.getElementById('TempAWIunitNumID');
+    if(unitIdEl){
+        unitIdEl.classList.remove('disableBtn');
+        unitIdEl.id = '';
+        unitIdEl.removeAttribute('id');
+    }
 
     const messageBox = document.getElementById('editModeMessageChild');
     if (messageBox) {
         messageBox.parentNode.removeChild(messageBox);
     }
 
-    document.getElementById('addWorkItemSection').mode = 'normal';
+    document.getElementById('addWorkItemSection').setAttribute("mode", 'normal');
     document.getElementById('menuSearchWorkItem').click();
     
     toggleFormButtons(false);
-  }
+}
+//this is for the image gallery of when a unit id is typed
+// function createDropdown(folderName, pictureIds) {
+//     const dropdownDiv = document.createElement('div');
+//     dropdownDiv.className = 'ui dropdown';
+//     dropdownDiv.innerHTML = `<input type="hidden" name="${folderName}">
+//                              <i class="dropdown icon"></i>
+//                              <div class="default text">${folderName}</div>
+//                              <div class="menu">`;
+
+//     pictureIds.forEach(pictureId => {
+//         const item = document.createElement('div');
+//         item.className = 'item';
+//         item.dataset.pictureId = pictureId;
+//         item.textContent = `Picture ${pictureId}`;
+//         item.onclick = () => fetchAndDisplayImage(pictureId);
+//         dropdownDiv.querySelector('.menu').appendChild(item);
+//     });
+
+//     dropdownDiv.innerHTML += '</div>';
+//     return dropdownDiv;
+// }
+// function displayPopupImage(imageUrl) {
+//     let modal = document.getElementById('imageModal');
+//     if (!modal) {
+//         modal = document.createElement('div');
+//         modal.id = 'imageModal';
+//         modal.className = 'ui modal';
+//         modal.style.display = 'none'; 
+//         document.body.appendChild(modal);
+
+//         // Optional: Add a close button inside the modal
+//         const closeButton = document.createElement('i');
+//         closeButton.className = 'close icon';
+//         closeButton.onclick = () => modal.style.display = 'none'; 
+//         modal.appendChild(closeButton);
+//     }
+
+//     modal.innerHTML += `<div class="content">
+//                             <img src="${imageUrl}" style="max-width: 90vw; max-height: 90vh;">
+//                         </div>`;
+
+//     modal.style.display = 'block';
+
+//     window.onclick = (event) => {
+//         if (event.target == modal) {
+//             modal.style.display = 'none';
+//         }
+//     };
+// }
+
 
 
 
@@ -641,7 +733,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         } catch (error) {
             console.error('Error:', error);
-            // displayMessage(`Error: ${error.message}`, 'error');
         } finally {
             toggleButtonState('saveDownloadButton', false);
         }
@@ -882,11 +973,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else if (opp.getAttribute('attr') === 'editInvoice') {
                     populateFormForUpdate(data, opp.id);
                 } else if (opp.getAttribute('attr') === 'viewWorkItem') {
-                    viewWorkItem(opp.id, JSON.parse(opp.parentElement.getAttribute('data')));
+                    viewWorkItem(JSON.parse(opp.parentElement.getAttribute('data')));
                 } else if (opp.getAttribute('attr') === 'delWorkItem') {
                     delWorkItem(opp.id, JSON.parse(opp.parentElement.getAttribute('data')));
                 } else if (opp.getAttribute('attr') === 'editWorkItem') {
-                    editWorkItem(opp.id, JSON.parse(opp.parentElement.getAttribute('data')));
+                    editWorkItem(JSON.parse(opp.parentElement.getAttribute('data')));
                 }
 
                 // search Work items
@@ -987,6 +1078,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const form = document.getElementById('addWorkItemForm');
         const formData = new FormData(form);
         const jsonFormData = Object.fromEntries(formData.entries());
+        if(!jsonFormData['Client']){
+            jsonFormData['Client'] = document.querySelector("[name='Client']").value;
+        }
         const jsonFormData2 = {
             Client: '7 - Test Client',
             date: '2024-10-12',
@@ -1022,9 +1116,9 @@ document.addEventListener('DOMContentLoaded', function() {
             '10C': ''
           };
 
-        if (true) {//addWorkItemValidation(formData)
+        if (addWorkItemValidation(formData)) {//addWorkItemValidation(formData)
+            const saveBtn = event.target;
             try{
-                const saveBtn = event.target;
                 saveBtn.classList.add('loading');
                 saveBtn.disabled = true;
                 function workItemForm(route){
@@ -1033,7 +1127,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         headers: {
                             'Content-Type': 'application/json'
                         },
-                        body: JSON.stringify(jsonFormData2)
+                        body: JSON.stringify(jsonFormData)
                     }).then(response => response.json()).then(data => {
                         if (data.error) {
                             console.error('Error: ', data.error);
@@ -1049,18 +1143,27 @@ document.addEventListener('DOMContentLoaded', function() {
                                 document.getElementById('inputAWIFields').querySelectorAll('input[type="text"]').forEach(input => {
                                     input.value = '';
                                 });
-                                document.querySelector("[id='AWI1A']").focus();
+                                document.querySelector("[name='1A']").focus();
                             }else{
                                 form.reset();
                             }
-    
+                            return 0;
                         }
-                    }).catch(error => console.error('Error:', error));
+                    }).catch(error => {
+                        throw new Error(error)
+                    });
                 }
-                if(document.getElementById('addWorkItemSection').mode == 'normal'){
+                if(document.getElementById('addWorkItemSection').getAttribute("mode") === 'normal'){
                     workItemForm('addWorkItem');
-                }else if(document.getElementById('addWorkItemSection').mode == 'edit'){
-                    workItemForm('updateWorkItem');
+                }else if(document.getElementById('addWorkItemSection').getAttribute("mode") === 'edit'){
+                    jsonFormData['dataFieldId'] = document.getElementById('addWorkItemSection').getAttribute("data-field-id");
+                    workItemForm('updateWorkItem')
+                    cancelViewOrEditMode();
+                }else{
+                    console.error('Error: Invalid mode', document.getElementById('addWorkItemSection').getAttribute("mode"));
+                    displayAWIMessage('Error: Invalid mode', 'red error');
+                    saveBtn.classList.remove('loading');
+                    saveBtn.disabled = false;
                 }
             }catch(error){
                 displayAWIMessage(`Error: ${error.message}`, 'red error');
@@ -1159,7 +1262,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const response = await fetch('/displayWorkItems'); //////////////////////////////////////////////
             if (!response.ok) throw new Error(`Failed to fetch work items: ${response.statusText}`);
             const workItems = await response.json();
-            console.log(workItems);
             renderWorkItemsTable(workItems);
         } catch (error) {
             console.error(`Error: ${error.message}`, error);

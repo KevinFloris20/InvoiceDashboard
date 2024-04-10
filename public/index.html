@@ -27,6 +27,12 @@
             <a id="menuSearchWorkItem" class="item" data-target="searchWorkItemSection">
                 Search Work Item
             </a>
+            <a id="menuSearchWOI" class="item" data-target="searchWOInvoiceSection">
+                Search WO Invoices
+            </a>
+            <a id="menuSearchWOItems" class="item" data-target="addWorkOrderItemSection">
+                Add WO Items
+            </a>
         </div>
     </div>
     
@@ -149,81 +155,84 @@
 
     <!-- Add work items -->
     <div class="ui segment sect" id="addWorkItemSection" style="display: none;" mode="normal">
-        <form class="ui form" style="margin-top: 20px;" id="addWorkItemForm">
-            <div class="fields" style="margin-bottom:10px;">
-                <div class="three wide field">
-                    <label>Client</label>
-                    <div>
-                        <div class="ui action input">
-                            <select name="Client" id="AWIClientDropdown" class="ui search dropdown">
-                                <option value="">Select a client</option>
-                            </select>
-                            <button class="ui icon button" type="button" id="AWIAddClientBtn">
-                                <i class="plus icon"></i>
-                            </button>
+        <div class="ui segment">
+            <h1 style="margin-right: 1rem;">Add Work Item: </h1>
+            <form class="ui form" style="margin-top: 20px;" id="addWorkItemForm">
+                <div class="fields" style="margin-bottom:10px;">
+                    <div class="three wide field">
+                        <label>Client</label>
+                        <div>
+                            <div class="ui action input">
+                                <select name="Client" id="AWIClientDropdown" class="ui search dropdown">
+                                    <option value="">Select a client</option>
+                                </select>
+                                <button class="ui icon button" type="button" id="AWIAddClientBtn">
+                                    <i class="plus icon"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
+                    <div class="three wide field" id="workDateFieldAWI">
+                        <label>Work Date</label>
+                        <div>
+                            <input type="date" autocomplete="off" name="date" id="">
+                        </div>
+                    </div>
+                    <!-- <div id="editModeMessageChild" style="background-color: orange; padding-left: 5px; padding-right: 5px; align-content:center; margin: 0 auto; color: white;">
+                        You are in Edit mode 
+                        <button id="editModeButton" class="ui button" style="background-color: white; color: black;">Exit</button>
+                    </div> -->
                 </div>
-                <div class="three wide field" id="workDateFieldAWI">
-                    <label>Work Date</label>
-                    <div>
-                        <input type="date" autocomplete="off" name="date" id="">
+
+                
+                <div id="inputAWIFields" class="fields" style="margin-top:20px" >
+                    <div class="three wide field">
+                        <label>Unit Number</label>
+                        <input type="text" id="AWI1A" autocomplete="off" name="1A" tabindex="1">
+                        <input type="text" autocomplete="off" name="2A" tabindex="4">
+                        <input type="text" autocomplete="off" name="3A" tabindex="7">
+                        <input type="text" autocomplete="off" name="4A" tabindex="10">
+                        <input type="text" autocomplete="off" name="5A" tabindex="13">
+                        <input type="text" autocomplete="off" name="6A" tabindex="16">
+                        <input type="text" autocomplete="off" name="7A" tabindex="19">
+                        <input type="text" autocomplete="off" name="8A" tabindex="22">
+                        <input type="text" autocomplete="off" name="9A" tabindex="25">
+                        <input type="text" autocomplete="off" name="10A" tabindex="28">
+                    </div>
+                    <div class="eleven wide field">
+                        <label>Description</label>
+                        <input type="text" autocomplete="off" name="1B" tabindex="2">
+                        <input type="text" autocomplete="off" name="2B" tabindex="5">
+                        <input type="text" autocomplete="off" name="3B" tabindex="8">
+                        <input type="text" autocomplete="off" name="4B" tabindex="11">
+                        <input type="text" autocomplete="off" name="5B" tabindex="14">
+                        <input type="text" autocomplete="off" name="6B" tabindex="17">
+                        <input type="text" autocomplete="off" name="7B" tabindex="20">
+                        <input type="text" autocomplete="off" name="8B" tabindex="23">
+                        <input type="text" autocomplete="off" name="9B" tabindex="26">
+                        <input type="text" autocomplete="off" name="10B" tabindex="29">
+                    </div>
+                    <div class="two wide field">
+                        <label>Price</label>
+                        <input type="text" autocomplete="off" name="1C" tabindex="3">
+                        <input type="text" autocomplete="off" name="2C" tabindex="6">
+                        <input type="text" autocomplete="off" name="3C" tabindex="9">
+                        <input type="text" autocomplete="off" name="4C" tabindex="12">
+                        <input type="text" autocomplete="off" name="5C" tabindex="15">
+                        <input type="text" autocomplete="off" name="6C" tabindex="18">
+                        <input type="text" autocomplete="off" name="7C" tabindex="21">
+                        <input type="text" autocomplete="off" name="8C" tabindex="24">
+                        <input type="text" autocomplete="off" name="9C" tabindex="27">
+                        <input type="text" autocomplete="off" name="10C" tabindex="30">
                     </div>
                 </div>
-                <!-- <div id="editModeMessageChild" style="background-color: orange; padding-left: 5px; padding-right: 5px; align-content:center; margin: 0 auto; color: white;">
-                    You are in Edit mode 
-                    <button id="editModeButton" class="ui button" style="background-color: white; color: black;">Exit</button>
-                </div> -->
-            </div>
-
-            
-            <div id="inputAWIFields" class="fields" style="margin-top:20px" >
-                <div class="three wide field">
-                    <label>Unit Number</label>
-                    <input type="text" id="AWI1A" autocomplete="off" name="1A" tabindex="1">
-                    <input type="text" autocomplete="off" name="2A" tabindex="4">
-                    <input type="text" autocomplete="off" name="3A" tabindex="7">
-                    <input type="text" autocomplete="off" name="4A" tabindex="10">
-                    <input type="text" autocomplete="off" name="5A" tabindex="13">
-                    <input type="text" autocomplete="off" name="6A" tabindex="16">
-                    <input type="text" autocomplete="off" name="7A" tabindex="19">
-                    <input type="text" autocomplete="off" name="8A" tabindex="22">
-                    <input type="text" autocomplete="off" name="9A" tabindex="25">
-                    <input type="text" autocomplete="off" name="10A" tabindex="28">
+                <div class="field" style="width:100%;justify-content:right;display:flex;">
+                    <button class="ui right blue button" type="button" id="AWIsaveNextBtn">SaveNext</button>
+                    <button class="ui right green button" type="submit" id="AWISaveBtn">Save</button>
                 </div>
-                <div class="eleven wide field">
-                    <label>Description</label>
-                    <input type="text" autocomplete="off" name="1B" tabindex="2">
-                    <input type="text" autocomplete="off" name="2B" tabindex="5">
-                    <input type="text" autocomplete="off" name="3B" tabindex="8">
-                    <input type="text" autocomplete="off" name="4B" tabindex="11">
-                    <input type="text" autocomplete="off" name="5B" tabindex="14">
-                    <input type="text" autocomplete="off" name="6B" tabindex="17">
-                    <input type="text" autocomplete="off" name="7B" tabindex="20">
-                    <input type="text" autocomplete="off" name="8B" tabindex="23">
-                    <input type="text" autocomplete="off" name="9B" tabindex="26">
-                    <input type="text" autocomplete="off" name="10B" tabindex="29">
-                </div>
-                <div class="two wide field">
-                    <label>Price</label>
-                    <input type="text" autocomplete="off" name="1C" tabindex="3">
-                    <input type="text" autocomplete="off" name="2C" tabindex="6">
-                    <input type="text" autocomplete="off" name="3C" tabindex="9">
-                    <input type="text" autocomplete="off" name="4C" tabindex="12">
-                    <input type="text" autocomplete="off" name="5C" tabindex="15">
-                    <input type="text" autocomplete="off" name="6C" tabindex="18">
-                    <input type="text" autocomplete="off" name="7C" tabindex="21">
-                    <input type="text" autocomplete="off" name="8C" tabindex="24">
-                    <input type="text" autocomplete="off" name="9C" tabindex="27">
-                    <input type="text" autocomplete="off" name="10C" tabindex="30">
-                </div>
-            </div>
-            <div class="field" style="width:100%;justify-content:right;display:flex;">
-                <button class="ui right blue button" type="button" id="AWIsaveNextBtn">SaveNext</button>
-                <button class="ui right green button" type="submit" id="AWISaveBtn">Save</button>
-            </div>
-        </form>
-        <div id="AWImessageDisplay" class="ui message" style="display: none;"></div>
+            </form>
+            <div id="AWImessageDisplay" class="ui message" style="display: none;"></div>
+        </div>
     </div>
     <!-- popup form for new client -->
     <div class="ui modal" id="clientModal">
@@ -338,8 +347,28 @@
             </div>
         </div>
     </div>
-    <!-- <script src="https://cdn.jsdelivr.net/npm/semantic-ui/dist/semantic.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
+
+
+    <!-- Search WO Invoices -->
+    <div class="ui segment sect" id="searchWOInvoiceSection" style="display: none;">
+        <div class="ui segment">
+            <div style="display: flex; align-items: center; margin-bottom: 1rem;justify-content: space-between">
+                <h1 style="margin-right: 1rem;">Search Work Order Invoices</h1>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Add WO Items -->
+    <div class="ui segment sect" id="addWorkOrderItemSection" style="display: none;">
+        <div class="ui segment">
+            <div style="display: flex; align-items: center; margin-bottom: 1rem;justify-content: space-between">
+                <h1 style="margin-right: 1rem;">Add Work Order Item:</h1>
+            </div>
+        </div>
+    </div>
+
+
     <script src="script.js"></script>
 </body>
 </html>
