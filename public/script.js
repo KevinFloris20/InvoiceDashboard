@@ -490,12 +490,24 @@ function checkBoxValidation() {
     const currentCheckbox = this;
     const currentClientId = this.getAttribute('WI-data-client-id');
     const checkboxes = document.querySelectorAll('input[type="checkbox"][WI-data-client-id]');
+    let checkedCount = 0;
 
     checkboxes.forEach(cb => {
-        if (cb.getAttribute('WI-data-client-id') !== currentClientId) {
+        checkedCount += cb.checked ? 1 : 0;
+        if (cb.getAttribute('WI-data-client-id') !== currentClientId && (checkedCount > 0 && currentCheckbox.checked) || (checkedCount === 0 && !currentCheckbox.checked)){
             cb.disabled = currentCheckbox.checked;
         }
     });
+
+    if (checkedCount > 0) {
+        let el = document.getElementById('assignToInvoice')
+        el.style.display = 'block';
+        el.disabled = false;
+    } else {
+        let el = document.getElementById('assignToInvoice')
+        el.style.display = 'none';
+        el.disabled = true;
+    }    
 }
 function viewWorkItem(data) {
     populateForm(data, true); 
