@@ -63,14 +63,18 @@ acceptable invoice object format for input into validation:
 */
 const { interactWithFirestore } = require('./firestoreApp');
 const { getClients, getWorkItemById } = require('./mySqlApp');
-const { extractFormFields, validateAndTransform } = require('./PDFDataApp');
+const { extractFormFields } = require('./PDFDataApp');
+const { validateAndTransform } = require('./validation');
 async function workItemToInvoiceConverter(data) {
     try{
         let finalInvoice = {};
+        const seperator = "---------------------"
+        const totalText = '                                                                                                Total $ ';
         const clientId = data.work_item_client_ID;
 
         //get all the things needed to create the invoice
-        const info = await extractFormFields('FCRInvoiceTemplateNull.pdf');
+        const formFields = await extractFormFields('FCRInvoiceTemplateNull.pdf');
+        console.log(formFields)
         const clientDetailsRes = await getClients(clientId);
         const clientDetails = clientDetailsRes[0];
         let workItems = [];
@@ -78,8 +82,12 @@ async function workItemToInvoiceConverter(data) {
             const workItem = await getWorkItemById(id);
             workItems.push(workItem[0]);
         }
+        console.log(workItems);
+        const rowIds = formFields.fields.filter(field => /^[0-9]+[ABC]$/.test(field.id)).map(field => parseInt(field.id.match(/^[0-9]+/)[0]));
+        const maxRows = Math.max(...rowIds);
 
         //light validation
+        if (workItems.length > maxRows - 3) throw new Error("Error: Too many work items for this invoice");
         if (!workItems.length) throw new Error("Error: Work items do not exist.");
         if (!clientDetails) throw new Error("Error: Client does not exist.");
         for (const item of workItems) {
@@ -98,34 +106,34 @@ async function workItemToInvoiceConverter(data) {
             '1C': ''
         };
 
-        //add the work items to the invoice object
         let totalPrice = 0;
-        workItems.forEach((item, index) => {
+        let currentRowIndex = 2;
+        workItems.forEach(item => {
             const descriptionPrice = JSON.parse(item.description_price);
-            Object.entries(descriptionPrice).forEach(([key, descPrice]) => {
-                finalInvoice[`${index + 2}A`] = descPrice.A;
-                finalInvoice[`${index + 2}B`] = descPrice.B;
-                finalInvoice[`${index + 2}C`] = parseFloat(descPrice.C).toFixed(2);
+            Object.entries(descriptionPrice).forEach(([rowNum, descPrice]) => {
+                finalInvoice[`${currentRowIndex}A`] = descPrice.A;
+                finalInvoice[`${currentRowIndex}B`] = descPrice.B;
+                finalInvoice[`${currentRowIndex}C`] = parseFloat(descPrice.C).toFixed(2);
                 totalPrice += parseFloat(descPrice.C);
+                currentRowIndex++;
             });
         });
 
         // Add the total price to the invoice object
-        const lineCount = workItems.length + 1;
-        finalInvoice[`${lineCount}C`] = "---------------------";
-        finalInvoice[`${lineCount + 1}B`] = '                                                                                                Total $ ';
-        finalInvoice[`${lineCount + 1}C`] = totalPrice;
+        finalInvoice[`${currentRowIndex}C`] = seperator;
+        finalInvoice[`${currentRowIndex + 1}B`] = totalText;
+        finalInvoice[`${currentRowIndex + 1}C`] = totalPrice;
 
         console.log(finalInvoice);
 
-        //submit the invoice object to firestore validation
-        // const transInvoice = validateAndTransform(finalInvoice)
+        // submit the invoice object to firestore validation
+        const transInvoice = validateAndTransform(finalInvoice)
 
-        //submit the invoice object to firestoreApp.js to be stored in the firestore database
-        // const invoiceId = await interactWithFirestore('writeData', transInvoice);
+        // submit the invoice object to firestoreApp.js to be stored in the firestore database
+        const invoiceId = await interactWithFirestore('writeData', transInvoice);
 
         // return :3
-        return 0;
+        return invoiceId;
 
     }catch(error){
         console.log('Error converting work items to invoice:', error);

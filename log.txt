@@ -796,3 +796,153 @@ Stack Trace: Error: request to https://www.googleapis.com/oauth2/v4/token failed
     at async C:\Users\theus\Yeaa\FCRdashboard\server\routes.js:124:31
 100
 
+[2024-04-17T21:12:19.430Z] Error in writeInvoice
+Error Details: Request failed with status code 400
+Response Data: [object Object]
+Stack Trace: AxiosError: Request failed with status code 400
+    at settle (C:\Users\theus\Yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:1967:12)
+    at Unzip.handleStreamEnd (C:\Users\theus\Yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:3062:11)
+    at Unzip.emit (node:events:527:35)
+    at endReadableNT (node:internal/streams/readable:1589:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+{
+  "A": "012324Test",
+  "B": "04/04/2024",
+  "C": "Test Client",
+  "D": "",
+  "E": "",
+  "creationDate": "2024-04-17T21:12:18.441Z",
+  "invoiceDetails": {
+    "1A": "",
+    "1B": "",
+    "1C": "",
+    "2A": "LMIZ111222",
+    "2B": "-m",
+    "2C": "9.01",
+    "3A": "(test)",
+    "3B": "- Description 2",
+    "3C": "411.19",
+    "4A": "(anythingGoesHere)",
+    "4B": "- MMMMMMMMMMMMM",
+    "4C": "123.11",
+    "5A": "",
+    "5B": "- M again",
+    "5C": "111111.11",
+    "6A": "LMIZ111222",
+    "6B": "-m",
+    "6C": "9.01",
+    "7A": "(test)",
+    "7B": "- Description 2",
+    "7C": "411.19",
+    "8A": "(anythingGoesHere)",
+    "8B": "",
+    "8C": "NaN",
+    "9A": "LMIZ111222",
+    "9B": "-m",
+    "9C": "9.01",
+    "10A": "(test)",
+    "10B": "- Description 2",
+    "10C": "411.19",
+    "11A": "(anythingGoesHere)",
+    "11B": "",
+    "11C": "NaN",
+    "12C": "---------------------",
+    "13B": "                                                                                                Total $ ",
+    "13C": null
+  }
+}
+
+[2024-04-17T21:13:55.333Z] Error in writeInvoice
+Error Details: Request failed with status code 400
+Response Data: [object Object]
+Stack Trace: AxiosError: Request failed with status code 400
+    at settle (C:\Users\theus\Yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:1967:12)
+    at Unzip.handleStreamEnd (C:\Users\theus\Yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:3062:11)
+    at Unzip.emit (node:events:527:35)
+    at endReadableNT (node:internal/streams/readable:1589:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+{
+  "A": "123",
+  "B": "12/14/2024",
+  "C": "Test Client",
+  "D": "",
+  "E": "",
+  "creationDate": "2024-04-17T21:13:54.377Z",
+  "invoiceDetails": {
+    "1A": "",
+    "1B": "",
+    "1C": "",
+    "2A": "LMIZ111222",
+    "2B": "-m",
+    "2C": "9.01",
+    "3A": "(test)",
+    "3B": "- Description 2",
+    "3C": "411.19",
+    "4A": "(anythingGoesHere)",
+    "4B": "- MMMMMMMMMMMMM",
+    "4C": "123.11",
+    "5A": "",
+    "5B": "- M again",
+    "5C": "111111.11",
+    "6C": "---------------------",
+    "7B": "                                                                                                Total $ ",
+    "7C": 111654.42
+  }
+}
+
+[2024-04-17T21:15:18.395Z] Error in writeInvoice
+Error Details: Request failed with status code 400
+Response Data: [object Object]
+Stack Trace: AxiosError: Request failed with status code 400
+    at settle (C:\Users\theus\Yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:1967:12)
+    at Unzip.handleStreamEnd (C:\Users\theus\Yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:3062:11)
+    at Unzip.emit (node:events:527:35)
+    at endReadableNT (node:internal/streams/readable:1589:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+{
+  "A": "123",
+  "B": "12/14/2024",
+  "C": "Test Client",
+  "D": "",
+  "E": "",
+  "creationDate": "2024-04-17T21:15:17.815Z",
+  "invoiceDetails": {
+    "1A": "",
+    "1B": "",
+    "1C": "",
+    "2A": "LMIZ111222",
+    "2B": "-m",
+    "2C": "9.01",
+    "3A": "(test)",
+    "3B": "- Description 2",
+    "3C": "411.19",
+    "4A": "(anythingGoesHere)",
+    "4B": "- MMMMMMMMMMMMM",
+    "4C": "123.11",
+    "5A": "",
+    "5B": "- M again",
+    "5C": "111111.11",
+    "6A": "LMIZ111222",
+    "6B": "-m",
+    "6C": "9.01",
+    "7A": "(test)",
+    "7B": "- Description 2",
+    "7C": "411.19",
+    "8A": "(anythingGoesHere)",
+    "8B": "",
+    "8C": "NaN",
+    "9A": "LMIZ111222",
+    "9B": "-m",
+    "9C": "9.01",
+    "10A": "(test)",
+    "10B": "- Description 2",
+    "10C": "411.19",
+    "11A": "(anythingGoesHere)",
+    "11B": "",
+    "11C": "NaN",
+    "12C": "---------------------",
+    "13B": "                                                                                                Total $ ",
+    "13C": null
+  }
+}
+
