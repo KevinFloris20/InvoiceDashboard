@@ -192,6 +192,43 @@ async function delWorkItem(workItemId, data) {
 async function editWorkItem(workItemId, data) {
     console.log("work item edited", workItemId);
 }
+async function submitInvoiceWorkItems(){
+    const checkedCheckboxes = document.querySelectorAll('input[type="checkbox"][WI-data-client-id]:checked');
+    const workItemIds = Array.from(checkedCheckboxes).map(checkbox => checkbox.getAttribute('WI-data-client-id'));
+    const invoiceDate = document.getElementById('invoiceDateInput').value;
+    const invoiceNumber = document.getElementById('invoiceNumberInput').value;
+    toggleButtonState('addWIinvoiceSave',true)
+
+    const data = {
+        workItemIds: workItemIds,
+        invoiceDate: invoiceDate,
+        invoiceNumber: invoiceNumber
+    };
+
+    fetch('/submit-invoice-work-items', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    })
+    .then(response => {
+        if (!response.ok) {
+            toggleButtonState('addWIinvoiceSave',false)
+            throw new Error('There was an Error ');
+        }
+        return response.json();
+    })
+    .then(data => {
+        toggleButtonState('addWIinvoiceSave',false)
+        displayMessages('successWIDisplay', 'New Invoice ID: ' + data);
+    })
+    .catch(error => {
+        toggleButtonState('addWIinvoiceSave',false)
+        displayMessages('errorWIDisplay', 'Failed to submit work items: ' + error.message, true);
+        console.error('There was a problem with the fetch operation:', error);
+    });
+}
 
 //this is for the image gallery of when a unit id is typed
 // async function fetchAndDisplayFolders() {
@@ -572,6 +609,81 @@ function displayEditModeMessage(isViewMode) {
 function toggleFormButtons(disable) {
     document.querySelector('#AWISaveBtn').disabled = disable;
 }
+function setupModal(ModalId, addFormId, errorDisplayId, addBtnId, addCancelId, addSaveId) {
+    var modal = document.getElementById(ModalId);
+    var overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    document.body.appendChild(overlay);
+
+    function openModal() {
+        overlay.style.display = 'block';
+        modal.style.display = 'block';
+    }
+
+    function closeModal() {
+        overlay.style.display = 'none';
+        modal.style.display = 'none';
+    }
+
+    document.getElementById(addBtnId).addEventListener('click', function(event) {
+        event.preventDefault();
+        openModal();
+    });
+
+    modal.querySelector('.close.icon').addEventListener('click', function(event) {
+        event.preventDefault();
+        closeModal();
+    });
+
+    document.getElementById(addCancelId).addEventListener('click', function(event) {
+        closeModal();
+    });
+
+    overlay.addEventListener('click', closeModal);
+
+    modal.addEventListener('click', function(event) {
+        event.stopPropagation();
+    });
+
+    if (addFormId === 'addClientForm') {
+        async function submitNewClientForm(formData) {
+            try {
+                const response = await fetch(`/newClient?${formData}`);
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || `Error: ${response.status}`);
+                }
+                const data = await response.json();
+                console.log(response, data);
+                document.getElementById(addFormId).reset();
+                document.getElementById(errorDisplayId).style.display = 'none';
+                closeModal();
+                fetchClientsAndPopulateDropdown();
+            } catch (error) {
+                console.error('Fetch error:', error.message);
+                const errorDisplay = document.getElementById(errorDisplayId);
+                errorDisplay.textContent = error.message;
+                errorDisplay.style.display = '';
+            }
+        }
+        document.getElementById(addSaveId).addEventListener('click', async function(event) {
+            event.preventDefault();
+            const formData = new URLSearchParams(new FormData(document.getElementById(addFormId))).toString();
+            console.log(formData);
+            submitNewClientForm(formData);
+        });
+    }
+}
+function displayMessages(elementId, message, isError = false) {
+    const displayElement = document.getElementById(elementId);
+    displayElement.textContent = message;
+    displayElement.style.display = 'block';
+    displayElement.style.color = isError ? 'red' : 'green';
+    setTimeout(() => {
+        displayElement.textContent = '';
+        displayElement.style.display = 'none';
+    }, 60000);
+}
 function cancelViewOrEditMode() {
     document.querySelector('#addWorkItemSection > div > h1').style.display = 'block';
     document.getElementById('addWorkItemForm').reset();
@@ -655,8 +767,6 @@ function cancelViewOrEditMode() {
 
 
 
-
-
 document.addEventListener('DOMContentLoaded', function() {
     handleImageError();
     document.getElementById('headBtns').addEventListener('click', function(e) {
@@ -679,8 +789,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     //save button (Make New Invoice)
-    async function submitFormData() {
-        const submitData = collectFormData()
+    async function submitFormData(data) {
+        const submitData = data ? data : collectFormData()
+        console.log(submitData)
         try {
             const response = await fetch('/submit-form', {
                 method: 'POST',
@@ -1205,62 +1316,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     //add new client (Add work Items)
     fetchClientsAndPopulateDropdown();
-    var modal = document.getElementById('clientModal');
-    var overlay = document.createElement('div');
-    overlay.className = 'modal-overlay';
-    document.body.appendChild(overlay);
-    function openModal() {
-        overlay.style.display = 'block';
-        modal.style.display = 'block';
-    }
-    function closeModal() {
-        overlay.style.display = 'none';
-        modal.style.display = 'none';
-    }
-    async function submitNewClientForm(formData) {
-        try {
-            const response = await fetch(`/newClient?${formData}`);
-            if (!response.ok) {
-                const errorData = await response.json(); 
-                throw new Error(errorData.error || `Error: ${response.status}`);
-            }
-            const data = await response.json();
-            console.log(response, data);
-            document.getElementById('addClientForm').reset();
-            document.getElementById('errorDisplay').style.display = 'none';
-            closeModal();
-            fetchClientsAndPopulateDropdown();            
-        } catch (error) {
-            console.error('Fetch error:', error.message);
-            const errorDisplay = document.getElementById('errorDisplay');
-            errorDisplay.textContent = error.message; 
-            errorDisplay.style.display = ''; 
-        }
-    }
-    document.getElementById('AWIAddClientBtn').addEventListener('click', function(event) {
-        event.preventDefault();
-        openModal();
-    });
-    modal.querySelector('.close.icon').addEventListener('click', function(event) {
-        event.preventDefault();
-        closeModal();
-    });
-    document.getElementById('addClientCancel').addEventListener('click', function(event) {
-        closeModal();
-    });
-    overlay.addEventListener('click', closeModal);
-    modal.addEventListener('click', function(event) {
-        event.stopPropagation();
-    });
-    document.getElementById('addClientSave').addEventListener('click', async function(event) {
-        event.preventDefault();
-        const formData = new URLSearchParams(new FormData(document.getElementById('addClientForm'))).toString();
-        console.log(formData);
-        submitNewClientForm(formData);
-    });
-
-
-
+    //Setup for the add client modal
+    setupModal('clientModal', 'addClientForm', 'errorDisplay', 'AWIAddClientBtn', 'addClientCancel', 'addClientSave');
 
     ////////////////////////Search Work Items////////////////////////
 
@@ -1269,6 +1326,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     //Display Work Items Table (Search Work Items)
     async function fetchAndDisplayWorkItems() {
+        let el = document.getElementById('assignToInvoice')
+        el.style.display = 'none';
+        el.disabled = true;
         toggleLoadingAnimation(true, 'loadingSpinnerWI');
         try {
             const response = await fetch('/displayWorkItems'); //////////////////////////////////////////////
@@ -1371,6 +1431,14 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('searchWorkItemDate').addEventListener('input', filterWorkItemsTable);
     document.getElementById('searchWorkItemName').addEventListener('input', filterWorkItemsTable);
     // document.getElementById('searchAssigned').addEventListener('input', filterWorkItemsTable);
+
+    // Assigning an invoice to the work Items (Search Work Items)
+    document.getElementById('addWIinvoiceSave').addEventListener('click', submitInvoiceWorkItems);
+
+    //setup for the assign to invoice(Search Work Items)
+    setupModal('WIinvoiceModal', 'addWIinvoiceForm', 'errorWIDisplay', 'assignToInvoice', 'addWIinvoiceCancel', 'addWIinvoiceSave');
+    
+
     
 
     //make the table interactive (Search Work Items)

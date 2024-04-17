@@ -42,9 +42,24 @@ router.get('/script.js', isAuthenticated, (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'public/script.js'));
 });
 
-router.get('/backgroundImg.png', isAuthenticated, (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'public/backgroundImg.png'));
-});
+// router.get('/jquery-3.7.1.min.js', isAuthenticated, (req, res) => {
+//     res.sendFile(path.join(__dirname, '..', 'public/other/jquery-3.7.1.min.js'));
+// });
+
+// router.get('/semantic.min.js', isAuthenticated, (req, res) => {
+//     res.sendFile(path.join(__dirname, '..', 'public/other/semantic.min.js'));
+// });
+
+// router.get('/semantic.min.css', isAuthenticated, (req, res) => {
+//     res.sendFile(path.join(__dirname, '..', 'public/other/semantic.min.css'));
+// });
+
+// router.get('/backgroundImg.png', isAuthenticated, (req, res) => {
+//     res.sendFile(path.join(__dirname, '..', 'public/other/backgroundImg.png'));
+// });
+router.use(isAuthenticated, express.static(path.join(__dirname, '..', 'public/other')));
+
+
 
 router.get('/FCRInvoiceTemplate.png', isAuthenticated, (req, res) => {
     const imagePath = path.join(__dirname, '../FCRInvoiceTemplate.png');
@@ -54,6 +69,7 @@ router.get('/FCRInvoiceTemplate.png', isAuthenticated, (req, res) => {
         res.status(404).send('Image not found');
     }
 });
+
 ///////////////////////////////////////
 
 

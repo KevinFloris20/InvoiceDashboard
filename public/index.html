@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css" integrity="sha512-8bHTC73gkZ7rZ7vpqUQThUDhqcNFyYi2xgDgPDHc+GXVGHXq+xPjynxIopALmOPqzo9JZj0k6OqqewdGO3EsrQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css" integrity="sha512-8bHTC73gkZ7rZ7vpqUQThUDhqcNFyYi2xgDgPDHc+GXVGHXq+xPjynxIopALmOPqzo9JZj0k6OqqewdGO3EsrQ==" crossorigin="anonymous" referrerpolicy="no-referrer" /> -->
+    <link rel="stylesheet" href="/semantic.min.css"/>
     <link rel="stylesheet" href="style.css">
     <title>FCR Dashboard</title>
 </head>
@@ -155,6 +156,36 @@
 
     <!-- Add work items -->
     <div class="ui segment sect" id="addWorkItemSection" style="display: none;" mode="normal">
+        <!-- hidden popup form for new client -->
+        <div class="ui modal" id="clientModal">
+            <i class="close icon"></i>
+            <div class="header">
+                Add New Client
+            </div>
+            <div class="content">
+                <form class="ui form" id="addClientForm">
+                    <div class="field">
+                        <label>Client Name</label>
+                        <input type="text" name="clientName" placeholder="Client Name" autocomplete="off">
+                    </div>
+                    <div class="field">
+                        <label>Client Address</label>
+                        <input type="text" name="clientAddress" placeholder="Client Address" autocomplete="off">
+                    </div>
+                    <div class="field">
+                        <label>Client Email</label>
+                        <input type="text" name="clientEmail" placeholder="Client Email" autocomplete="off">
+                    </div>
+                </form>
+            </div>
+            <div class="actions">
+                <div class="ui button" id="addClientCancel" >Cancel</div>
+                <button type="submit" class="ui button primary" id="addClientSave">Save Client</button>
+            </div>
+            <div class="ui error message" id="errorDisplay" style="display: none;"></div>
+        </div>
+
+        <!-- What the user sees -->
         <div class="ui segment">
             <h1 style="margin-right: 1rem;">Add Work Item: </h1>
             <form class="ui form" style="margin-top: 20px;" id="addWorkItemForm">
@@ -230,40 +261,39 @@
             <div id="AWImessageDisplay" class="ui message" style="display: none;"></div>
         </div>
     </div>
-    <!-- popup form for new client -->
-    <div class="ui modal" id="clientModal">
-        <i class="close icon"></i>
-        <div class="header">
-            Add New Client
-        </div>
-        <div class="content">
-            <form class="ui form" id="addClientForm">
-                <div class="field">
-                    <label>Client Name</label>
-                    <input type="text" name="clientName" placeholder="Client Name" autocomplete="off">
-                </div>
-                <div class="field">
-                    <label>Client Address</label>
-                    <input type="text" name="clientAddress" placeholder="Client Address" autocomplete="off">
-                </div>
-                <div class="field">
-                    <label>Client Email</label>
-                    <input type="text" name="clientEmail" placeholder="Client Email" autocomplete="off">
-                </div>
-            </form>
-        </div>
-        <div class="actions">
-            <div class="ui button" id="addClientCancel" >Cancel</div>
-            <button type="submit" class="ui button primary" id="addClientSave">Save Client</button>
-        </div>
-        <div class="ui error message" id="errorDisplay" style="display: none;"></div>
-    </div>
+
 
 
 
 
     <!-- Search work items -->
     <div class="ui segment sect" id="searchWorkItemSection" style="display: none;">
+        <!-- hidden popup form for new invoice -->
+        <div class="ui modal" id="WIinvoiceModal">
+            <i class="close icon"></i>
+            <div class="header">
+                Add New Invoice
+            </div>
+            <div class="content">
+                <form class="ui form" id="addWIinvoiceForm">
+                    <div class="field">
+                        <label>Invoice # </label>
+                        <input type="text" name="A" placeholder="Example: 010124A" autocomplete="off">
+                    </div>
+                    <div class="field">
+                        <label>Date: </label>
+                        <input type="text" name="B" placeholder="MM/DD/YYYY" autocomplete="off">
+                    </div>
+                </form>
+            </div>
+            <div class="actions">
+                <div class="ui button" id="addWIinvoiceCancel" >Cancel</div>
+                <button type="submit" class="ui button primary" id="addWIinvoiceSave">Save Invoice</button>
+            </div>
+            <div class="ui error message" id="errorWIDisplay" style="display: none;"></div>
+        </div>
+
+        <!-- What the user sees -->
         <div class="ui segment">
             <div style="display: flex; align-items: center; margin-bottom: 1rem;justify-content: space-between">
                 <h1 style="margin-right: 1rem;">Search Work Items</h1>
@@ -346,6 +376,7 @@
     </div>
 
 
+
     <!-- Search WO Invoices -->
     <div class="ui segment sect" id="searchWOInvoiceSection" style="display: none;">
         <div class="ui segment">
@@ -364,8 +395,11 @@
             </div>
         </div>
     </div>
-
-
+    <!-- jquery file jquery-3.7.1.min.js -->
+    <script src="/jquery-3.7.1.min.js"></script>
+    <!-- Semantic UI JS -->
+    <script src="/semantic.min.js"></script>
+    <!-- local script -->
     <script src="script.js"></script>
 </body>
 </html>

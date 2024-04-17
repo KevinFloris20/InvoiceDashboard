@@ -206,8 +206,8 @@ div{
     border: 1px solid #888;
     width: 60%;
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
-    position: relative;
-    transform: translateY(-120%);
+    position: fixed;
+    left: 20%;
 }
 .fade-out {
     opacity: 1;
