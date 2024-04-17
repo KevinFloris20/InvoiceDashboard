@@ -34,6 +34,8 @@ router.get('/', isAuthenticated, (req, res) => {
 });
 
 // Serve static files after authentication
+router.use(isAuthenticated, express.static(path.join(__dirname, '..', 'public/other')));
+
 router.get('/style.css', isAuthenticated, (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'public/style.css'));
 });
@@ -41,25 +43,6 @@ router.get('/style.css', isAuthenticated, (req, res) => {
 router.get('/script.js', isAuthenticated, (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'public/script.js'));
 });
-
-// router.get('/jquery-3.7.1.min.js', isAuthenticated, (req, res) => {
-//     res.sendFile(path.join(__dirname, '..', 'public/other/jquery-3.7.1.min.js'));
-// });
-
-// router.get('/semantic.min.js', isAuthenticated, (req, res) => {
-//     res.sendFile(path.join(__dirname, '..', 'public/other/semantic.min.js'));
-// });
-
-// router.get('/semantic.min.css', isAuthenticated, (req, res) => {
-//     res.sendFile(path.join(__dirname, '..', 'public/other/semantic.min.css'));
-// });
-
-// router.get('/backgroundImg.png', isAuthenticated, (req, res) => {
-//     res.sendFile(path.join(__dirname, '..', 'public/other/backgroundImg.png'));
-// });
-router.use(isAuthenticated, express.static(path.join(__dirname, '..', 'public/other')));
-
-
 
 router.get('/FCRInvoiceTemplate.png', isAuthenticated, (req, res) => {
     const imagePath = path.join(__dirname, '../FCRInvoiceTemplate.png');
@@ -95,7 +78,7 @@ const { newInvoicePDF } = require('./models/PDFDataApp.js');
 
 const { getClients, addClients, addWorkItem, getTables, getTableData, getAllWorkItems, displayWorkItems, deleteWorkItem, updateWorkItem } = require('./models/mySqlApp.js');
 
-
+const { workItemToInvoiceConverter } = require('./models/workItemInvoiceConverter.js');
 
 router.get('/newClient', isAuthenticatedAjax, async (req, res) => {
     try {
@@ -311,7 +294,24 @@ router.post('/updateWorkItem', isAuthenticatedAjax, async (req, res) => {
     }
 });
 
+router.post('/submitInvoiceWorkItems', isAuthenticatedAjax, async (req, res) => {
+    try{
+        const data = req.body;
+        console.log(data);
+        const {isValid, message, cleanedworkItemToInvoiceConverterData} = validateWITI(data);
+        if(!isValid){
+            return res.status(400).json({ message: message });
+        }
 
+        const invoiceId = await workItemToInvoiceConverter(cleanedworkItemToInvoiceConverterData);
+
+        res.json({ message: 'Work items submitted successfully', invoiceId: invoiceId});
+    }catch(error){
+        console.error(error.message);
+        res.status(500).json({ message: 'Error submitting invoice ', error: error.message });
+    }
+
+});
 
 //export
 module.exports = router;

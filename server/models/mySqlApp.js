@@ -198,6 +198,23 @@ async function displayWorkItems(numItems) {
     }
 }
 
+async function getWorkItemsById(workItemID) {
+    try {
+        return new Promise((resolve, reject) => {
+            const query = 'SELECT * FROM workItems WHERE workItem_id = ?';
+            db.query(query, [workItemID], (err, rows, fields) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(rows);
+                }
+            });
+        });
+    } catch (error) {
+        console.log('Error getting work items:', error);
+        return [];
+    }
+}
 
 
 
@@ -210,5 +227,6 @@ module.exports = {
     updateWorkItem,
     deleteWorkItem,
     getAllWorkItems,
-    displayWorkItems
+    displayWorkItems,
+    getWorkItemsById
 };

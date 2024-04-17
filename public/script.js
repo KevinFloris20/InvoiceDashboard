@@ -195,17 +195,16 @@ async function editWorkItem(workItemId, data) {
 async function submitInvoiceWorkItems(){
     const checkedCheckboxes = document.querySelectorAll('input[type="checkbox"][WI-data-client-id]:checked');
     const workItemIds = Array.from(checkedCheckboxes).map(checkbox => checkbox.getAttribute('WI-data-client-id'));
-    const invoiceDate = document.getElementById('invoiceDateInput').value;
-    const invoiceNumber = document.getElementById('invoiceNumberInput').value;
+    const inputs = document.querySelectorAll('#addWIinvoiceForm input[type="text"][name^="A"], #addWIinvoiceForm input[type="text"][name^="B"]');
     toggleButtonState('addWIinvoiceSave',true)
 
     const data = {
         workItemIds: workItemIds,
-        invoiceDate: invoiceDate,
-        invoiceNumber: invoiceNumber
+        invoiceDate: inputs[1].value,
+        invoiceNumber: inputs[0].value,
     };
-
-    fetch('/submit-invoice-work-items', {
+    console.log(data);
+    fetch('/submitInvoiceWorkItems', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -215,13 +214,19 @@ async function submitInvoiceWorkItems(){
     .then(response => {
         if (!response.ok) {
             toggleButtonState('addWIinvoiceSave',false)
-            throw new Error('There was an Error ');
+            console.log('There was an Error ', response.statusText, '\n', response.status, '\n', response);
+            throw new Error('There was an Error ', response.statusText);
         }
         return response.json();
     })
     .then(data => {
-        toggleButtonState('addWIinvoiceSave',false)
-        displayMessages('successWIDisplay', 'New Invoice ID: ' + data);
+        document.getElementById('addWIinvoiceForm').reset();
+        displayMessages('errorWIDisplay', ('New Invoice ID: ' + data.message));
+        setTimeout(() => {
+            document.getElementById('addWIinvoiceCancel').click();
+            document.getElementById('menuSearchWorkItem').click();
+            toggleButtonState('addWIinvoiceSave',false)
+        }, 3000);
     })
     .catch(error => {
         toggleButtonState('addWIinvoiceSave',false)
@@ -623,6 +628,8 @@ function setupModal(ModalId, addFormId, errorDisplayId, addBtnId, addCancelId, a
     function closeModal() {
         overlay.style.display = 'none';
         modal.style.display = 'none';
+        document.getElementById(errorDisplayId).style.display = 'none';
+        document.getElementById(addFormId).reset();
     }
 
     document.getElementById(addBtnId).addEventListener('click', function(event) {
@@ -679,6 +686,7 @@ function displayMessages(elementId, message, isError = false) {
     displayElement.textContent = message;
     displayElement.style.display = 'block';
     displayElement.style.color = isError ? 'red' : 'green';
+    displayElement.classList = isError ? 'ui error message' : 'ui success message';
     setTimeout(() => {
         displayElement.textContent = '';
         displayElement.style.display = 'none';

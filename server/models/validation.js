@@ -137,6 +137,65 @@ function validateWorkItem(data) {
     return { isValid, errors, data: transformedData };
 }
 
+async function validateWITI(data) {
+    let errors = [];
+    let isValid = true;
+    const { workItemIds, invoiceDate, invoiceNumber } = data;
+
+    //validate workItemIds
+    if (!workItemIds) {
+        errors.push("Error: work items field is missing");
+        isValid = false;
+    } else if (!Array.isArray(workItemIds) || !workItemIds.length) {
+        errors.push("Error: work items need to be an array of at least one item");
+        isValid = false;
+    } else if (workItemIds.some(id => typeof id !== 'string')) {
+        errors.push("Error: work items needs to be a string");
+        isValid = false;
+    } else if (workItemIds.some(id => !/^\d+$/.test(id))) {
+        errors.push("Error: work items need to be a number");
+        isValid = false;
+    }
+
+    //MM/DD/YYYY format only
+    if (!invoiceDate) {
+        errors.push("Error: invoice date field is missing");
+        isValid = false;
+    } else {
+        const dateRegex = /^(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])\/(20\d\d)$/;
+        if (typeof invoiceDate !== 'string' || !dateRegex.test(invoiceDate)) {
+            errors.push("Error: Invalid invoice date format, required MM/DD/YYYY");
+            isValid = false;
+        } else {
+            const dateObject = new Date(invoiceDate);
+            if (dateObject.toString() === 'Invalid Date' || dateObject.getFullYear() < 1420 || dateObject.getFullYear() > 4069) {
+                errors.push("Error: Invoice date is outside of allowed year range: (1420-4069)");
+                isValid = false;
+            }
+        }
+    }
+
+    //check for string
+    if (!invoiceNumber) {
+        errors.push("Error: Invoice # field is missing");
+        isValid = false;
+    } else if (typeof invoiceNumber !== 'string') {
+        errors.push("Error: Invoice # must be a string");
+        isValid = false;
+    } else if (!invoiceNumber.trim()) {
+        errors.push("Error: Invoice # cannot be empty");
+        isValid = false;
+    }
+
+    let newData = isValid ? {
+        workItemIds: workItemIds.map(id => parseInt(id)),
+        invoiceDate: invoiceDate,
+        invoiceNumber
+    } : {};
+
+    return { isValid, errors, newData };
+
+}
 
 // Info object to provide more context in error messages
 const info = {
@@ -147,7 +206,7 @@ const info = {
     'E': 'Email'
 };
 
-module.exports = { validateAndTransform, validateWorkItem };
+module.exports = { validateAndTransform, validateWorkItem, validateWITI };
 
 // // Example usage
 // try {
