@@ -192,48 +192,52 @@ async function delWorkItem(workItemId, data) {
 async function editWorkItem(workItemId, data) {
     console.log("work item edited", workItemId);
 }
-async function submitInvoiceWorkItems(){
+async function submitInvoiceWorkItems() {
     const checkedCheckboxes = document.querySelectorAll('input[type="checkbox"][WI-data-client-id]:checked');
-    const workItemIds = Array.from(checkedCheckboxes).map(checkbox => checkbox.getAttribute('WI-data-client-id'));
+    const workItemClientIds = Array.from(checkedCheckboxes).map(checkbox => checkbox.getAttribute('WI-data-client-id'));
+    const workItemIds = Array.from(checkedCheckboxes).map(checkbox => checkbox.getAttribute('WI-data-work-item-id'));
     const inputs = document.querySelectorAll('#addWIinvoiceForm input[type="text"][name^="A"], #addWIinvoiceForm input[type="text"][name^="B"]');
-    toggleButtonState('addWIinvoiceSave',true)
+    toggleButtonState('addWIinvoiceSave', true);
 
     const data = {
+        workItemClientIds: workItemClientIds,
         workItemIds: workItemIds,
         invoiceDate: inputs[1].value,
         invoiceNumber: inputs[0].value,
     };
     console.log(data);
-    fetch('/submitInvoiceWorkItems', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-    })
-    .then(response => {
+
+    try {
+        const response = await fetch('/submitInvoiceWorkItems', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        });
+
+        const responseData = await response.json(); 
+
         if (!response.ok) {
-            toggleButtonState('addWIinvoiceSave',false)
-            console.log('There was an Error ', response.statusText, '\n', response.status, '\n', response);
-            throw new Error('There was an Error ', response.statusText);
+            toggleButtonState('addWIinvoiceSave', false);
+            displayMessages('errorWIDisplay', responseData.message, true);
+            console.error('Server responded with status:', response.status, responseData.message);
+        } else {
+            document.getElementById('addWIinvoiceForm').reset();
+            displayMessages('errorWIDisplay', 'New Invoice ID: ' + responseData.message);
+            setTimeout(() => {
+                document.getElementById('addWIinvoiceCancel').click();
+                document.getElementById('menuSearchWorkItem').click();
+                toggleButtonState('addWIinvoiceSave', false);
+            }, 3000);
         }
-        return response.json();
-    })
-    .then(data => {
-        document.getElementById('addWIinvoiceForm').reset();
-        displayMessages('errorWIDisplay', ('New Invoice ID: ' + data.message));
-        setTimeout(() => {
-            document.getElementById('addWIinvoiceCancel').click();
-            document.getElementById('menuSearchWorkItem').click();
-            toggleButtonState('addWIinvoiceSave',false)
-        }, 3000);
-    })
-    .catch(error => {
-        toggleButtonState('addWIinvoiceSave',false)
+    } catch (error) {
+        toggleButtonState('addWIinvoiceSave', false);
         displayMessages('errorWIDisplay', 'Failed to submit work items: ' + error.message, true);
         console.error('There was a problem with the fetch operation:', error);
-    });
+    }
 }
+
 
 //this is for the image gallery of when a unit id is typed
 // async function fetchAndDisplayFolders() {
@@ -683,7 +687,8 @@ function setupModal(ModalId, addFormId, errorDisplayId, addBtnId, addCancelId, a
 }
 function displayMessages(elementId, message, isError = false) {
     const displayElement = document.getElementById(elementId);
-    displayElement.textContent = message;
+    const formattedMessage = Array.isArray(message) ? message.join('<br>') : message;
+    displayElement.innerHTML = formattedMessage;
     displayElement.style.display = 'block';
     displayElement.style.color = isError ? 'red' : 'green';
     displayElement.classList = isError ? 'ui error message' : 'ui success message';
@@ -1366,7 +1371,8 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!item.assignedToInvoice) {
                 const checkbox = document.createElement('input');
                 checkbox.type = 'checkbox';
-                checkbox.setAttribute('WI-data-client-id', item.clientID); 
+                checkbox.setAttribute('WI-data-client-id', item.clientID);
+                checkbox.setAttribute('WI-data-work-item-id', item.workItemID); 
                 checkbox.onclick = checkBoxValidation; 
                 assignedCell.appendChild(checkbox);
             }

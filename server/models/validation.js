@@ -140,7 +140,7 @@ function validateWorkItem(data) {
 async function validateWITI(data) {
     let errors = [];
     let isValid = true;
-    const { workItemIds, invoiceDate, invoiceNumber } = data;
+    const { workItemIds, workItemClientIds, invoiceDate, invoiceNumber } = data;
 
     //validate workItemIds
     if (!workItemIds) {
@@ -154,6 +154,24 @@ async function validateWITI(data) {
         isValid = false;
     } else if (workItemIds.some(id => !/^\d+$/.test(id))) {
         errors.push("Error: work items need to be a number");
+        isValid = false;
+    }
+
+    //validate workItemClientIds and check if all the client ids match
+    if (!workItemClientIds) {
+        errors.push("Error: work items client id field is missing");
+        isValid = false;
+    } else if (!Array.isArray(workItemClientIds) || !workItemClientIds.length) {
+        errors.push("Error: work items client ids need to be an array of at least one item");
+        isValid = false;
+    } else if (workItemClientIds.some(id => typeof id !== 'string')) {
+        errors.push("Error: work items client ids needs to be a string");
+        isValid = false;
+    } else if (workItemClientIds.some(id => !/^\d+$/.test(id))) {
+        errors.push("Error: work items client ids need to be a number");
+        isValid = false;
+    } else if (new Set(workItemClientIds).size !== 1) {
+        errors.push("Error: Multiple clients detected, only one client is allowed per invoice");
         isValid = false;
     }
 
@@ -187,14 +205,21 @@ async function validateWITI(data) {
         isValid = false;
     }
 
-    let newData = isValid ? {
-        workItemIds: workItemIds.map(id => parseInt(id)),
-        invoiceDate: invoiceDate,
-        invoiceNumber
-    } : {};
+    let newData = {
+        work_item_IDs: null,
+        work_item_client_ID: null,
+        invoice_date: null,
+        invoice_number: null
+    };
 
-    return { isValid, errors, newData };
+    if (isValid) {
+        newData.work_item_IDs = workItemIds.map(id => parseInt(id.trim()));
+        newData.work_item_client_ID = parseInt(workItemClientIds[0]);
+        newData.invoice_date = invoiceDate;
+        newData.invoice_number = invoiceNumber;
+    }
 
+    return { isValid, errors, cleanedworkItemToInvoiceConverterData: newData };
 }
 
 // Info object to provide more context in error messages

@@ -72,7 +72,7 @@ router.get('/formdata', isAuthenticatedAjax, async (req, res) => {
 
 const { interactWithFirestore } = require('./models/firestoreApp.js');
 
-const { validateAndTransform, validateWorkItem } = require('./models/validation.js');
+const { validateAndTransform, validateWorkItem, validateWITI } = require('./models/validation.js');
 
 const { newInvoicePDF } = require('./models/PDFDataApp.js');
 
@@ -296,13 +296,13 @@ router.post('/updateWorkItem', isAuthenticatedAjax, async (req, res) => {
 
 router.post('/submitInvoiceWorkItems', isAuthenticatedAjax, async (req, res) => {
     try{
-        const data = req.body;
-        console.log(data);
-        const {isValid, message, cleanedworkItemToInvoiceConverterData} = validateWITI(data);
-        if(!isValid){
-            return res.status(400).json({ message: message });
+        console.log(req.body);
+        const { isValid, errors, cleanedworkItemToInvoiceConverterData } = await validateWITI(req.body);
+        if (!isValid) {
+            return res.status(400).json({ message: errors });
         }
 
+        console.log(cleanedworkItemToInvoiceConverterData);
         const invoiceId = await workItemToInvoiceConverter(cleanedworkItemToInvoiceConverterData);
 
         res.json({ message: 'Work items submitted successfully', invoiceId: invoiceId});

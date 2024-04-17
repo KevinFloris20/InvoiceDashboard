@@ -198,7 +198,7 @@ async function displayWorkItems(numItems) {
     }
 }
 
-async function getWorkItemsById(workItemID) {
+async function getWorkItemById(workItemID) {
     try {
         return new Promise((resolve, reject) => {
             const query = 'SELECT * FROM workItems WHERE workItem_id = ?';
@@ -228,5 +228,5 @@ module.exports = {
     deleteWorkItem,
     getAllWorkItems,
     displayWorkItems,
-    getWorkItemsById
+    getWorkItemById
 };
