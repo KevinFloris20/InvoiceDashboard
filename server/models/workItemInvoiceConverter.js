@@ -107,22 +107,28 @@ async function workItemToInvoiceConverter(data) {
         };
 
         let totalPrice = 0;
-        let currentRowIndex = 2;
+        let currentRowIndex = 1;
         workItems.forEach(item => {
+            currentRowIndex++;
             const descriptionPrice = JSON.parse(item.description_price);
             Object.entries(descriptionPrice).forEach(([rowNum, descPrice]) => {
                 finalInvoice[`${currentRowIndex}A`] = descPrice.A;
                 finalInvoice[`${currentRowIndex}B`] = descPrice.B;
-                finalInvoice[`${currentRowIndex}C`] = parseFloat(descPrice.C).toFixed(2);
-                totalPrice += parseFloat(descPrice.C);
+                let priceValue = parseFloat(descPrice.C);
+                if (!isNaN(priceValue)) {
+                    finalInvoice[`${currentRowIndex}C`] = priceValue.toFixed(2);
+                    totalPrice += priceValue; 
+                } else {
+                    finalInvoice[`${currentRowIndex}C`] = '';
+                }
                 currentRowIndex++;
             });
         });
 
-        // Add the total price to the invoice object
+        //add the total price to the invoice object
         finalInvoice[`${currentRowIndex}C`] = seperator;
         finalInvoice[`${currentRowIndex + 1}B`] = totalText;
-        finalInvoice[`${currentRowIndex + 1}C`] = totalPrice;
+        finalInvoice[`${currentRowIndex + 1}C`] = totalPrice.toFixed(2);
 
         console.log(finalInvoice);
 

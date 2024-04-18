@@ -946,3 +946,79 @@ Stack Trace: AxiosError: Request failed with status code 400
   }
 }
 
+[2024-04-18T01:35:32.198Z] Error in writeInvoice
+Error Details: Request failed with status code 400
+Response Data: [object Object]
+Stack Trace: AxiosError: Request failed with status code 400
+    at settle (C:\Users\theus\Yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:1967:12)
+    at Unzip.handleStreamEnd (C:\Users\theus\Yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:3062:11)
+    at Unzip.emit (node:events:527:35)
+    at endReadableNT (node:internal/streams/readable:1589:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+{
+  "A": "123",
+  "B": "12/14/2024",
+  "C": "Test Client",
+  "D": "",
+  "E": "",
+  "creationDate": "2024-04-18T01:35:31.659Z",
+  "invoiceDetails": {
+    "1A": "",
+    "1B": "",
+    "1C": "",
+    "2A": "LMIZ111222",
+    "2B": "-m",
+    "2C": 9.01,
+    "3A": "(test)",
+    "3B": "- Description 2",
+    "3C": 411.19,
+    "4A": "(anythingGoesHere)",
+    "4B": "- MMMMMMMMMMMMM",
+    "4C": 123.11,
+    "5A": "",
+    "5B": "- M again",
+    "5C": 111111.11,
+    "6C": "---------------------",
+    "7B": "                                                                                                Total $ ",
+    "7C": 111654.42
+  }
+}
+
+[2024-04-18T01:36:43.557Z] Error in writeInvoice
+Error Details: Request failed with status code 400
+Response Data: [object Object]
+Stack Trace: AxiosError: Request failed with status code 400
+    at settle (C:\Users\theus\Yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:1967:12)
+    at Unzip.handleStreamEnd (C:\Users\theus\Yeaa\FCRdashboard\node_modules\axios\dist\node\axios.cjs:3062:11)
+    at Unzip.emit (node:events:527:35)
+    at endReadableNT (node:internal/streams/readable:1589:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+{
+  "A": "1212212",
+  "B": "12/14/2024",
+  "C": "Test Client",
+  "D": "",
+  "E": "",
+  "creationDate": "2024-04-18T01:36:43.138Z",
+  "invoiceDetails": {
+    "1A": "",
+    "1B": "",
+    "1C": "",
+    "2A": "LMIZ111222",
+    "2B": "-m",
+    "2C": 9.01,
+    "3A": "(test)",
+    "3B": "- Description 2",
+    "3C": 411.19,
+    "4A": "(anythingGoesHere)",
+    "4B": "- MMMMMMMMMMMMM",
+    "4C": 123.11,
+    "5A": "",
+    "5B": "- M again",
+    "5C": 111111.11,
+    "6C": "---------------------",
+    "7B": "                                                                                                Total $ ",
+    "7C": "111654.42"
+  }
+}
+

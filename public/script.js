@@ -1210,6 +1210,40 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     // Handle form submission (Add work Items)
+    const jsonFormData2 = {
+        Client: '7 - Test Client',
+        date: '2024-10-12',
+        '1A': 'LMIZ111222',
+        '2A': '(test)',
+        '3A': '(anythingGoesHere)',
+        '4A': '',
+        '5A': '',
+        '6A': '',
+        '7A': '',
+        '8A': '',
+        '9A': '',
+        '10A': '',
+        '1B': '-m',
+        '2B': '- Description 2',
+        '3B': '',
+        '4B': '',
+        '5B': '',
+        '6B': '',
+        '7B': '',
+        '8B': '',
+        '9B': '',
+        '10B': '',
+        '1C': '9.01',
+        '2C': '411.19',
+        '3C': '',
+        '4C': '',
+        '5C': '',
+        '6C': '',
+        '7C': '',
+        '8C': '',
+        '9C': '',
+        '10C': ''
+    };
     function addWorkItemForm(event, saveNext){
         const form = document.getElementById('addWorkItemForm');
         const formData = new FormData(form);
@@ -1217,40 +1251,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if(!jsonFormData['Client']){
             jsonFormData['Client'] = document.querySelector("[name='Client']").value;
         }
-        const jsonFormData2 = {
-            Client: '7 - Test Client',
-            date: '2024-10-12',
-            '1A': 'LMIZ111222',
-            '2A': '(test)',
-            '3A': '(anythingGoesHere)',
-            '4A': '',
-            '5A': '',
-            '6A': '',
-            '7A': '',
-            '8A': '',
-            '9A': '',
-            '10A': '',
-            '1B': '-m',
-            '2B': '- Description 2',
-            '3B': '',
-            '4B': '',
-            '5B': '',
-            '6B': '',
-            '7B': '',
-            '8B': '',
-            '9B': '',
-            '10B': '',
-            '1C': '9.01',
-            '2C': '411.19',
-            '3C': '',
-            '4C': '',
-            '5C': '',
-            '6C': '',
-            '7C': '',
-            '8C': '',
-            '9C': '',
-            '10C': ''
-          };
 
         if (addWorkItemValidation(formData)) {//addWorkItemValidation(formData)
             const saveBtn = event.target;
