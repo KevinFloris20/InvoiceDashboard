@@ -237,7 +237,40 @@ async function submitInvoiceWorkItems() {
         console.error('There was a problem with the fetch operation:', error);
     }
 }
+async function submitWorkItemForm(route, jsonFormData, saveBtn, saveNext, form) {
+    saveBtn.classList.add('loading');
+    saveBtn.disabled = true;
 
+    try {
+        const response = await fetch(`/${route}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(jsonFormData)
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            console.error('Error:', data.error);
+            displayAWIMessage(`${Array.isArray(data.error) ? data.error.join('<br>') : data.error.toString()}`, 'red error');
+        } else {
+            console.log('Success:', data.message);
+            displayAWIMessage(`Success: ${data.message}`, 'green success');
+            if (saveNext) {
+                document.getElementById('inputAWIFields').querySelectorAll('input[type="text"]').forEach(input => input.value = '');
+                document.querySelector("[name='1A']").focus();
+            } else {
+                form.reset();
+            }
+        }
+    } catch (error) {
+        console.error('Fetch error:', error);
+        displayAWIMessage(`Error: ${error.message}`, 'red error');
+    } finally {
+        saveBtn.classList.remove('loading');
+        saveBtn.disabled = false;
+    }
+}
 
 //this is for the image gallery of when a unit id is typed
 // async function fetchAndDisplayFolders() {
@@ -540,16 +573,23 @@ function checkBoxValidation() {
 
     checkboxes.forEach(cb => {
         checkedCount += cb.checked ? 1 : 0;
-        if (cb.getAttribute('WI-data-client-id') !== currentClientId && (checkedCount > 0 && currentCheckbox.checked) || (checkedCount === 0 && !currentCheckbox.checked)){
-            cb.disabled = currentCheckbox.checked;
-        }
     });
 
     if (checkedCount > 0) {
+        checkboxes.forEach(cb => {
+            if (cb.getAttribute('WI-data-client-id') !== currentClientId && (checkedCount > 0 && currentCheckbox.checked) || (checkedCount === 0 && !currentCheckbox.checked)){
+                cb.disabled = currentCheckbox.checked;
+            }
+        });
         let el = document.getElementById('assignToInvoice')
         el.style.display = 'block';
         el.disabled = false;
     } else {
+        checkboxes.forEach(cb => {
+            if (cb.getAttribute('WI-data-client-id') !== currentClientId && (checkedCount > 0 && currentCheckbox.checked) || (checkedCount === 0 && !currentCheckbox.checked)){
+                cb.disabled = currentCheckbox.checked;
+            }
+        });
         let el = document.getElementById('assignToInvoice')
         el.style.display = 'none';
         el.disabled = true;
@@ -977,6 +1017,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     fetch('/formdata').then(response => response.json()).then(data => {
             formData = data; 
+            console.log(formData)
             reloadFields();
         }).catch(error => console.error('Error fetching data:', error));
     window.addEventListener('resize', reloadFields);
@@ -1244,69 +1285,38 @@ document.addEventListener('DOMContentLoaded', function() {
         '9C': '',
         '10C': ''
     };
-    function addWorkItemForm(event, saveNext){
+    function addWorkItemForm(event, saveNext) {
         const form = document.getElementById('addWorkItemForm');
         const formData = new FormData(form);
         const jsonFormData = Object.fromEntries(formData.entries());
-        if(!jsonFormData['Client']){
+    
+        if (!jsonFormData['Client']){
             jsonFormData['Client'] = document.querySelector("[name='Client']").value;
         }
-
-        if (addWorkItemValidation(formData)) {//addWorkItemValidation(formData)
-            const saveBtn = event.target;
-            try{
-                saveBtn.classList.add('loading');
-                saveBtn.disabled = true;
-                function workItemForm(route){
-                    fetch(`/${route}`,{
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(jsonFormData)
-                    }).then(response => response.json()).then(data => {
-                        if (data.error) {
-                            console.error('Error: ', data.error);
-                            displayAWIMessage(`${data.error.join('<br>')}`, 'red error');
-                            saveBtn.classList.remove('loading');
-                            saveBtn.disabled = false;
-                        } else {
-                            console.log('Success:', data.message);
-                            displayAWIMessage(`Success: ${data.message}`, 'green success');
-                            saveBtn.classList.remove('loading');
-                            saveBtn.disabled = false;
-                            if (saveNext) {
-                                document.getElementById('inputAWIFields').querySelectorAll('input[type="text"]').forEach(input => {
-                                    input.value = '';
-                                });
-                                document.querySelector("[name='1A']").focus();
-                            }else{
-                                form.reset();
-                            }
-                            return 0;
-                        }
-                    }).catch(error => {
-                        throw new Error(error)
-                    });
-                }
-                if(document.getElementById('addWorkItemSection').getAttribute("mode") === 'normal'){
-                    workItemForm('addWorkItem');
-                }else if(document.getElementById('addWorkItemSection').getAttribute("mode") === 'edit'){
-                    jsonFormData['dataFieldId'] = document.getElementById('addWorkItemSection').getAttribute("data-field-id");
-                    workItemForm('updateWorkItem')
-                    cancelViewOrEditMode();
-                }else{
-                    console.error('Error: Invalid mode', document.getElementById('addWorkItemSection').getAttribute("mode"));
-                    displayAWIMessage('Error: Invalid mode', 'red error');
-                    saveBtn.classList.remove('loading');
-                    saveBtn.disabled = false;
-                }
-            }catch(error){
-                displayAWIMessage(`Error: ${error.message}`, 'red error');
-                saveBtn.classList.remove('loading');
-                saveBtn.disabled = false;
-            }
+        if (!addWorkItemValidation(formData)){
+            return; 
         }
+    
+        const saveBtn = event.target;
+        saveBtn.classList.add('loading');
+        saveBtn.disabled = true;
+        const mode = document.getElementById('addWorkItemSection').getAttribute("mode");
+        const route = mode === 'normal' ? 'addWorkItem' : mode === 'edit' ? 'updateWorkItem' : null;
+    
+        if (!route) {
+            console.error('Error: Invalid mode', mode);
+            displayAWIMessage('Error: Invalid mode', 'red error');
+            saveBtn.classList.remove('loading');
+            saveBtn.disabled = false;
+            return;
+        }
+    
+        if (mode === 'edit') {
+            jsonFormData['dataFieldId'] = document.getElementById('addWorkItemSection').getAttribute("data-field-id");
+            cancelViewOrEditMode();
+        }
+    
+        submitWorkItemForm(route, jsonFormData, saveBtn, saveNext, form);
     }
     document.getElementById('AWISaveBtn').addEventListener('click', function(event) {
         event.preventDefault(); 

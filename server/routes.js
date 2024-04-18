@@ -243,7 +243,8 @@ router.post('/updateInvoice', isAuthenticatedAjax, async (req, res) => {
 
 router.post('/addWorkItem', isAuthenticatedAjax, async (req, res) => {
     try {
-        const { isValid, errors, data } = validateWorkItem(req.body);
+        const allClients = await getClients()
+        const { isValid, errors, data } = validateWorkItem(req.body, allClients);
         if (!isValid) {
             return res.status(400).json({ error: errors });
         }

@@ -1,4 +1,5 @@
 // validation.js
+const { getClients } = require('./mySqlApp.js');
 
 function validateAndTransform(inboundData) {
     // Validate presence and non-empty values for 'A', 'B', 'C'
@@ -34,25 +35,40 @@ function validateAndTransform(inboundData) {
     return outboundData;
 }
 
-function validateWorkItem(data) {
+function validateWorkItem(data, allClients) {
     let errors = [];
     let hasValidRows = false;
     let unitNum = '';
+    let workItemId = parseInt(data['dataFieldId']) ? parseInt(data['dataFieldId'].trim()) : null;
 
-    let workItemId = parseInt(data['dataFieldId'] ? data['dataFieldId'].trim() : null);
 
     let clientName = data['Client'] ? data['Client'].trim() : '';
     if (!clientName) {
         errors.push("Error: Client name is required");
     }
-    let clientIdMatch = clientName.match(/^(\d+)/);
-    let clientId = clientIdMatch ? clientIdMatch[1] : null;
+    let [clientId, clientsName] = clientName.split(" - ");
+    clientId = clientId ? clientId : null;
     if (!clientId) {
         errors.push("Error: Client ID is required and must be a number");
     }
     clientId = parseInt(clientId);
-    let clientsName = clientName.replace(clientId, '').trim();
-    clientsName = clientsName.replace(/[^a-zA-Z0-9\s]/g, '').trim();
+
+    let clientMatchFound = false;
+    for (const x of allClients) {
+        if (clientId === x.client_id) {
+            clientMatchFound = true;
+            clientsName = x.client_name;
+            if (clientsName.trim() !== x.client_name.trim()) {
+                errors.push("Error: Client ID does not match name ");
+            }
+            break;
+        }
+    }
+    if (!clientMatchFound) {
+        errors.push("Error: No client found with ID: " + clientId);
+    }
+
+
 
     let workDate = data['date'] ? data['date'].trim() : '';
     if (!workDate) {
