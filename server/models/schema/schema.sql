@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS clients (
 )$$
 
 CREATE TABLE IF NOT EXISTS unit_numbers (
-    unit_id INT AUTO_INCREMENT PRIMARY KEY,
+    unit_id INT AUTO_INCREMENT PRIMARY KEY,gi
     client_id INT,
     unit_name VARCHAR(255) NOT NULL,
     FOREIGN KEY (client_id) REFERENCES clients(client_id)

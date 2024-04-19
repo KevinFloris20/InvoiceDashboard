@@ -156,7 +156,7 @@ async function workItemToInvoiceConverter(data) {
         //     IN p_workItemIds TEXT
         // )
         //turn finalInvoice into a string for sql
-        await addInvoiceAndUpdateWorkItems(invoiceId, JSON.stringify(finalInvoice), transInvoice['B'].timestampValue, new Date(),totalPrice.toFixed(2), clientDetails.client_name, data.work_item_IDs);
+        // await addInvoiceAndUpdateWorkItems(invoiceId, JSON.stringify(finalInvoice), transInvoice['B'].timestampValue, new Date(),totalPrice.toFixed(2), clientDetails.client_name, data.work_item_IDs);
 
         // return :3
         return invoiceId;
