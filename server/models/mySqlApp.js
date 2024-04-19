@@ -216,6 +216,19 @@ async function getWorkItemById(workItemID) {
     }
 }
 
+async function addInvoiceAndUpdateWorkItems(externalUniqueId, regularString, invoiceDate, creationDate, total, clientName, workItemIds) {
+    const sql = `CALL InsertInvoiceAndUpdateWorkItems(?,?,?,?,?,?,?)`; 
+    return new Promise((resolve, reject) => {
+        db.query(sql, [externalUniqueId, regularString, invoiceDate, creationDate, total, clientName, workItemIds], (err, result) => {
+            if (err){
+                reject(err);
+            }else{
+                resolve(result); 
+            }
+        });
+    });
+}
+
 
 
 module.exports = {
@@ -228,5 +241,6 @@ module.exports = {
     deleteWorkItem,
     getAllWorkItems,
     displayWorkItems,
-    getWorkItemById
+    getWorkItemById,
+    addInvoiceAndUpdateWorkItems
 };

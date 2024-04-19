@@ -62,7 +62,7 @@ acceptable invoice object format for input into validation:
 }
 */
 const { interactWithFirestore } = require('./firestoreApp');
-const { getClients, getWorkItemById } = require('./mySqlApp');
+const { getClients, getWorkItemById, addInvoiceAndUpdateWorkItems } = require('./mySqlApp');
 const { extractFormFields } = require('./PDFDataApp');
 const { validateAndTransform } = require('./validation');
 async function workItemToInvoiceConverter(data) {
@@ -82,12 +82,10 @@ async function workItemToInvoiceConverter(data) {
             const workItem = await getWorkItemById(id);
             workItems.push(workItem[0]);
         }
-        console.log(workItems);
         const rowIds = formFields.fields.filter(field => /^[0-9]+[ABC]$/.test(field.id)).map(field => parseInt(field.id.match(/^[0-9]+/)[0]));
         const maxRows = Math.max(...rowIds);
 
         //light validation
-        if (workItems.length > maxRows - 3) throw new Error("Error: Too many work items for this invoice");
         if (!workItems.length) throw new Error("Error: Work items do not exist.");
         if (!clientDetails) throw new Error("Error: Client does not exist.");
         for (const item of workItems) {
@@ -130,6 +128,15 @@ async function workItemToInvoiceConverter(data) {
         finalInvoice[`${currentRowIndex + 1}B`] = totalText;
         finalInvoice[`${currentRowIndex + 1}C`] = totalPrice.toFixed(2);
 
+        //get the largest row number in finalInvoice
+        const finalRowIds = Object.keys(finalInvoice).filter(key => /^[0-9]+[ABC]$/.test(key)).map(key => parseInt(key.match(/^[0-9]+/)[0]));
+        const finalMaxRows = Math.max(...finalRowIds);
+
+        //check if the work items exceed the invoice line limit
+        if (finalMaxRows > maxRows) {
+            throw new Error(`Error: The work items exceed the Invoice line limit. Total lines: ${maxRows}, Requested lines: ${finalMaxRows}`);
+        }
+
         console.log(finalInvoice);
 
         // submit the invoice object to firestore validation
@@ -137,6 +144,19 @@ async function workItemToInvoiceConverter(data) {
 
         // submit the invoice object to firestoreApp.js to be stored in the firestore database
         const invoiceId = await interactWithFirestore('writeData', transInvoice);
+
+        //send the invoice id to mySqlApp.js to update the work items
+        // CREATE PROCEDURE InsertInvoiceAndUpdateWorkItems(
+        //     IN p_externalUniqueId VARCHAR(255),
+        //     IN p_regularString VARCHAR(255),
+        //     IN p_invoiceDate DATE,
+        //     IN p_creationDate DATETIME,
+        //     IN p_total DECIMAL(10,2),
+        //     IN p_clientName VARCHAR(255),
+        //     IN p_workItemIds TEXT
+        // )
+        //turn finalInvoice into a string for sql
+        await addInvoiceAndUpdateWorkItems(invoiceId, JSON.stringify(finalInvoice), transInvoice['B'].timestampValue, new Date(),totalPrice.toFixed(2), clientDetails.client_name, data.work_item_IDs);
 
         // return :3
         return invoiceId;

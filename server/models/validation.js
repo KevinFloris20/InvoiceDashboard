@@ -1,6 +1,4 @@
 // validation.js
-const { getClients } = require('./mySqlApp.js');
-
 function validateAndTransform(inboundData) {
     // Validate presence and non-empty values for 'A', 'B', 'C'
     const requiredNonEmptyKeys = ['A', 'B', 'C'];
