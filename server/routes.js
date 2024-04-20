@@ -304,12 +304,15 @@ router.post('/submitInvoiceWorkItems', isAuthenticatedAjax, async (req, res) => 
         }
 
         console.log(cleanedworkItemToInvoiceConverterData);
-        const invoiceId = await workItemToInvoiceConverter(cleanedworkItemToInvoiceConverterData);
+        const {errorMessages, invoiceId} = await workItemToInvoiceConverter(cleanedworkItemToInvoiceConverterData);
+        if (errorMessages.length) {
+            return res.status(400).json({ message: errorMessages });
+        }
 
         res.json({ message: 'Work items submitted successfully', invoiceId: invoiceId});
     }catch(error){
         console.error(error.message);
-        res.status(500).json({ message: 'Error submitting invoice ', error: error.message });
+        res.status(400).json({ message: 'Error submitting invoice ', error: error.message });
     }
 
 });

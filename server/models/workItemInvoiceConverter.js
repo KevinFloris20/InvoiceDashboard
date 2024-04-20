@@ -61,6 +61,7 @@ acceptable invoice object format for input into validation:
     '3C': 'price'//... and so on untill the last key option
 }
 */
+const e = require('express');
 const { interactWithFirestore } = require('./firestoreApp');
 const { getClients, getWorkItemById, addInvoiceAndUpdateWorkItems } = require('./mySqlApp');
 const { extractFormFields } = require('./PDFDataApp');
@@ -86,10 +87,11 @@ async function workItemToInvoiceConverter(data) {
         const maxRows = Math.max(...rowIds);
 
         //light validation
-        if (!workItems.length) throw new Error("Error: Work items do not exist.");
-        if (!clientDetails) throw new Error("Error: Client does not exist.");
+        let errorMessages = [];
+        if (!workItems.length) errorMessages.push("Error: Work items do not exist.");
+        if (!clientDetails) errorMessages.push("Error: Client does not exist.");
         for (const item of workItems) {
-            if (parseInt(item.client_id) !== parseInt(clientId)) throw new Error("Error: Work item client id's do not match the client ID submitted.");
+            if (parseInt(item.client_id) !== parseInt(clientId)) errorMessages.push("Error: Work item client id's do not match the client ID submitted.");
         }
         
         //create the invoice object
@@ -134,16 +136,31 @@ async function workItemToInvoiceConverter(data) {
 
         //check if the work items exceed the invoice line limit
         if (finalMaxRows > maxRows) {
-            throw new Error(`Error: The work items exceed the Invoice line limit. Total lines: ${maxRows}, Requested lines: ${finalMaxRows}`);
+            errorMessages.push(`Error: The work items exceed the Invoice line limit. Total lines: ${maxRows}, Requested lines: ${finalMaxRows}`);
         }
 
         console.log(finalInvoice);
 
-        // submit the invoice object to firestore validation
-        const transInvoice = validateAndTransform(finalInvoice)
+        let invoiceId = null;
+        //check if there are any errors before going ahead with the rest of the invoice creation
+        if (!errorMessages.length) {
+            try{
+                // submit the invoice object to firestore validation
+                const transInvoice = validateAndTransform(finalInvoice)
 
-        // submit the invoice object to firestoreApp.js to be stored in the firestore database
-        const invoiceId = await interactWithFirestore('writeData', transInvoice);
+                // submit the invoice object to firestoreApp.js to be stored in the firestore database
+                invoiceId = await interactWithFirestore('writeData', transInvoice);
+
+                //send the invoice id to mySqlApp.js to update the work items
+
+
+            }catch(error){
+                console.log(error);
+                errorMessages.push(error.message);
+            }
+        }
+
+
 
         //send the invoice id to mySqlApp.js to update the work items
         // CREATE PROCEDURE InsertInvoiceAndUpdateWorkItems(
@@ -159,7 +176,7 @@ async function workItemToInvoiceConverter(data) {
         // await addInvoiceAndUpdateWorkItems(invoiceId, JSON.stringify(finalInvoice), transInvoice['B'].timestampValue, new Date(),totalPrice.toFixed(2), clientDetails.client_name, data.work_item_IDs);
 
         // return :3
-        return invoiceId;
+        return {errorMessages, invoiceId};
 
     }catch(error){
         console.log('Error converting work items to invoice:', error);

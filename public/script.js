@@ -150,15 +150,43 @@ async function fetchClientsAndPopulateDropdown() {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         const clients = await response.json();
-        const dropdown = document.getElementById('AWIClientDropdown');
-        dropdown.length = 1; 
+        const $dropdown = $('#AWIClientDropdown');
+        $dropdown.empty(); 
+        $('<option>').val('').text('Select Client').appendTo($dropdown);
         clients.forEach(client => {
-            let option = new Option(`${client.client_id} - ${client.client_name} `);
-            dropdown.add(option);
+            $('<option>').val(client.client_id).text(`${client.client_id} - ${client.client_name}`).appendTo($dropdown);
         });
+        $dropdown.dropdown();
     } catch (error) {
         console.error('Fetch error:', error.message);
     }
+    // $('.ui.selection.dropdown').dropdown({
+    //     clearable: true,
+    //     placeholder: 'Select Client',
+    //     onClear: async function() {
+    //         const clientId = $(this).data('value');
+    //         const userConfirmed = confirm(`Are you sure you want to delete this client(${clientId})?`);
+    //         if(userConfirmed){                
+    //             try {
+    //                 const response = await fetch('/deleteClient', {
+    //                     method: 'POST',
+    //                     headers: {
+    //                         'Content-Type': 'application/json',
+    //                     },
+    //                     body: JSON.stringify({ id: clientId })
+    //                 });
+    //                 if (!response.ok) {
+    //                     throw new Error('Server responded with an error.');
+    //                 }
+    //                 const data = await response.json();
+    //                 alert('Client deleted successfully.');          
+    //             } catch (error) {
+    //                 console.error('Error deleting client:', error);
+    //                 alert('An error occurred while deleting the client.');
+    //             }
+    //         }
+    //     }
+    // });
 }
 async function delWorkItem(workItemId, data) {
     const userConfirmed = confirm(`Are you sure you want to delete this work item? ${workItemId}`);
