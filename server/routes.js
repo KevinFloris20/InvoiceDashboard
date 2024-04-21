@@ -278,7 +278,9 @@ router.post('/deleteWorkItem', isAuthenticatedAjax, async (req, res) => {
 
 router.post('/updateWorkItem', isAuthenticatedAjax, async (req, res) => {
     try {
-        const { isValid, errors, data } = validateWorkItem(req.body);
+        const allClients = await getClients();
+        console.log(req.body)
+        const { isValid, errors, data } = validateWorkItem(req.body, allClients);
         if (!isValid) {
             return res.status(400).json({ error: errors });
         }

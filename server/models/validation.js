@@ -38,6 +38,7 @@ function validateWorkItem(data, allClients) {
     let hasValidRows = false;
     let unitNum = '';
     let workItemId = parseInt(data['dataFieldId']) ? parseInt(data['dataFieldId'].trim()) : null;
+    allClients = allClients ? allClients : [];
 
 
     let clientName = data['Client'] ? data['Client'].trim() : '';

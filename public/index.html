@@ -50,11 +50,20 @@
         </div>
 
         <!-- pdf Form -->
-        <div class="pdf-form ui segment" id="inv">
+        <!-- <div class="pdf-form ui segment" id="inv">
             <div class="ui form" id="invoice-form">
                 <img alt="Invoice Form" id="invoice-image">
             </div>
+        </div> -->
+        <div class="pdf-form ui segment" id="inv">
+            <div class="ui form" id="invoice-form">
+                <div class="ui placeholder">
+                    <div class="image"></div>
+                </div>
+                <img alt="Invoice Form" id="invoice-image" style="display:none;" onload="imageLoaded()">
+            </div>
         </div>
+        
 
         <!-- Error bar -->
         <div class="ui segment" id="errorBar" >

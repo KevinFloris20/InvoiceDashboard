@@ -10,6 +10,7 @@ body{
     background-color: #333;
     overflow: auto;
     background-image:url('backgroundImg.png') ;
+    z-index: -1;
 }  
 div{
     word-wrap: break-word;
@@ -31,6 +32,7 @@ div{
     display: block;
 }
 
+
 #invoice-form div {
     position: absolute;
     z-index: 10; 
@@ -43,6 +45,25 @@ div{
     padding: 0; 
     margin: 0;
 }
+
+/* placeholder stuf */
+#invoice-form .ui.placeholder {
+    max-width: 100%;
+    height: 100%;
+    width: 100%;
+    background-color: #f0f0f0; 
+}
+
+#invoice-form .ui.placeholder .image {
+    width: fit-content;
+    height: 100%;
+}
+
+#invoice-image {
+    width: 100%;
+    display: none;
+}
+
 
 #errorBar{
     width: 20%;

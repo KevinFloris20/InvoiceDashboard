@@ -265,7 +265,7 @@ async function submitInvoiceWorkItems() {
         console.error('There was a problem with the fetch operation:', error);
     }
 }
-async function submitWorkItemForm(route, jsonFormData, saveBtn, saveNext, form) {
+async function submitWorkItemForm(route, jsonFormData, saveBtn, saveNext, form, mode) {
     saveBtn.classList.add('loading');
     saveBtn.disabled = true;
 
@@ -289,6 +289,9 @@ async function submitWorkItemForm(route, jsonFormData, saveBtn, saveNext, form) 
                 document.querySelector("[name='1A']").focus();
             } else {
                 form.reset();
+            }
+            if (mode === 'edit') {
+                cancelViewOrEditMode();
             }
         }
     } catch (error) {
@@ -336,6 +339,11 @@ async function submitWorkItemForm(route, jsonFormData, saveBtn, saveNext, form) 
 
 
 //other helper logic for the entire front end opperations
+function imageLoaded() {
+    var image = document.getElementById('invoice-image');
+    image.style.display = 'block'; 
+    image.previousElementSibling.remove();
+}
 function createCell(text) {
     const cell = document.createElement('td');
     cell.textContent = text;
@@ -644,9 +652,12 @@ function populateForm(workItemDetails, isViewMode) {
         button.classList.add('disableBtn');
     });
 
-    const clientSelectField = document.querySelector(`#addWorkItemForm [name="Client"]`);
-    clientSelectField.value = `${workItemDetails.clientID} - ${workItemDetails.clientName}`;
-    clientSelectField.setAttribute('disabled', 'true');;
+    $('#AWIClientDropdown').dropdown();
+    $('#AWIClientDropdown').dropdown('set selected', `${workItemDetails.clientID} - ${workItemDetails.clientName}`);
+
+    document.querySelector(`#addWorkItemForm > div:nth-child(1) > div:nth-child(1) > div > div > div`).classList.add('disabled');
+    document.getElementById('AWIAddClientBtn').classList.add('disabled');
+    
   
     const workDateField = document.querySelector(`#addWorkItemForm [name="date"]`);
     workDateField.value = workItemDetails.workDate.split('T')[0];
@@ -657,7 +668,7 @@ function populateForm(workItemDetails, isViewMode) {
         if (inputField) {
             inputField.value = workItemDetails.descriptionPrice[key];
         }
-        if(key.includes('A') && key !== 'A' && (!workItemDetails.descriptionPrice[key].includes('(')) && (!workItemDetails.descriptionPrice[key].includes(')'))){
+        if(key.includes('A') && key !== 'A' && (!workItemDetails.descriptionPrice[key].includes('(')) && (!workItemDetails.descriptionPrice[key].includes(')')) && (workItemDetails.descriptionPrice[key] !== '')){
             inputField.id = 'TempAWIunitNumID';
             document.getElementById('TempAWIunitNumID').classList.add('disableBtn');
         }
@@ -770,6 +781,10 @@ function cancelViewOrEditMode() {
     document.querySelectorAll('#addWorkItemForm input, #addWorkItemForm select').forEach(input => {
         input.setAttribute('disabled', 'false');
     });
+    document.querySelector(`#addWorkItemForm > div:nth-child(1) > div:nth-child(1) > div > div > div`).classList.remove('disabled');
+    document.getElementById('AWIAddClientBtn').classList.remove('disabled');
+    $('#AWIClientDropdown').dropdown('clear');
+
     document.querySelector('#AWIsaveNextBtn').disabled = false;
 
     document.getElementById('addWorkItemSection').setAttribute("data-field-id", " ");
@@ -1316,10 +1331,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const form = document.getElementById('addWorkItemForm');
         const formData = new FormData(form);
         const jsonFormData = Object.fromEntries(formData.entries());
-    
-        if (!jsonFormData['Client']){
-            jsonFormData['Client'] = document.querySelector("[name='Client']").value;
+
+        if(!jsonFormData['Client']){
+            jsonFormData['Client'] = $('#AWIClientDropdown').val();
         }
+
         if (!addWorkItemValidation(formData)){
             return; 
         }
@@ -1340,10 +1356,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
         if (mode === 'edit') {
             jsonFormData['dataFieldId'] = document.getElementById('addWorkItemSection').getAttribute("data-field-id");
-            cancelViewOrEditMode();
         }
     
-        submitWorkItemForm(route, jsonFormData, saveBtn, saveNext, form);
+        submitWorkItemForm(route, jsonFormData, saveBtn, saveNext, form, mode);
     }
     document.getElementById('AWISaveBtn').addEventListener('click', function(event) {
         event.preventDefault(); 
