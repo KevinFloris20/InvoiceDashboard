@@ -177,14 +177,20 @@ router.get('/displayWorkItems', isAuthenticatedAjax, async (req, res) => {
 router.post('/submit-form', isAuthenticatedAjax, async (req, res) => {
     try {
         const submitData = req.body;
-        console.log(submitData)
-        const validatedData = validateAndTransform(submitData);
-        const result = await interactWithFirestore('writeData', validatedData);
+        console.log(submitData);
+        const validation = validateAndTransform(submitData);
+
+        if (!validation.isValid) {
+            return res.status(400).json({ errors: validation.errors });
+        }
+
+        const result = await interactWithFirestore('writeData', validation.data);
         res.json({ message: 'Invoice submitted successfully', result: result });
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        res.status(500).json({ error: error.message });
     }
 });
+
 
 router.post('/download-invoice', isAuthenticatedAjax, async (req, res) => {
     try {
@@ -225,19 +231,26 @@ router.post('/updateInvoice', isAuthenticatedAjax, async (req, res) => {
     try {
         const updatedData = req.body;
         const documentId = updatedData.docID;
-        delete updatedData.docID;
+        delete updatedData.docID;  
+
         if (!documentId) {
-            throw new Error("Document ID is required for updating data.");
+            return res.status(400).json({ error: "Document ID is required for updating data." });
         }
-        const validatedData = validateAndTransform(updatedData);
+
+        const validation = validateAndTransform(updatedData);
+        if (!validation.isValid) {
+            return res.status(400).json({ errors: validation.errors });
+        }
+
         const result = await interactWithFirestore('updateData', {
             documentId: documentId,
-            updateFields: validatedData
+            updateFields: validation.data
         });
+
         res.json({ message: 'Invoice updated successfully', result: result });
     } catch (error) {
         console.error('Error updating invoice:', error);
-        res.status(400).json({ error: error.message });
+        res.status(500).json({ error: 'Server error: ' + error.message });
     }
 });
 

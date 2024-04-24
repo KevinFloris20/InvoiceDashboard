@@ -1,36 +1,42 @@
 // validation.js
 function validateAndTransform(inboundData) {
-    // Validate presence and non-empty values for 'A', 'B', 'C'
     const requiredNonEmptyKeys = ['A', 'B', 'C'];
+    let isValid = true;
+    let errors = [];
+
+    //Check if these keys are missing or empty
     for (let key of requiredNonEmptyKeys) {
         if (!inboundData.hasOwnProperty(key) || inboundData[key].trim() === '') {
-            throw new Error(`'${info[key]}' is missing or empty`);
+            errors.push(`'${info[key]}' is missing or empty`);
+            isValid = false;
         }
     }
 
-    // Initialize outbound data structure
+    //out bound structure to be returned
     const outboundData = {
-        A: inboundData.A,
-        B: inboundData.B,
-        C: inboundData.C,
+        A: inboundData.A || '',
+        B: inboundData.B || '',
+        C: inboundData.C || '',
         D: inboundData.D || '',  
         E: inboundData.E || '', 
         creationDate: new Date().toISOString(),
-        invoiceDetails: {}
+        invoiceDetails: {},
     };
 
-    // Validate and populate invoiceDetails
+    //validate and populate invoiceDetails
     const keyPattern = /^\d+[A-Z]$/;
     for (let key in inboundData) {
         if (!['A', 'B', 'C', 'D', 'E', 'creationDate'].includes(key)) {
             if (!keyPattern.test(key)) {
-                throw new Error(`Invalid key format: '${key}'. Expected format: digit followed by a capital letter.`);
+                errors.push(`Invalid key format: '${key}'. Expected format: digit followed by a capital letter.`);
+                isValid = false;
+            } else {
+                outboundData.invoiceDetails[key] = inboundData[key];
             }
-            outboundData.invoiceDetails[key] = inboundData[key];
         }
     }
 
-    return outboundData;
+    return { isValid, errors, data: isValid ? outboundData : null };
 }
 
 function validateWorkItem(data, allClients) {

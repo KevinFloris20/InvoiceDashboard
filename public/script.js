@@ -124,19 +124,20 @@ async function editFormData(docId) {
             },
             body: JSON.stringify(submitData)
         });
-        const data = await response.json();
+        const responseData = await response.json();
 
         if (!response.ok) {
-            throw new Error(data.error || 'Error updating invoice');
+            displayMessage(responseData.errors || 'Error updating invoice', 'error');
+            return null; 
         }
 
-        console.log('Form Updated:', data, submitData);
-        displayMessage(`Success: ${data.message}`, 'success');
+        console.log('Form Updated:', responseData, submitData);
+        displayMessage(`Success: ${responseData.message}`, 'success');
         const messageBox = document.getElementById('editModeMessageChild');
         if (messageBox) {
             messageBox.parentNode.removeChild(messageBox);
         }
-        return [data, submitData.A];
+        return [responseData, submitData.A];
     } catch (error) {
         console.error('Error updating form:', error);
         displayMessage(`Error updating form: ${error.message}`, 'error');
@@ -359,7 +360,8 @@ function collectFormData() {
 function displayMessage(message, type) {
     const errorListUl = document.getElementById('errorListUl');
     const messageElement = document.createElement('div');
-    messageElement.textContent = message;
+    const formattedMessage = Array.isArray(message) ? message.join('<br>') : message;
+    messageElement.innerHTML = formattedMessage;
     messageElement.classList.add(type === 'error' ? 'error-message' : 'success-message');
     errorListUl.appendChild(messageElement);
 }
@@ -449,7 +451,7 @@ function convertToMMDDYYYY(dateStr) {
     if (!dateStr) return '';
     const date = new Date(dateStr);
     const utcDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
-    const month = utcDate.getMonth() + 1; // Months are zero-indexed
+    const month = utcDate.getMonth() + 1; 
     const day = utcDate.getDate();
     const year = utcDate.getFullYear();
     return `${month.toString().padStart(2, '0')}/${day.toString().padStart(2, '0')}/${year}`;
@@ -490,7 +492,7 @@ function toggleLoadingAnimation(show, elementId) {
         loadingSpinner.style.display = 'none';
     }
 }
-function displayEditModeMessage(invoiceId) {
+function displayInvoiceEditModeMessage(invoiceId) {
     let messageBox;
     messageBox = document.createElement('div');
     messageBox.id = 'editModeMessageChild';
@@ -526,7 +528,7 @@ function populateFormForUpdate(invoice, id) {
     document.querySelectorAll('.dynamic-input').forEach(input => {
         input.value = invoice[input.name] ? invoice[input.name] : '';
     })
-    displayEditModeMessage(id); 
+    displayInvoiceEditModeMessage(id); 
 }
 function handleImageError() {
     var image = document.getElementById('invoice-image');
@@ -895,14 +897,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
                 body: JSON.stringify(submitData)
             });
-            const data = await response.json();
+            const responseData = await response.json();
             if (!response.ok) {
-                throw new Error(data.error || 'Unknown error');
+                displayMessage(responseData.errors || 'Unknown error', 'error');
+                return [null,null]; 
             }
-
-            console.log('Form submitted:', data, submitData);
-            displayMessage(`Success: ${data.message}. New ID: ${data.result}`, 'success');
-            return [data, submitData.A];
+            console.log('Form submitted:', responseData, submitData);
+            displayMessage(`Success: ${responseData.message}. New ID: ${responseData.result}`, 'success');
+            return [responseData, submitData.A];
         } catch (error) {
             console.error('Error submitting form:', error);
             displayMessage(`Error: ${error.message}`, 'error');
@@ -924,7 +926,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         } catch (error) {
             console.error('Error:', error);
-            // displayMessage(`Error: ${error.message}`, 'error');
         } finally {
             toggleButtonState('saveButton', false);
         }
@@ -1095,6 +1096,11 @@ document.addEventListener('DOMContentLoaded', function() {
     function renderInvoicesTable(invoices) {
         const tbody = document.getElementById('invoiceTable').querySelector('tbody');
         tbody.innerHTML = ''; 
+        // check if invoice is an array
+        if (!Array.isArray(invoices)) {
+            console.error('Error: Invalid invoice data');
+            return;
+        }
         invoices.forEach(invoice => {
             const downloadPDFdata = JSON.stringify(flattenServerRes(invoice));
             for (const [key, value] of Object.entries(invoice.fields)) {
@@ -1146,7 +1152,6 @@ document.addEventListener('DOMContentLoaded', function() {
             row.appendChild(optionsCell); 
             tbody.appendChild(row); 
         });
-    
         initializeDropdowns();
     }
     function initializeDropdowns(whichTable) {
@@ -1262,7 +1267,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const formData = new FormData(this);
         const searchParams = new URLSearchParams(formData);
         const queryString = searchParams.toString();
-        console.log(queryString);
         try {
             const response = await fetch(`/getAdvancedInvoice?${queryString}`);
             console.log(response);
@@ -1271,7 +1275,6 @@ document.addEventListener('DOMContentLoaded', function() {
             renderInvoicesTable(invoices);
         } catch (error) {
             console.error('Error:', error);
-
         }
     });
 

@@ -1022,3 +1022,242 @@ Stack Trace: AxiosError: Request failed with status code 400
   }
 }
 
+[2024-04-22T20:16:52.278Z] Error in readAdvancedData
+Error Details: Request failed with status code 400
+Response Data: [object Object]
+Stack Trace: AxiosError: Request failed with status code 400
+    at settle (C:\Users\theus\Yeaa\fcrdashboard\node_modules\axios\dist\node\axios.cjs:1967:12)
+    at Unzip.handleStreamEnd (C:\Users\theus\Yeaa\fcrdashboard\node_modules\axios\dist\node\axios.cjs:3062:11)
+    at Unzip.emit (node:events:527:35)
+    at endReadableNT (node:internal/streams/readable:1589:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+{
+  "numberOfResults": "ALL",
+  "fromAccount": "test",
+  "startDate": "",
+  "endDate": ""
+}
+
+[2024-04-22T20:18:02.412Z] Error in readAdvancedData
+Error Details: Request failed with status code 400
+Response Data: [object Object]
+Stack Trace: AxiosError: Request failed with status code 400
+    at settle (C:\Users\theus\Yeaa\fcrdashboard\node_modules\axios\dist\node\axios.cjs:1967:12)
+    at Unzip.handleStreamEnd (C:\Users\theus\Yeaa\fcrdashboard\node_modules\axios\dist\node\axios.cjs:3062:11)
+    at Unzip.emit (node:events:527:35)
+    at endReadableNT (node:internal/streams/readable:1589:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+{
+  "numberOfResults": "ALL",
+  "fromAccount": "5",
+  "startDate": "",
+  "endDate": ""
+}
+
+[2024-04-22T20:18:07.327Z] Error in readAdvancedData
+Error Details: Request failed with status code 400
+Response Data: [object Object]
+Stack Trace: AxiosError: Request failed with status code 400
+    at settle (C:\Users\theus\Yeaa\fcrdashboard\node_modules\axios\dist\node\axios.cjs:1967:12)
+    at Unzip.handleStreamEnd (C:\Users\theus\Yeaa\fcrdashboard\node_modules\axios\dist\node\axios.cjs:3062:11)
+    at Unzip.emit (node:events:527:35)
+    at endReadableNT (node:internal/streams/readable:1589:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+{
+  "numberOfResults": "ALL",
+  "fromAccount": "7",
+  "startDate": "",
+  "endDate": ""
+}
+
+[2024-04-22T20:18:15.559Z] Error in readAdvancedData
+Error Details: Request failed with status code 400
+Response Data: [object Object]
+Stack Trace: AxiosError: Request failed with status code 400
+    at settle (C:\Users\theus\Yeaa\fcrdashboard\node_modules\axios\dist\node\axios.cjs:1967:12)
+    at Unzip.handleStreamEnd (C:\Users\theus\Yeaa\fcrdashboard\node_modules\axios\dist\node\axios.cjs:3062:11)
+    at Unzip.emit (node:events:527:35)
+    at endReadableNT (node:internal/streams/readable:1589:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+{
+  "numberOfResults": "ALL",
+  "fromAccount": "test",
+  "startDate": "",
+  "endDate": ""
+}
+
+[2024-04-22T20:24:01.551Z] Error in readAdvancedData
+Error Details: Request failed with status code 400
+Response Data: [object Object]
+Stack Trace: AxiosError: Request failed with status code 400
+    at settle (C:\Users\theus\Yeaa\fcrdashboard\node_modules\axios\dist\node\axios.cjs:1967:12)
+    at Unzip.handleStreamEnd (C:\Users\theus\Yeaa\fcrdashboard\node_modules\axios\dist\node\axios.cjs:3062:11)
+    at Unzip.emit (node:events:527:35)
+    at endReadableNT (node:internal/streams/readable:1589:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+{
+  "numberOfResults": "ALL",
+  "fromAccount": "ALL",
+  "startDate": "2024-12-13",
+  "endDate": "2024-12-14"
+}
+
+[2024-04-23T21:03:23.817Z] Error in readAdvancedData
+Error Details: Request failed with status code 400
+Response Data: [object Object]
+Stack Trace: AxiosError: Request failed with status code 400
+    at settle (C:\Users\theus\Yeaa\fcrdashboard\node_modules\axios\dist\node\axios.cjs:1967:12)
+    at Unzip.handleStreamEnd (C:\Users\theus\Yeaa\fcrdashboard\node_modules\axios\dist\node\axios.cjs:3062:11)
+    at Unzip.emit (node:events:527:35)
+    at endReadableNT (node:internal/streams/readable:1589:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+{
+  "numberOfResults": "ALL",
+  "fromAccount": "ALL",
+  "startDate": "2024-12-10",
+  "endDate": "2024-12-15"
+}
+
+[2024-04-23T21:09:53.207Z] Error in readAdvancedData
+Error Details: Request failed with status code 400
+Response Data: [object Object]
+Stack Trace: AxiosError: Request failed with status code 400
+    at settle (C:\Users\theus\Yeaa\fcrdashboard\node_modules\axios\dist\node\axios.cjs:1967:12)
+    at Unzip.handleStreamEnd (C:\Users\theus\Yeaa\fcrdashboard\node_modules\axios\dist\node\axios.cjs:3062:11)
+    at Unzip.emit (node:events:527:35)
+    at endReadableNT (node:internal/streams/readable:1589:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+{
+  "numberOfResults": "ALL",
+  "fromAccount": "ALL",
+  "startDate": "2024-12-10",
+  "endDate": "2024-12-15"
+}
+
+[2024-04-23T21:12:07.259Z] Error in readAdvancedData
+Error Details: Request failed with status code 400
+Response Data: [object Object]
+Stack Trace: AxiosError: Request failed with status code 400
+    at settle (C:\Users\theus\Yeaa\fcrdashboard\node_modules\axios\dist\node\axios.cjs:1967:12)
+    at Unzip.handleStreamEnd (C:\Users\theus\Yeaa\fcrdashboard\node_modules\axios\dist\node\axios.cjs:3062:11)
+    at Unzip.emit (node:events:527:35)
+    at endReadableNT (node:internal/streams/readable:1589:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+{
+  "numberOfResults": "ALL",
+  "fromAccount": "ALL",
+  "startDate": "2024-12-10",
+  "endDate": "2024-12-15"
+}
+
+[2024-04-23T21:20:37.671Z] Error in readAdvancedData
+Error Details: Request failed with status code 400
+Response Data: [object Object]
+Stack Trace: AxiosError: Request failed with status code 400
+    at settle (C:\Users\theus\Yeaa\fcrdashboard\node_modules\axios\dist\node\axios.cjs:1967:12)
+    at Unzip.handleStreamEnd (C:\Users\theus\Yeaa\fcrdashboard\node_modules\axios\dist\node\axios.cjs:3062:11)
+    at Unzip.emit (node:events:527:35)
+    at endReadableNT (node:internal/streams/readable:1589:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+{
+  "numberOfResults": "ALL",
+  "fromAccount": "ALL",
+  "startDate": "2024-12-10",
+  "endDate": "2024-12-15"
+}
+
+[2024-04-23T21:22:21.285Z] Error in readAdvancedData
+Error Details: Request failed with status code 400
+Response Data: [object Object]
+Stack Trace: AxiosError: Request failed with status code 400
+    at settle (C:\Users\theus\Yeaa\fcrdashboard\node_modules\axios\dist\node\axios.cjs:1967:12)
+    at Unzip.handleStreamEnd (C:\Users\theus\Yeaa\fcrdashboard\node_modules\axios\dist\node\axios.cjs:3062:11)
+    at Unzip.emit (node:events:527:35)
+    at endReadableNT (node:internal/streams/readable:1589:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+{
+  "numberOfResults": "ALL",
+  "fromAccount": "ALL",
+  "startDate": "2024-12-10",
+  "endDate": "2024-12-15"
+}
+
+[2024-04-23T21:22:46.251Z] Error in readAdvancedData
+Error Details: Request failed with status code 400
+Response Data: [object Object]
+Stack Trace: AxiosError: Request failed with status code 400
+    at settle (C:\Users\theus\Yeaa\fcrdashboard\node_modules\axios\dist\node\axios.cjs:1967:12)
+    at Unzip.handleStreamEnd (C:\Users\theus\Yeaa\fcrdashboard\node_modules\axios\dist\node\axios.cjs:3062:11)
+    at Unzip.emit (node:events:527:35)
+    at endReadableNT (node:internal/streams/readable:1589:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+{
+  "numberOfResults": "ALL",
+  "fromAccount": "ALL",
+  "startDate": "2024-12-10",
+  "endDate": "2024-12-15"
+}
+
+[2024-04-23T21:36:40.583Z] Error in readAdvancedData
+Error Details: Request failed with status code 400
+Response Data: [object Object]
+Stack Trace: AxiosError: Request failed with status code 400
+    at settle (C:\Users\theus\Yeaa\fcrdashboard\node_modules\axios\dist\node\axios.cjs:1967:12)
+    at Unzip.handleStreamEnd (C:\Users\theus\Yeaa\fcrdashboard\node_modules\axios\dist\node\axios.cjs:3062:11)
+    at Unzip.emit (node:events:527:35)
+    at endReadableNT (node:internal/streams/readable:1589:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+{
+  "numberOfResults": "ALL",
+  "fromAccount": "ALL",
+  "startDate": "2024-12-10",
+  "endDate": "2024-12-15"
+}
+
+[2024-04-23T21:42:28.955Z] Error in readAdvancedData
+Error Details: Request failed with status code 400
+Response Data: [object Object]
+Stack Trace: AxiosError: Request failed with status code 400
+    at settle (C:\Users\theus\Yeaa\fcrdashboard\node_modules\axios\dist\node\axios.cjs:1967:12)
+    at Unzip.handleStreamEnd (C:\Users\theus\Yeaa\fcrdashboard\node_modules\axios\dist\node\axios.cjs:3062:11)
+    at Unzip.emit (node:events:527:35)
+    at endReadableNT (node:internal/streams/readable:1589:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+{
+  "numberOfResults": "ALL",
+  "fromAccount": "ALL",
+  "startDate": "2024-12-10",
+  "endDate": "2024-12-15"
+}
+
+[2024-04-23T22:05:02.313Z] Error in readAdvancedData
+Error Details: Request failed with status code 400
+Response Data: [object Object]
+Stack Trace: AxiosError: Request failed with status code 400
+    at settle (C:\Users\theus\Yeaa\fcrdashboard\node_modules\axios\dist\node\axios.cjs:1967:12)
+    at Unzip.handleStreamEnd (C:\Users\theus\Yeaa\fcrdashboard\node_modules\axios\dist\node\axios.cjs:3062:11)
+    at Unzip.emit (node:events:527:35)
+    at endReadableNT (node:internal/streams/readable:1589:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+"{\"numberOfResults\":\"ALL\",\"fromAccount\":\"ALL\",\"startDate\":\"2024-12-10\",\"endDate\":\"2024-12-15\"}"
+
+[2024-04-23T22:11:31.333Z] Error in readAdvancedData
+Error Details: firebase is not defined
+Stack Trace: ReferenceError: firebase is not defined
+    at formatDateForQuery (C:\Users\theus\Yeaa\fcrdashboard\server\models\firestoreApp.js:197:25)
+    at interactWithFirestore (C:\Users\theus\Yeaa\fcrdashboard\server\models\firestoreApp.js:231:55)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async C:\Users\theus\Yeaa\fcrdashboard\server\routes.js:133:24
+"{\"numberOfResults\":\"ALL\",\"fromAccount\":\"ALL\",\"startDate\":\"2024-12-10\",\"endDate\":\"2024-12-15\"}"
+
+[2024-04-23T22:25:07.139Z] Error in readAdvancedData
+Error Details: Request failed with status code 400
+Response Data: [object Object]
+Stack Trace: AxiosError: Request failed with status code 400
+    at settle (C:\Users\theus\Yeaa\fcrdashboard\node_modules\axios\dist\node\axios.cjs:1967:12)
+    at Unzip.handleStreamEnd (C:\Users\theus\Yeaa\fcrdashboard\node_modules\axios\dist\node\axios.cjs:3062:11)
+    at Unzip.emit (node:events:527:35)
+    at endReadableNT (node:internal/streams/readable:1589:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+"{\"numberOfResults\":\"ALL\",\"fromAccount\":\"ALL\",\"startDate\":\"2024-12-10\",\"endDate\":\"2024-12-15\"}"
+

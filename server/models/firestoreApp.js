@@ -4,6 +4,7 @@ const fs = require('fs');
 require('dotenv').config({ path: 'cred.env' });
 const moment = require('moment-timezone');
 
+//import firebase
 const collection_Id = process.env.COLLECTIONID.toString();
 const db_name = process.env.DB2NAME.toString();
 const keyFilename = process.env.KEYFILE.toString();
@@ -50,6 +51,8 @@ function convertToISO(dateStr) {
     const isoDate = moment.tz(dateStr, "MM/DD/YYYY", "UTC").toISOString();
     return isoDate;
 }
+
+
 
 // Convert ISO format to MM/DD/YYYY
 function convertToMMDDYYYY(dateStr) {
@@ -120,7 +123,7 @@ async function interactWithFirestore(whatAreWeDoing, data) {
                         D: formatFirestoreValue(data.D),
                         E: formatFirestoreValue(data.E),
                         creationDate: formatFirestoreValue(new Date()),
-                        invoiceDetails: formatFirestoreValue(data.invoiceDetails) 
+                        invoiceDetails: formatFirestoreValue(data.invoiceDetails),
                     };
                     console.log("Submitting this object: ", formattedData)
                     const createResponse = await axios.post(createUrl, { fields: formattedData }, { headers });
@@ -190,13 +193,17 @@ async function interactWithFirestore(whatAreWeDoing, data) {
                 }
                 break;
             case 'readAdvancedData':
-                try{
+                try {
+                    await data; // just in case ;D
+                
+
+                    // THese are the query parameters
                     let queryPayload = {
                         structuredQuery: {
                             from: [{ collectionId: collection_Id }],
                             orderBy: [{
-                                field: { fieldPath: 'creationDate' },
-                                direction: 'DESCENDING'
+                                field: { fieldPath: data.startDate && data.endDate ? 'B' : 'creationDate'},
+                                direction: data.startDate && data.endDate ? 'ASCENDING' : 'DESCENDING'
                             }],
                             where: {
                                 compositeFilter: {
@@ -209,7 +216,7 @@ async function interactWithFirestore(whatAreWeDoing, data) {
                     if (data.fromAccount && data.fromAccount !== 'ALL') {
                         queryPayload.structuredQuery.where.compositeFilter.filters.push({
                             fieldFilter: {
-                                field: { fieldPath: 'C' },
+                                field: { fieldPath: 'C' }, 
                                 op: 'EQUAL',
                                 value: { stringValue: data.fromAccount }
                             }
@@ -220,7 +227,7 @@ async function interactWithFirestore(whatAreWeDoing, data) {
                             fieldFilter: {
                                 field: { fieldPath: 'B' },
                                 op: 'GREATER_THAN_OR_EQUAL',
-                                value: { timestampValue: convertToISO(data.startDate) }
+                                value: { timestampValue: new Date(data.startDate + 'T00:00:00Z').toISOString() }
                             }
                         });
                     }
@@ -228,34 +235,41 @@ async function interactWithFirestore(whatAreWeDoing, data) {
                         queryPayload.structuredQuery.where.compositeFilter.filters.push({
                             fieldFilter: {
                                 field: { fieldPath: 'B' },
-                                op: 'LESS_THAN_OR_EQUAL',
-                                value: { timestampValue: convertToISO(data.endDate) }
+                                op: 'LESS_THAN',
+                                value: { timestampValue: new Date(data.endDate + 'T00:00:00Z').toISOString() }
                             }
                         });
                     }
-
+                
                     if (data.numberOfResults !== 'ALL' && !isNaN(parseInt(data.numberOfResults))) {
                         queryPayload.structuredQuery.limit = parseInt(data.numberOfResults);
                     }
-
+                
+                    // These will be the api call to firestore
                     const queryUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/${db_name}/documents:runQuery`;
+                    console.log('Received query:', data);
+                    console.log('Sending query with payload:', JSON.stringify(queryPayload, null, 2));
                     const queryResponse = await axios.post(queryUrl, queryPayload, { headers });
+
+                    console.log('Status', queryResponse.status);
+                    console.log('Firestore response:', queryResponse.data);
+                
+                    //DONNNE
                     const processedData = queryResponse.data.map(item => {
                         if (item.document) {
                             const document = item.document;
                             const doc = item.document.fields;
-                            if (doc.B && doc.B.timestampValue) {
-                                document.fields.B = { stringValue: convertToMMDDYYYY(doc.B.timestampValue) };
+                            if (doc.B && doc.B.stringValue) {
+                                document.fields.B = { stringValue: convertToMMDDYYYY(doc.B.stringValue) };
                             }
                             document.id = document.name.split('/').pop();
                             return document;
                         }
                         return null;
-                    }).filter(item => item !== null); 
-            
+                    }).filter(item => item !== null);
                     return processedData;
                 } catch (error) {
-                    return handleError(error, 'Error in readAdvancedData', safeStringify(data));
+                    console.error('Error in readAdvancedData:| Status:', error.response?.status, "| Message: ", error.message, "| Data: ", error.response?.data);
                 }
                 break;
             default:
