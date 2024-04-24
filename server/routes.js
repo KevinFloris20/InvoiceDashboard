@@ -72,11 +72,11 @@ router.get('/formdata', isAuthenticatedAjax, async (req, res) => {
 
 const { interactWithFirestore } = require('./models/firestoreApp.js');
 
-const { validateAndTransform, validateWorkItem, validateWITI } = require('./models/validation.js');
+const { validateAndTransform, validateWorkItem, validateWITI, valSearchQuery, validateInvoiceSearchQuery } = require('./models/validation.js');
 
 const { newInvoicePDF } = require('./models/PDFDataApp.js');
 
-const { getClients, addClients, addWorkItem, getTables, getTableData, getAllWorkItems, displayWorkItems, deleteWorkItem, updateWorkItem } = require('./models/mySqlApp.js');
+const { getClients, addClients, addWorkItem, getTables, getTableData, getAllWorkItems, displayWorkItems, deleteWorkItem, updateWorkItem, displayAdvancedWorkItems } = require('./models/mySqlApp.js');
 
 const { workItemToInvoiceConverter } = require('./models/workItemInvoiceConverter.js');
 
@@ -129,13 +129,16 @@ router.get('/getInvoices', isAuthenticatedAjax, async (req, res) => {
 router.get('/getAdvancedInvoice', isAuthenticatedAjax, async (req, res) => {
     try {
         const data = req.query;
-        console.log('Received query:', data);
-        const result = await interactWithFirestore('readAdvancedData', data);
-        console.log('Result:', result);
-        res.json(result);
+        const { isValid, errors, cleanedSearchQuery } = validateInvoiceSearchQuery(data);
+        if (!isValid) {
+            return res.status(400).json({ error: errors });
+        }
+        console.log(cleanedSearchQuery);
+        const firestoreData = await interactWithFirestore('readAdvancedData',cleanedSearchQuery);
+        res.json(firestoreData);
     } catch (error) {
         console.error(error);
-        res.status(400).json({ message: 'Error fetching invoices', error: error.message });
+        res.status(500).json({ message: 'Error fetching invoices', error: error.message });
     }
 });
 
@@ -146,6 +149,22 @@ router.get('/displayWorkItems', isAuthenticatedAjax, async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(400).json({ message: 'Error fetching work items', error: error.message });
+    }
+});
+
+router.get('/getAdvancedWorkItems', isAuthenticatedAjax, async (req, res) => {
+    try {
+        const data = req.query;
+        const { isValid, errors, cleanedSearchQuery } = valSearchQuery(data);
+        if (!isValid) {
+            return res.status(400).json({ error: errors });
+        }
+        console.log('Received query:',cleanedSearchQuery);
+        const result = await displayAdvancedWorkItems(cleanedSearchQuery);
+        res.json(result);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error fetching work items', error: error.message });
     }
 });
 
@@ -190,7 +209,6 @@ router.post('/submit-form', isAuthenticatedAjax, async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
-
 
 router.post('/download-invoice', isAuthenticatedAjax, async (req, res) => {
     try {

@@ -1,3 +1,5 @@
+const { clean } = require("gh-pages");
+
 // validation.js
 function validateAndTransform(inboundData) {
     const requiredNonEmptyKeys = ['A', 'B', 'C'];
@@ -37,6 +39,48 @@ function validateAndTransform(inboundData) {
     }
 
     return { isValid, errors, data: isValid ? outboundData : null };
+}
+
+function validateInvoiceSearchQuery(data) {
+    let errors = [];
+    let isValid = true;
+    const {numberOfResults, fromAccount, startDate, endDate} = data;
+
+    let finalObject = {
+        invoiceStartDate: null,
+        invoiceEndDate: null,
+        numberOfQueryRes: null,
+        clientAccountName: null
+    };
+
+    //just assign the values to the finalObject for now
+    finalObject.invoiceStartDate = startDate;
+    finalObject.invoiceEndDate = endDate;
+    finalObject.numberOfQueryRes = numberOfResults;
+    finalObject.clientAccountName = fromAccount;
+
+    return { isValid, errors, cleanedSearchQuery: finalObject ? finalObject : null};
+}
+
+function valSearchQuery(data) {
+    let errors = [];
+    let isValid = true;
+    const {numberOfResults, fromAccount, startDate, endDate} = data;
+
+    let finalObject = {
+        invoiceStartDate: null,
+        invoiceEndDate: null,
+        numberOfQueryRes: null,
+        clientAccountName: null
+    };
+
+    //just assign the values to the finalObject for now
+    finalObject.invoiceStartDate = startDate;
+    finalObject.invoiceEndDate = endDate;
+    finalObject.numberOfQueryRes = numberOfResults;
+    finalObject.clientAccountName = fromAccount;
+
+    return { isValid, errors, cleanedSearchQuery: finalObject ? finalObject : null};
 }
 
 function validateWorkItem(data, allClients) {
@@ -252,7 +296,7 @@ const info = {
     'E': 'Email'
 };
 
-module.exports = { validateAndTransform, validateWorkItem, validateWITI };
+module.exports = { validateAndTransform, validateWorkItem, validateWITI, validateInvoiceSearchQuery, valSearchQuery };
 
 // // Example usage
 // try {

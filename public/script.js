@@ -1454,7 +1454,15 @@ document.addEventListener('DOMContentLoaded', function() {
         const formData = new FormData(this);
         const searchParams = new URLSearchParams(formData);
         const queryString = searchParams.toString();
-        console.log(`Searching Work Items with query: ${queryString}`);
+        try {
+            const response = await fetch(`/getAdvancedWorkItems?${queryString}`);
+            console.log(response);
+            if (!response.ok) throw new Error(`Failed to fetch work items: ${response}`);
+            const workItems = await response.json();
+            renderWorkItemsTable(workItems);
+        } catch (error) {
+            console.error('Error:', error);
+        }
     });
     
     const toggleBtnWI = document.getElementById('toggleAdvancedSearchWI');

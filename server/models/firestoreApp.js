@@ -195,6 +195,105 @@ async function interactWithFirestore(whatAreWeDoing, data) {
             case 'readAdvancedData':
                 try {
                     await data; // just in case ;D
+                    // let finalObject = {
+                    //     invoiceStartDate: null,
+                    //     invoiceEndDate: null,
+                    //     numberOfQueryRes: null,
+                    //     clientAccountName: null
+                    // };
+                
+
+                    // THese are the query parameters
+                    let queryPayload = {
+                        structuredQuery: {
+                            from: [{ collectionId: collection_Id }],
+                            orderBy: [{
+                                field: { fieldPath: data.invoiceStartDate && data.invoiceEndDate ? 'B' : 'creationDate'},
+                                direction: data.invoiceStartDate && data.invoiceEndDate ? 'ASCENDING' : 'DESCENDING'
+                            }],
+                            where: {
+                                compositeFilter: {
+                                    op: 'AND',
+                                    filters: []
+                                }
+                            }
+                        }
+                    };
+                    if (data.clientAccountName && data.clientAccountName !== 'ALL') {
+                        queryPayload.structuredQuery.where.compositeFilter.filters.push({
+                            fieldFilter: {
+                                field: { fieldPath: 'C' }, 
+                                op: 'EQUAL',
+                                value: { stringValue: data.clientAccountName }
+                            }
+                        });
+                    }
+                    if (data.invoiceStartDate) {
+                        queryPayload.structuredQuery.where.compositeFilter.filters.push({
+                            fieldFilter: {
+                                field: { fieldPath: 'B' },
+                                op: 'GREATER_THAN_OR_EQUAL',
+                                value: { timestampValue: new Date(data.invoiceStartDate + 'T00:00:00Z').toISOString() }
+                            }
+                        });
+                    }
+                    if (data.invoiceEndDate) {
+                        queryPayload.structuredQuery.where.compositeFilter.filters.push({
+                            fieldFilter: {
+                                field: { fieldPath: 'B' },
+                                op: 'LESS_THAN',
+                                value: { timestampValue: new Date(data.invoiceEndDate + 'T00:00:00Z').toISOString() }
+                            }
+                        });
+                    }
+                
+                    if (data.numberOfQueryRes !== 'ALL' && !isNaN(parseInt(data.numberOfQueryRes))) {
+                        queryPayload.structuredQuery.limit = parseInt(data.numberOfQueryRes);
+                    }
+                
+                    // These will be the api call to firestore
+                    const queryUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/${db_name}/documents:runQuery`;
+                    const queryResponse = await axios.post(queryUrl, queryPayload, { headers });
+                
+                    //DONNNE
+                    const processedData = queryResponse.data.map(item => {
+                        if (item.document) {
+                            const document = item.document;
+                            const doc = item.document.fields;
+                            if (doc.B && doc.B.timestampValue) {
+                                document.fields.B = { stringValue: convertToMMDDYYYY(doc.B.timestampValue) };
+                            }
+                            document.id = document.name.split('/').pop();
+                            return document;
+                        }
+                        return null;
+                    }).filter(item => item !== null);
+                    return processedData;
+                } catch (error) {
+                    console.error('Error in readAdvancedData:| Status:', error.response?.status, "| Message: ", error.message, "| Data: ", error.response?.data);
+                }
+                break;
+            default:
+                throw new Error('Unsupported operation: ' + whatAreWeDoing);
+        }
+    } catch (error) {
+        handleError(error, 'Error in interactWithFirestore', data);
+    }
+}
+
+module.exports = { interactWithFirestore };
+
+
+
+/*
+                try {
+                    await data; // just in case ;D
+                    // let finalObject = {
+                    //     invoiceStartDate: null,
+                    //     invoiceEndDate: null,
+                    //     numberOfQueryRes: null,
+                    //     clientAccountName: null
+                    // };
                 
 
                     // THese are the query parameters
@@ -271,19 +370,7 @@ async function interactWithFirestore(whatAreWeDoing, data) {
                 } catch (error) {
                     console.error('Error in readAdvancedData:| Status:', error.response?.status, "| Message: ", error.message, "| Data: ", error.response?.data);
                 }
-                break;
-            default:
-                throw new Error('Unsupported operation: ' + whatAreWeDoing);
-        }
-    } catch (error) {
-        handleError(error, 'Error in interactWithFirestore', data);
-    }
-}
-
-module.exports = { interactWithFirestore };
-
-
-
+*/
 
 // module.exports = { interactWithFirestore };
 // // interactWithFirestore('writeData', {

@@ -198,6 +198,83 @@ async function displayWorkItems(numItems) {
     }
 }
 
+async function displayAdvancedWorkItems(data) {
+    try {
+        let sql = `SELECT wi.*, c.client_name, u.unit_name FROM workItems wi 
+                   LEFT JOIN clients c ON wi.client_id = c.client_id 
+                   LEFT JOIN unit_numbers u ON wi.unit_id = u.unit_id`;
+
+        const conditions = [];
+        const params = [];
+
+        if (data.invoiceStartDate && data.invoiceEndDate) {
+            conditions.push('wi.work_date BETWEEN ? AND ?');
+            params.push(data.invoiceStartDate, data.invoiceEndDate);
+        }
+
+        if (data.clientAccountName && data.clientAccountName !== 'ALL') {
+            conditions.push('c.client_name = ?');
+            params.push(data.clientAccountName);
+        }
+
+        if (conditions.length) {
+            sql += ` WHERE ${conditions.join(' AND ')}`;
+        }
+
+        sql += ` ORDER BY wi.workItem_id DESC`;
+        if (data.numberOfQueryRes && data.numberOfQueryRes !== 'ALL') {
+            sql += ` LIMIT ?`;
+            params.push(parseInt(data.numberOfQueryRes));
+        }
+
+        return new Promise((resolve, reject) => {
+            db.query(sql, params, async (error, results) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    const workItems = [];
+                    for (const item of results) {
+                        const clientsRes = await getClients(item.client_id);
+                        const unitsRes = await getUnitNumbers(item.unit_id);
+
+                        const descriptionPriceObj = JSON.parse(item.description_price);
+                        let totalCharges = 0;
+                        let descriptionPriceObject = {};
+                        for (const key in descriptionPriceObj) {
+                            const entry = descriptionPriceObj[key];
+                            const price = parseFloat(entry.C);
+                        
+                            if (!isNaN(price)) {
+                                totalCharges += price;
+                            }
+                            descriptionPriceObject[`${key}A`] = entry.A;
+                            descriptionPriceObject[`${key}B`] = entry.B;
+                            descriptionPriceObject[`${key}C`] = entry.C;
+                        }
+
+                        workItems.push({
+                            workItemID: item.workItem_id,
+                            clientID: item.client_id,
+                            clientName: (clientsRes[0] ? clientsRes[0].client_name : "Unknown Client"),
+                            unitID: item.unit_id,
+                            unitName: (unitsRes[0] ? unitsRes[0].unit_name : "Unknown Unit"),
+                            descriptionPrice: descriptionPriceObject,
+                            totalCharges: totalCharges.toFixed(2),
+                            workDate: item.work_date,
+                            invoiceID: item.invoice_id
+                        });
+                    }
+                    resolve(workItems);
+                }
+            });
+        });
+
+    } catch (error) {
+        console.log('Error in displayAdvancedWorkItems:', error);
+        throw error;
+    }
+}
+
 async function getWorkItemById(workItemID) {
     try {
         return new Promise((resolve, reject) => {
@@ -242,5 +319,6 @@ module.exports = {
     getAllWorkItems,
     displayWorkItems,
     getWorkItemById,
-    addInvoiceAndUpdateWorkItems
+    addInvoiceAndUpdateWorkItems,
+    displayAdvancedWorkItems
 };
