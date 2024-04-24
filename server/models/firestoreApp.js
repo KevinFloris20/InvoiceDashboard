@@ -195,14 +195,7 @@ async function interactWithFirestore(whatAreWeDoing, data) {
             case 'readAdvancedData':
                 try {
                     await data; // just in case ;D
-                    // let finalObject = {
-                    //     invoiceStartDate: null,
-                    //     invoiceEndDate: null,
-                    //     numberOfQueryRes: null,
-                    //     clientAccountName: null
-                    // };
                 
-
                     // THese are the query parameters
                     let queryPayload = {
                         structuredQuery: {
@@ -285,92 +278,6 @@ module.exports = { interactWithFirestore };
 
 
 
-/*
-                try {
-                    await data; // just in case ;D
-                    // let finalObject = {
-                    //     invoiceStartDate: null,
-                    //     invoiceEndDate: null,
-                    //     numberOfQueryRes: null,
-                    //     clientAccountName: null
-                    // };
-                
-
-                    // THese are the query parameters
-                    let queryPayload = {
-                        structuredQuery: {
-                            from: [{ collectionId: collection_Id }],
-                            orderBy: [{
-                                field: { fieldPath: data.startDate && data.endDate ? 'B' : 'creationDate'},
-                                direction: data.startDate && data.endDate ? 'ASCENDING' : 'DESCENDING'
-                            }],
-                            where: {
-                                compositeFilter: {
-                                    op: 'AND',
-                                    filters: []
-                                }
-                            }
-                        }
-                    };
-                    if (data.fromAccount && data.fromAccount !== 'ALL') {
-                        queryPayload.structuredQuery.where.compositeFilter.filters.push({
-                            fieldFilter: {
-                                field: { fieldPath: 'C' }, 
-                                op: 'EQUAL',
-                                value: { stringValue: data.fromAccount }
-                            }
-                        });
-                    }
-                    if (data.startDate) {
-                        queryPayload.structuredQuery.where.compositeFilter.filters.push({
-                            fieldFilter: {
-                                field: { fieldPath: 'B' },
-                                op: 'GREATER_THAN_OR_EQUAL',
-                                value: { timestampValue: new Date(data.startDate + 'T00:00:00Z').toISOString() }
-                            }
-                        });
-                    }
-                    if (data.endDate) {
-                        queryPayload.structuredQuery.where.compositeFilter.filters.push({
-                            fieldFilter: {
-                                field: { fieldPath: 'B' },
-                                op: 'LESS_THAN',
-                                value: { timestampValue: new Date(data.endDate + 'T00:00:00Z').toISOString() }
-                            }
-                        });
-                    }
-                
-                    if (data.numberOfResults !== 'ALL' && !isNaN(parseInt(data.numberOfResults))) {
-                        queryPayload.structuredQuery.limit = parseInt(data.numberOfResults);
-                    }
-                
-                    // These will be the api call to firestore
-                    const queryUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/${db_name}/documents:runQuery`;
-                    console.log('Received query:', data);
-                    console.log('Sending query with payload:', JSON.stringify(queryPayload, null, 2));
-                    const queryResponse = await axios.post(queryUrl, queryPayload, { headers });
-
-                    console.log('Status', queryResponse.status);
-                    console.log('Firestore response:', queryResponse.data);
-                
-                    //DONNNE
-                    const processedData = queryResponse.data.map(item => {
-                        if (item.document) {
-                            const document = item.document;
-                            const doc = item.document.fields;
-                            if (doc.B && doc.B.stringValue) {
-                                document.fields.B = { stringValue: convertToMMDDYYYY(doc.B.stringValue) };
-                            }
-                            document.id = document.name.split('/').pop();
-                            return document;
-                        }
-                        return null;
-                    }).filter(item => item !== null);
-                    return processedData;
-                } catch (error) {
-                    console.error('Error in readAdvancedData:| Status:', error.response?.status, "| Message: ", error.message, "| Data: ", error.response?.data);
-                }
-*/
 
 // module.exports = { interactWithFirestore };
 // // interactWithFirestore('writeData', {
