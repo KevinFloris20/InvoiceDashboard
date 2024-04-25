@@ -1055,7 +1055,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function reloadFields() {
         const form = document.getElementById('invoice-form');
         const pngWidth = form.offsetWidth;
-        const scaleFactor = pngWidth / formData.pdfWidth;
+        const scaleFactor = pngWidth / formData.pdfWidth ? formData.pdfWidth : 1.0;
         createFormFields(formData.fields, scaleFactor);
     }
     fetch('/formdata').then(response => response.json()).then(data => {
