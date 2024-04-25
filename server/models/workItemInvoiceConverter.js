@@ -153,17 +153,8 @@ async function workItemToInvoiceConverter(data) {
                 if (!transInvoice.isValid) throw new Error(transInvoice.message);
                 invoiceId = await interactWithFirestore('writeData', transInvoice.data);
 
-                // //send the invoice id to mySqlApp.js to update the work items
-                // console.log('------------------------------------')
-                // console.log(invoiceId)
-                // console.log(JSON.stringify(finalInvoice))
-                // // slice  - 'T00:00:00.000Z' off the end of the date string
-                // console.log(moment.tz(transInvoice.data.B, "MM/DD/YYYY", "UTC").format('YYYY-MM-DD'))
-                // console.log(moment(new Date()).format('YYYY-MM-DD'))
-                // console.log(totalPrice.toFixed(2))
-                // console.log(clientDetails.client_name)
-                // console.log(data.work_item_IDs)
-                if (invoiceId === null) throw new Error('Error: Invoice ID is null, There was an Error with firestore');
+                //send the invoice id to mySqlApp.js to update the work items
+                if (invoiceId === null) throw new Error('Error: Invoice ID is null, There was an Error with firestore. Input: \nInvoice Id:', invoiceId, '\nInvoice String', JSON.stringify(finalInvoice).replace(/'/g, "\\'"), '\nDate:', moment.tz(transInvoice.data.B, "MM/DD/YYYY", "UTC").format('YYYY-MM-DD'), '\nTotal Price:', totalPrice.toFixed(2), '\nClient Name:', clientDetails.client_name, '\nWork Item IDs:', data.work_item_IDs.join(','));
                 const res = await addInvoiceAndUpdateWorkItems(invoiceId, JSON.stringify(finalInvoice).replace(/'/g, "\\'"), moment.tz(transInvoice.data.B, "MM/DD/YYYY", "UTC").format('YYYY-MM-DD'), moment(new Date()).format('YYYY-MM-DD'),totalPrice.toFixed(2), clientDetails.client_name, data.work_item_IDs.join(','));
                 console.log(res);
             }catch(error){

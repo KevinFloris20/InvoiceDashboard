@@ -1055,12 +1055,12 @@ document.addEventListener('DOMContentLoaded', function() {
     function reloadFields() {
         const form = document.getElementById('invoice-form');
         const pngWidth = form.offsetWidth;
-        const scaleFactor = pngWidth / formData.pdfWidth ? formData.pdfWidth : 1.0;
+        if (!formData.pdfWidth) return;
+        const scaleFactor = pngWidth / formData.pdfWidth;
         createFormFields(formData.fields, scaleFactor);
     }
     fetch('/formdata').then(response => response.json()).then(data => {
             formData = data; 
-            console.log(formData)
             reloadFields();
         }).catch(error => console.error('Error fetching data:', error));
     window.addEventListener('resize', reloadFields);
@@ -1307,40 +1307,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     // Handle form submission (Add work Items)
-    const jsonFormData2 = {
-        Client: '7 - Test Client',
-        date: '2024-10-12',
-        '1A': 'LMIZ111222',
-        '2A': '(test)',
-        '3A': '(anythingGoesHere)',
-        '4A': '',
-        '5A': '',
-        '6A': '',
-        '7A': '',
-        '8A': '',
-        '9A': '',
-        '10A': '',
-        '1B': '-m',
-        '2B': '- Description 2',
-        '3B': '',
-        '4B': '',
-        '5B': '',
-        '6B': '',
-        '7B': '',
-        '8B': '',
-        '9B': '',
-        '10B': '',
-        '1C': '9.01',
-        '2C': '411.19',
-        '3C': '',
-        '4C': '',
-        '5C': '',
-        '6C': '',
-        '7C': '',
-        '8C': '',
-        '9C': '',
-        '10C': ''
-    };
     function addWorkItemForm(event, saveNext) {
         const form = document.getElementById('addWorkItemForm');
         const formData = new FormData(form);
@@ -1432,9 +1398,10 @@ document.addEventListener('DOMContentLoaded', function() {
             row.appendChild(createCell(convertToMMDDYYYY(item.workDate)));
             row.appendChild(createCell(item.clientName));
             row.appendChild(createCell(item.totalCharges));
-            const assignedCell = createCell(item.assignedToInvoice ? '✔️' : '');
+            let invoiceStatus = item.invoiceName ? `✔️ ${item.invoiceName}` : ''; 
+            const assignedCell = createCell(invoiceStatus);
             assignedCell.style.textAlign = 'center'; 
-            if (!item.assignedToInvoice) {
+            if (!item.invoiceName) {
                 const checkbox = document.createElement('input');
                 checkbox.type = 'checkbox';
                 checkbox.setAttribute('WI-data-client-id', item.clientID);

@@ -180,6 +180,12 @@ async function displayWorkItems(numItems) {
                 descriptionPriceObject[`${key}C`] = entry.C;
             }
 
+            let invoice_Name = null;
+            if(item.invoice_id !== null){
+                const invoiceInfo = await getInvoiceByID(item.invoice_id);
+                let regString = JSON.parse(invoiceInfo[0].regular_string);
+                invoice_Name = regString.A;
+            }
 
             workItems.push({
                 workItemID: item.workItem_id,
@@ -190,7 +196,8 @@ async function displayWorkItems(numItems) {
                 descriptionPrice: descriptionPriceObject,
                 totalCharges: totalCharges.toFixed(2), 
                 workDate: item.work_date,
-                invoiceID: item.invoice_id
+                invoiceID: item.invoice_id,
+                invoiceName: invoice_Name
             });
         }
         return workItems;
@@ -308,6 +315,23 @@ async function addInvoiceAndUpdateWorkItems(externalUniqueId, regularString, inv
     });
 }
 
+async function getInvoiceByID(invoiceID) {
+    try {
+        return new Promise((resolve, reject) => {
+            const query = 'SELECT * FROM invoices WHERE invoice_id = ?';
+            db.query(query, [invoiceID], (err, rows, fields) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(rows);
+                }
+            });
+        });
+    } catch (error) {
+        console.log('Error getting invoice:', error);
+        return [];
+    }
+}
 
 
 module.exports = {
