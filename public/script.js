@@ -1096,12 +1096,23 @@ document.addEventListener('DOMContentLoaded', function() {
     function renderInvoicesTable(invoices) {
         const tbody = document.getElementById('invoiceTable').querySelector('tbody');
         tbody.innerHTML = ''; 
-        // check if invoice is an array
         if (!Array.isArray(invoices)) {
             console.error('Error: Invalid invoice data');
             return;
         }
         invoices.forEach(invoice => {
+            const requiredFields = ['A', 'B', 'C', 'D', 'invoiceDetails'];
+            const missingFields = requiredFields.filter(field => !invoice.fields[field]);
+        
+            if (missingFields.length > 0) {
+                console.log(`Skipping invoice ID ${invoice.id} due to missing fields`);
+                return; 
+            }
+            if (!invoice.fields.invoiceDetails.mapValue) {
+                console.log(`Skipping invoice ID ${invoice.id} due to missing invoiceDetails.mapValue`);
+                return;
+            }
+
             const downloadPDFdata = JSON.stringify(flattenServerRes(invoice));
             for (const [key, value] of Object.entries(invoice.fields)) {
                 if (value.stringValue) {

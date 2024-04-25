@@ -53,7 +53,6 @@ function convertToISO(dateStr) {
 }
 
 
-
 // Convert ISO format to MM/DD/YYYY
 function convertToMMDDYYYY(dateStr) {
     if (!dateStr) return '';

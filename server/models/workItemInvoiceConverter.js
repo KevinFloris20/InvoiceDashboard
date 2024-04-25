@@ -61,11 +61,13 @@ acceptable invoice object format for input into validation:
     '3C': 'price'//... and so on untill the last key option
 }
 */
-const e = require('express');
 const { interactWithFirestore } = require('./firestoreApp');
 const { getClients, getWorkItemById, addInvoiceAndUpdateWorkItems } = require('./mySqlApp');
 const { extractFormFields } = require('./PDFDataApp');
 const { validateAndTransform } = require('./validation');
+const moment = require('moment-timezone');
+
+
 async function workItemToInvoiceConverter(data) {
     try{
         let finalInvoice = {};
@@ -75,7 +77,6 @@ async function workItemToInvoiceConverter(data) {
 
         //get all the things needed to create the invoice
         const formFields = await extractFormFields('FCRInvoiceTemplateNull.pdf');
-        console.log(formFields)
         const clientDetailsRes = await getClients(clientId);
         const clientDetails = clientDetailsRes[0];
         let workItems = [];
@@ -149,11 +150,22 @@ async function workItemToInvoiceConverter(data) {
                 const transInvoice = validateAndTransform(finalInvoice)
 
                 // submit the invoice object to firestoreApp.js to be stored in the firestore database
-                invoiceId = await interactWithFirestore('writeData', transInvoice);
+                if (!transInvoice.isValid) throw new Error(transInvoice.message);
+                invoiceId = await interactWithFirestore('writeData', transInvoice.data);
 
-                //send the invoice id to mySqlApp.js to update the work items
-
-
+                // //send the invoice id to mySqlApp.js to update the work items
+                // console.log('------------------------------------')
+                // console.log(invoiceId)
+                // console.log(JSON.stringify(finalInvoice))
+                // // slice  - 'T00:00:00.000Z' off the end of the date string
+                // console.log(moment.tz(transInvoice.data.B, "MM/DD/YYYY", "UTC").format('YYYY-MM-DD'))
+                // console.log(moment(new Date()).format('YYYY-MM-DD'))
+                // console.log(totalPrice.toFixed(2))
+                // console.log(clientDetails.client_name)
+                // console.log(data.work_item_IDs)
+                if (invoiceId === null) throw new Error('Error: Invoice ID is null, There was an Error with firestore');
+                const res = await addInvoiceAndUpdateWorkItems(invoiceId, JSON.stringify(finalInvoice).replace(/'/g, "\\'"), moment.tz(transInvoice.data.B, "MM/DD/YYYY", "UTC").format('YYYY-MM-DD'), moment(new Date()).format('YYYY-MM-DD'),totalPrice.toFixed(2), clientDetails.client_name, data.work_item_IDs.join(','));
+                console.log(res);
             }catch(error){
                 console.log(error);
                 errorMessages.push(error.message);

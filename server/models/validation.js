@@ -1,5 +1,3 @@
-const { clean } = require("gh-pages");
-
 // validation.js
 function validateAndTransform(inboundData) {
     const requiredNonEmptyKeys = ['A', 'B', 'C'];

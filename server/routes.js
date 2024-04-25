@@ -331,12 +331,16 @@ router.post('/updateWorkItem', isAuthenticatedAjax, async (req, res) => {
 router.post('/submitInvoiceWorkItems', isAuthenticatedAjax, async (req, res) => {
     try{
         console.log(req.body);
+
+        // Validate what the client sent us
         const { isValid, errors, cleanedworkItemToInvoiceConverterData } = await validateWITI(req.body);
         if (!isValid) {
             return res.status(400).json({ message: errors });
         }
 
         console.log(cleanedworkItemToInvoiceConverterData);
+
+        //Then submit this into the work item converter
         const {errorMessages, invoiceId} = await workItemToInvoiceConverter(cleanedworkItemToInvoiceConverterData);
         if (errorMessages.length) {
             return res.status(400).json({ message: errorMessages });

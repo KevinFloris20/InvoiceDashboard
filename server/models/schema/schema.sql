@@ -3,6 +3,7 @@ DELIMITER $$
 CREATE DATABASE IF NOT EXISTS workItemDB$$
 USE workItemDB$$
 
+-- make the tables
 CREATE TABLE IF NOT EXISTS clients (
     client_id INT AUTO_INCREMENT PRIMARY KEY,
     client_name VARCHAR(255) NOT NULL,
@@ -11,7 +12,7 @@ CREATE TABLE IF NOT EXISTS clients (
 )$$
 
 CREATE TABLE IF NOT EXISTS unit_numbers (
-    unit_id INT AUTO_INCREMENT PRIMARY KEY,gi
+    unit_id INT AUTO_INCREMENT PRIMARY KEY,
     client_id INT,
     unit_name VARCHAR(255) NOT NULL,
     FOREIGN KEY (client_id) REFERENCES clients(client_id)
@@ -20,14 +21,13 @@ CREATE TABLE IF NOT EXISTS unit_numbers (
 CREATE TABLE IF NOT EXISTS invoices (
     invoice_id INT AUTO_INCREMENT PRIMARY KEY,
     external_id VARCHAR(255) NOT NULL,
-    regular_string VARCHAR(255) NOT NULL,
+    regular_string TEXT NOT NULL,
     invoice_date DATE NOT NULL,
     date_created DATETIME,
     total DECIMAL(10, 2),
     client_id INT,
     FOREIGN KEY (client_id) REFERENCES clients(client_id)
 )$$
-
 
 CREATE TABLE IF NOT EXISTS workItems (
     workItem_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -39,11 +39,12 @@ CREATE TABLE IF NOT EXISTS workItems (
     FOREIGN KEY (client_id) REFERENCES clients(client_id),
     FOREIGN KEY (unit_id) REFERENCES unit_numbers(unit_id),
     FOREIGN KEY (invoice_id) REFERENCES invoices(invoice_id)
-)$$
+)
 
+-- make the stored procedures
 
--- Stored Procedure: InsertWorkItemWithChassis
-CREATE PROCEDURE InsertWorkItemWithChassis(
+-- InsertWorkItemWithEquipId
+CREATE PROCEDURE InsertWorkItemWithEquipId(
     IN p_clientName VARCHAR(255),
     IN p_unitName VARCHAR(255),
     IN p_descriptionPrice TEXT,
@@ -78,10 +79,10 @@ BEGIN
     END IF;
 END$$
 
--- Stored Procedure: InsertInvoiceAndUpdateWorkItems
+-- InsertWorkItemWithChassis
 CREATE PROCEDURE InsertInvoiceAndUpdateWorkItems(
     IN p_externalUniqueId VARCHAR(255),
-    IN p_regularString VARCHAR(255),
+    IN p_regularString TEXT,
     IN p_invoiceDate DATE,
     IN p_creationDate DATETIME,
     IN p_total DECIMAL(10,2),

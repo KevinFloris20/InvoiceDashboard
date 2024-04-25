@@ -25,6 +25,8 @@ try{
     console.log('Error connecting to SQL DB:', error);
 }
 
+
+
 async function getTables() {
     try {
         return new Promise((resolve, reject) => {
@@ -97,7 +99,7 @@ async function addClients(client_name, client_address, email) {
 }
 
 async function addWorkItem(clientName, unitName, descriptionPrice, workDate) {
-    const sql = `CALL InsertWorkItemWithChassis(?,?,?,?)`;
+    const sql = `CALL InsertWorkItemWithEquipId(?,?,?,?)`;
     return new Promise((resolve, reject) => {
         db.query(sql, [clientName, unitName, descriptionPrice, workDate], (error, results) => {
             if (error) reject(error);
