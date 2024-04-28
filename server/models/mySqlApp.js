@@ -208,32 +208,58 @@ async function displayWorkItems(numItems) {
 }
 
 async function displayAdvancedWorkItems(data) {
+    let sql = `SELECT wi.*, c.client_name, u.unit_name FROM workItems wi 
+    LEFT JOIN clients c ON wi.client_id = c.client_id 
+    LEFT JOIN unit_numbers u ON wi.unit_id = u.unit_id`;
+    let params = [];
+
     try {
-        let sql = `SELECT wi.*, c.client_name, u.unit_name FROM workItems wi 
-                   LEFT JOIN clients c ON wi.client_id = c.client_id 
-                   LEFT JOIN unit_numbers u ON wi.unit_id = u.unit_id`;
+        if ('workItemId' in data && 'equipmentName' in data) {
+            const { workItemId, equipmentName } = data;
+            const conditions = [];
 
-        const conditions = [];
-        const params = [];
+            if (workItemId && equipmentName) {
+                conditions.push('wi.invoice_id = ?');
+                conditions.push('u.unit_name = ?');
+                params.push(workItemId, equipmentName);
+            } else if (workItemId) {
+                conditions.push('wi.invoice_id = ?');
+                params.push(workItemId);
+            } else if (equipmentName) {
+                conditions.push('u.unit_name = ?');
+                params.push(equipmentName);
+            }
 
-        if (data.invoiceStartDate && data.invoiceEndDate) {
-            conditions.push('wi.work_date BETWEEN ? AND ?');
-            params.push(data.invoiceStartDate, data.invoiceEndDate);
-        }
+            if (conditions.length) {
+                sql += ` WHERE ${conditions.join(' AND ')}`;
+            }
 
-        if (data.clientAccountName && data.clientAccountName !== 'ALL') {
-            conditions.push('c.client_name = ?');
-            params.push(data.clientAccountName);
-        }
+        } else {
+            sql = `SELECT wi.*, c.client_name, u.unit_name FROM workItems wi 
+                    LEFT JOIN clients c ON wi.client_id = c.client_id 
+                    LEFT JOIN unit_numbers u ON wi.unit_id = u.unit_id`;
 
-        if (conditions.length) {
-            sql += ` WHERE ${conditions.join(' AND ')}`;
-        }
+            const conditions = [];
 
-        sql += ` ORDER BY wi.workItem_id DESC`;
-        if (data.numberOfQueryRes && data.numberOfQueryRes !== 'ALL') {
-            sql += ` LIMIT ?`;
-            params.push(parseInt(data.numberOfQueryRes));
+            if (data.invoiceStartDate && data.invoiceEndDate) {
+                conditions.push('wi.work_date BETWEEN ? AND ?');
+                params.push(data.invoiceStartDate, data.invoiceEndDate);
+            }
+
+            if (data.clientAccountName && data.clientAccountName !== 'ALL') {
+                conditions.push('c.client_name = ?');
+                params.push(data.clientAccountName);
+            }
+
+            if (conditions.length) {
+                sql += ` WHERE ${conditions.join(' AND ')}`;
+            }
+
+            sql += ` ORDER BY wi.workItem_id DESC`;
+            if (data.numberOfQueryRes && data.numberOfQueryRes !== 'ALL') {
+                sql += ` LIMIT ?`;
+                params.push(parseInt(data.numberOfQueryRes));
+            }
         }
 
         return new Promise((resolve, reject) => {
@@ -334,6 +360,7 @@ async function getInvoiceByID(invoiceID) {
 }
 
 
+
 module.exports = {
     getTables,
     getTableData,
@@ -346,5 +373,5 @@ module.exports = {
     displayWorkItems,
     getWorkItemById,
     addInvoiceAndUpdateWorkItems,
-    displayAdvancedWorkItems
+    displayAdvancedWorkItems,
 };

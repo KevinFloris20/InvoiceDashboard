@@ -39,7 +39,6 @@ async function newInvoicePDF(data, pdfPath) {
 
     const form = pdfDoc.getForm();
 
-    // Fill each field with data
     for (let key in data) {
         const formField = form.getField(key);
         if (formField) {

@@ -145,49 +145,39 @@ async function editFormData(docId) {
     }
 }
 async function fetchClientsAndPopulateDropdown() {
-    try {
+    try {     
         const response = await fetch('/getClients');
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         const clients = await response.json();
-        const $dropdown = $('#AWIClientDropdown');
-        $dropdown.empty(); 
-        $('<option>').val('').text('Select Client').appendTo($dropdown);
+        const dropdown = document.getElementById('AWIClientDropdown');
+        dropdown.innerHTML = ''; 
+        
+        const defaultOption = document.createElement('option');
+        defaultOption.value = '';
+        defaultOption.textContent = 'Select Client';
+        dropdown.appendChild(defaultOption);
+        
         clients.forEach(client => {
-            $('<option>').val(client.client_id).text(`${client.client_id} - ${client.client_name}`).appendTo($dropdown);
+            const option = document.createElement('option');
+            option.value = client.client_id;
+            option.textContent = `${client.client_id} - ${client.client_name}`;
+            dropdown.appendChild(option);
         });
-        $dropdown.dropdown();
+        
+        dropdown.addEventListener('click', function() {
+            this.classList.toggle('open');
+        });
+    
+        window.addEventListener('click', function(e) {
+            if (!dropdown.contains(e.target)) {
+                dropdown.classList.remove('open');
+            }
+        });
     } catch (error) {
         console.error('Fetch error:', error.message);
     }
-    // $('.ui.selection.dropdown').dropdown({
-    //     clearable: true,
-    //     placeholder: 'Select Client',
-    //     onClear: async function() {
-    //         const clientId = $(this).data('value');
-    //         const userConfirmed = confirm(`Are you sure you want to delete this client(${clientId})?`);
-    //         if(userConfirmed){                
-    //             try {
-    //                 const response = await fetch('/deleteClient', {
-    //                     method: 'POST',
-    //                     headers: {
-    //                         'Content-Type': 'application/json',
-    //                     },
-    //                     body: JSON.stringify({ id: clientId })
-    //                 });
-    //                 if (!response.ok) {
-    //                     throw new Error('Server responded with an error.');
-    //                 }
-    //                 const data = await response.json();
-    //                 alert('Client deleted successfully.');          
-    //             } catch (error) {
-    //                 console.error('Error deleting client:', error);
-    //                 alert('An error occurred while deleting the client.');
-    //             }
-    //         }
-    //     }
-    // });
 }
 async function delWorkItem(workItemId, data) {
     const userConfirmed = confirm(`Are you sure you want to delete this work item? ${workItemId}`);
@@ -654,8 +644,13 @@ function populateForm(workItemDetails, isViewMode) {
         button.classList.add('disableBtn');
     });
 
-    $('#AWIClientDropdown').dropdown();
-    $('#AWIClientDropdown').dropdown('set selected', `${workItemDetails.clientID} - ${workItemDetails.clientName}`);
+    const dropdown = document.getElementById('AWIClientDropdown');
+    for (const option of dropdown.options) {
+        if (option.value === `${workItemDetails.clientID} - ${workItemDetails.clientName}`) {
+            option.selected = true;
+            break;
+        }
+    }
 
     document.querySelector(`#addWorkItemForm > div:nth-child(1) > div:nth-child(1) > div > div > div`).classList.add('disabled');
     document.getElementById('AWIAddClientBtn').classList.add('disabled');
@@ -785,7 +780,7 @@ function cancelViewOrEditMode() {
     });
     document.querySelector(`#addWorkItemForm > div:nth-child(1) > div:nth-child(1) > div > div > div`).classList.remove('disabled');
     document.getElementById('AWIAddClientBtn').classList.remove('disabled');
-    $('#AWIClientDropdown').dropdown('clear');
+    document.getElementById('AWIClientDropdown').selectedIndex = 0;
 
     document.querySelector('#AWIsaveNextBtn').disabled = false;
 
@@ -1049,7 +1044,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
             fieldDiv.appendChild(input);
     
-            form.appendChild(fieldDiv);
+            form.prepend(fieldDiv);
         });
     }
     function reloadFields() {
@@ -1068,6 +1063,7 @@ document.addEventListener('DOMContentLoaded', function() {
     //calculate total charges (Make New Invoice)
     document.getElementById('invoice-form').addEventListener('input', handleTotalChargesCalculation, true);
     document.getElementById('newInv').addEventListener('click', handleTotalChargesCalculation, true);
+    // document.getElementById('menuNewInv').addEventListener('click', reloadFields);
 
     //auto fill textbox (Make New Invoice)
 
@@ -1313,7 +1309,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const jsonFormData = Object.fromEntries(formData.entries());
 
         if(!jsonFormData['Client']){
-            jsonFormData['Client'] = $('#AWIClientDropdown').val();
+            jsonFormData['Client'] = document.getElementById('AWIClientDropdown').value;
         }
 
         if (!addWorkItemValidation(formData)){
@@ -1361,6 +1357,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     //add new client (Add work Items)
     fetchClientsAndPopulateDropdown();
+
     //Setup for the add client modal
     setupModal('clientModal', 'addClientForm', 'errorDisplay', 'AWIAddClientBtn', 'addClientCancel', 'addClientSave');
 
@@ -1434,6 +1431,21 @@ document.addEventListener('DOMContentLoaded', function() {
         const queryString = searchParams.toString();
         try {
             const response = await fetch(`/getAdvancedWorkItems?${queryString}`);
+            console.log(response);
+            if (!response.ok) throw new Error(`Failed to fetch work items: ${response}`);
+            const workItems = await response.json();
+            renderWorkItemsTable(workItems);
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    });
+    document.getElementById('advSearchFormWIB').addEventListener('submit', async function(event) {
+        event.preventDefault();
+        const formData = new FormData(this);
+        const searchParams = new URLSearchParams(formData);
+        const queryString = searchParams.toString();
+        try {
+            const response = await fetch(`/getWorkItem?${queryString}`);
             console.log(response);
             if (!response.ok) throw new Error(`Failed to fetch work items: ${response}`);
             const workItems = await response.json();

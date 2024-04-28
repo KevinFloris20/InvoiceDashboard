@@ -72,7 +72,7 @@ router.get('/formdata', isAuthenticatedAjax, async (req, res) => {
 
 const { interactWithFirestore } = require('./models/firestoreApp.js');
 
-const { validateAndTransform, validateWorkItem, validateWITI, valSearchQuery, validateInvoiceSearchQuery } = require('./models/validation.js');
+const { validateAndTransform, validateWorkItem, validateWITI, valSearchQuery, validateInvoiceSearchQuery, validateAWIquery, valAndTransformInvoiceQuery } = require('./models/validation.js');
 
 const { newInvoicePDF } = require('./models/PDFDataApp.js');
 
@@ -101,6 +101,21 @@ router.get('/getClients', isAuthenticatedAjax, async (req, res) => {
     } catch (error) {
         console.error('Error fetching clients:', error);
         res.status(500).json({ error: error.message });
+    }
+});
+
+router.get('/getInvoice', isAuthenticatedAjax, async (req, res) => {
+    try {
+        const data = req.query;
+        const { isValid, errors, cleanedInvoiceQuery } = validateInvoiceSearchQuery(data);
+        if (!isValid) {
+            return res.status(400).json({ error: errors });
+        }
+        const firestoreData = await interactWithFirestore('readData', cleanedInvoiceQuery);
+        res.json(firestoreData);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error fetching invoice', error: error.message });
     }
 });
 
@@ -139,6 +154,24 @@ router.get('/getAdvancedInvoice', isAuthenticatedAjax, async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Error fetching invoices', error: error.message });
+    }
+});
+
+router.get('/getWorkItem', isAuthenticatedAjax, async (req, res) => {
+    try{
+        const data = req.query;
+        console.log(data);
+        const { isValid, errors, cleanedSearchQuery } = validateAWIquery(data);
+        
+        if (!isValid) {
+            return res.status(400).json({ error: errors });
+        }
+        const result = await displayAdvancedWorkItems(cleanedSearchQuery);
+        console.log(result);
+        res.json(result);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error fetching work items', error: error.message });
     }
 });
 

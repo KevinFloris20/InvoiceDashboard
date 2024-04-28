@@ -285,6 +285,26 @@ async function validateWITI(data) {
     return { isValid, errors, cleanedworkItemToInvoiceConverterData: newData };
 }
 
+function validateAWIquery(data){
+    let errors = [];
+    let isValid = true;
+    const { equipmentIdSearch, workItemId } = data;
+
+    let finalOutput = {
+        workItemmId: null,
+        equipmentName: null,
+    }
+
+    // for now we just assign the values to the finalOutput
+    finalOutput.workItemmId = workItemId;
+    finalOutput.equipmentName = equipmentIdSearch;
+
+    return { isValid, errors, cleanedAWIquery: finalOutput ? finalOutput : null};
+}
+
+async function valAndTransformInvoiceQuery(data){
+}
+
 // Info object to provide more context in error messages
 const info = {
     'A': 'Invoice #',
@@ -294,7 +314,15 @@ const info = {
     'E': 'Email'
 };
 
-module.exports = { validateAndTransform, validateWorkItem, validateWITI, validateInvoiceSearchQuery, valSearchQuery };
+module.exports = { 
+    validateAndTransform, 
+    validateWorkItem, 
+    validateWITI, 
+    validateInvoiceSearchQuery, 
+    valSearchQuery,
+    validateAWIquery,
+    valAndTransformInvoiceQuery
+};
 
 // // Example usage
 // try {
