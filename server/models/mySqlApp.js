@@ -212,19 +212,18 @@ async function displayAdvancedWorkItems(data) {
     LEFT JOIN clients c ON wi.client_id = c.client_id 
     LEFT JOIN unit_numbers u ON wi.unit_id = u.unit_id`;
     let params = [];
-
     try {
-        if ('workItemId' in data && 'equipmentName' in data) {
-            const { workItemId, equipmentName } = data;
+        if ('workItem_Id' in data && 'equipmentName' in data) {
+            const { workItem_Id, equipmentName } = data;
             const conditions = [];
 
-            if (workItemId && equipmentName) {
-                conditions.push('wi.invoice_id = ?');
+            if (workItem_Id && equipmentName) {
+                conditions.push('wi.workItem_id = ?');
                 conditions.push('u.unit_name = ?');
-                params.push(workItemId, equipmentName);
-            } else if (workItemId) {
-                conditions.push('wi.invoice_id = ?');
-                params.push(workItemId);
+                params.push(workItem_Id, equipmentName);
+            } else if (workItem_Id) {
+                conditions.push('wi.workItem_id = ?');
+                params.push(workItem_Id);
             } else if (equipmentName) {
                 conditions.push('u.unit_name = ?');
                 params.push(equipmentName);

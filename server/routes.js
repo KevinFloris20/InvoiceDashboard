@@ -160,14 +160,12 @@ router.get('/getAdvancedInvoice', isAuthenticatedAjax, async (req, res) => {
 router.get('/getWorkItem', isAuthenticatedAjax, async (req, res) => {
     try{
         const data = req.query;
-        console.log(data);
         const { isValid, errors, cleanedSearchQuery } = validateAWIquery(data);
-        
         if (!isValid) {
             return res.status(400).json({ error: errors });
         }
+        console.log("Received query: ",cleanedSearchQuery);
         const result = await displayAdvancedWorkItems(cleanedSearchQuery);
-        console.log(result);
         res.json(result);
     } catch (error) {
         console.error(error);

@@ -291,21 +291,20 @@ function validateAWIquery(data){
     const { equipmentIdSearch, workItemId } = data;
 
     let finalOutput = {
-        workItemmId: null,
+        workItem_Id: null,
         equipmentName: null,
     }
 
     // for now we just assign the values to the finalOutput
-    finalOutput.workItemmId = workItemId;
+    finalOutput.workItem_Id = parseInt(workItemId);
     finalOutput.equipmentName = equipmentIdSearch;
 
-    return { isValid, errors, cleanedAWIquery: finalOutput ? finalOutput : null};
+    return { isValid, errors, cleanedSearchQuery: finalOutput };
 }
 
 async function valAndTransformInvoiceQuery(data){
 }
 
-// Info object to provide more context in error messages
 const info = {
     'A': 'Invoice #',
     'B': 'Date',
