@@ -265,6 +265,252 @@ async function interactWithFirestore(whatAreWeDoing, data) {
                     console.error('Error in readAdvancedData:| Status:', error.response?.status, "| Message: ", error.message, "| Data: ", error.response?.data);
                 }
                 break;
+                    try {
+                        let queryPayload = {
+                            structuredQuery: {
+                                from: [{ collectionId: collection_Id }],
+                                orderBy: [{
+                                    field: { fieldPath: 'creationDate' },
+                                    direction: 'DESCENDING'
+                                }]
+                            }
+                        };
+                
+                        if (data.invoice_Id && data.invoice_Num) {
+                            // Ensure both fields are not empty
+                            queryPayload.structuredQuery.where = {
+                                compositeFilter: {
+                                    op: 'AND',
+                                    filters: [
+                                        {
+                                            fieldFilter: {
+                                                field: { fieldPath: '__name__' },
+                                                op: 'EQUAL',
+                                                value: { stringValue: data.invoice_Id }
+                                            }
+                                        },
+                                        {
+                                            fieldFilter: {
+                                                field: { fieldPath: 'A' },
+                                                op: 'EQUAL',
+                                                value: { stringValue: data.invoice_Num }
+                                            }
+                                        }
+                                    ]
+                                }
+                            };
+                        } else if (data.invoice_Id) {
+                            // Ensure invoice_Id is not empty
+                            if (data.invoice_Id.trim() !== '') {
+                                queryPayload.structuredQuery.where = {
+                                    fieldFilter: {
+                                        field: { fieldPath: '__name__' },
+                                        op: 'EQUAL',
+                                        value: { stringValue: data.invoice_Id }
+                                    }
+                                };
+                            } else {
+                                throw new Error("Invoice ID is required but was empty.");
+                            }
+                        } else if (data.invoice_Num) {
+                            // Ensure invoice_Num is not empty
+                            if (data.invoice_Num.trim() !== '') {
+                                queryPayload.structuredQuery.where = {
+                                    fieldFilter: {
+                                        field: { fieldPath: 'A' },
+                                        op: 'EQUAL',
+                                        value: { stringValue: data.invoice_Num }
+                                    }
+                                };
+                            } else {
+                                throw new Error("Invoice Number is required but was empty.");
+                            }
+                        } else {
+                            // If both are empty, throw an error or handle appropriately
+                            throw new Error("At least one identifier (Invoice ID or Invoice Number) is required.");
+                        }
+                
+                        const queryUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/${db_name}/documents:runQuery`;
+                        const queryResponse = await axios.post(queryUrl, queryPayload, { headers });
+                
+                        if (queryResponse.status !== 200) {
+                            throw new Error(`Error in getInvoice: Status ${queryResponse.status}`);
+                        }
+                
+                        const processedData = queryResponse.data.map(item => {
+                            if (item.document) {
+                                const document = item.document;
+                                document.fields = Object.keys(document.fields).reduce((acc, key) => {
+                                    acc[key] = document.fields[key].stringValue || document.fields[key].timestampValue || document.fields[key];
+                                    return acc;
+                                }, {});
+                                document.id = document.name.split('/').pop();
+                                return document;
+                            }
+                            return null;
+                        }).filter(item => item !== null);
+                
+                        console.log('Invoice data retrieved:', JSON.stringify(processedData, null, 2));
+                        return processedData;
+                    } catch (error) {
+                        return handleError(error, 'Error in getInvoice', JSON.stringify(data, null, 2));
+                    }
+                    break;
+                
+                console.log('Getting invoice data:', data);
+                try {
+                    let queryPayload = {
+                        structuredQuery: {
+                            from: [{ collectionId: collection_Id }],
+                            orderBy: [{
+                                field: { fieldPath: 'creationDate' },
+                                direction: 'DESCENDING'
+                            }]
+                        }
+                    };
+            
+                    const filters = [];
+                    if (data.invoice_Id) {
+                        queryPayload.structuredQuery.where = {
+                            fieldFilter: {
+                                field: { fieldPath: '__name__' },
+                                op: 'EQUAL',
+                                value: { stringValue: data.invoice_Id }
+                            }
+                        };
+                    } else if (data.invoice_Num) {
+                        queryPayload.structuredQuery.where = {
+                            fieldFilter: {
+                                field: { fieldPath: 'A' },
+                                op: 'EQUAL',
+                                value: { stringValue: data.invoice_Num }
+                            }
+                        };
+                    }
+            
+                    if (data.invoice_Id && data.invoice_Num) {
+                        queryPayload.structuredQuery.where = {
+                            compositeFilter: {
+                                op: 'AND',
+                                filters: [
+                                    {
+                                        fieldFilter: {
+                                            field: { fieldPath: '__name__' },
+                                            op: 'EQUAL',
+                                            value: { stringValue: data.invoice_Id }
+                                        }
+                                    },
+                                    {
+                                        fieldFilter: {
+                                            field: { fieldPath: 'A' },
+                                            op: 'EQUAL',
+                                            value: { stringValue: data.invoice_Num }
+                                        }
+                                    }
+                                ]
+                            }
+                        };
+                    }
+            
+                    const queryUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/${db_name}/documents:runQuery`;
+                    const queryResponse = await axios.post(queryUrl, queryPayload, { headers });
+
+                    //check if res is ok
+                    if (queryResponse.status !== 200) {
+                        throw new Error(`Error in getInvoice: Status ${queryResponse.status}`);
+                    }
+            
+                    const processedData = queryResponse.data.map(item => {
+                    if (item.document) {
+                        const document = item.document;
+                        const doc = item.document.fields;
+                        if (doc.B && doc.B.timestampValue) {
+                            document.fields.B = { stringValue: convertToMMDDYYYY(doc.B.timestampValue) };
+                        }
+                        document.id = document.name.split('/').pop();
+                        return document;
+                    }
+                        return null;
+                    }).filter(item => item !== null);
+            
+                    // console.log('Invoice data retrieved:', processedData);
+                    return processedData;
+                } catch (error) {
+                    return handleError(error, 'Error in getInvoice', safeStringify(data));
+                }
+                break;
+            case 'getInvoice':
+                try {
+                    let queryPayload = {
+                        structuredQuery: {
+                            from: [{ collectionId: collection_Id }],
+                            orderBy: [{
+                                field: { fieldPath: 'creationDate' },
+                                direction: 'DESCENDING'
+                            }]
+                        }
+                    };
+            
+                    let filters = [];
+                    if (data.invoice_Id.trim() !== '') {
+                        filters.push({
+                            fieldFilter: {
+                                field: { fieldPath: '__name__' },
+                                op: 'EQUAL',
+                                value: { referenceValue: `projects/${projectId}/databases/${db_name}/documents/${collection_Id}/${data.invoice_Id}` }
+                            }
+                        });
+                    }
+                    if (data.invoice_Num.trim() !== '') {
+                        filters.push({
+                            fieldFilter: {
+                                field: { fieldPath: 'A' },
+                                op: 'EQUAL',
+                                value: { stringValue: data.invoice_Num }
+                            }
+                        });
+                    }
+            
+                    if (filters.length === 1) {
+                        queryPayload.structuredQuery.where = filters[0];
+                    } else if (filters.length > 1) {
+                        queryPayload.structuredQuery.where = {
+                            compositeFilter: {
+                                op: 'AND',
+                                filters: filters
+                            }
+                        };
+                    }
+            
+                    const queryUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/${db_name}/documents:runQuery`;
+                    const queryResponse = await axios.post(queryUrl, queryPayload, { headers });
+            
+                    if (queryResponse.status !== 200) {
+                        throw new Error(`Error in getInvoice: Status ${queryResponse.status}`);
+                    }
+            
+                    //DONNNE
+                    const processedData = queryResponse.data.map(item => {
+                        if (item.document) {
+                            const document = item.document;
+                            const doc = item.document.fields;
+                            if (doc.B && doc.B.timestampValue) {
+                                document.fields.B = { stringValue: convertToMMDDYYYY(doc.B.timestampValue) };
+                            }
+                            document.id = document.name.split('/').pop();
+                            return document;
+                        }
+                        return null;
+                    }).filter(item => item !== null);
+                    return processedData;
+                } catch (error) {
+                    console.error('Error Details:', error.message);
+                    if (error.response) {
+                        console.error('Error Response:', JSON.stringify(error.response.data, null, 2));
+                    }
+                    return handleError(error, 'Error in getInvoice', JSON.stringify(data, null, 2));
+                }
+                break;
             default:
                 throw new Error('Unsupported operation: ' + whatAreWeDoing);
         }

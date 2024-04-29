@@ -107,11 +107,11 @@ router.get('/getClients', isAuthenticatedAjax, async (req, res) => {
 router.get('/getInvoice', isAuthenticatedAjax, async (req, res) => {
     try {
         const data = req.query;
-        const { isValid, errors, cleanedInvoiceQuery } = validateInvoiceSearchQuery(data);
+        const { isValid, errors, cleanedSearchQuery } = valAndTransformInvoiceQuery(data);
         if (!isValid) {
             return res.status(400).json({ error: errors });
         }
-        const firestoreData = await interactWithFirestore('readData', cleanedInvoiceQuery);
+        const firestoreData = await interactWithFirestore('getInvoice', cleanedSearchQuery);
         res.json(firestoreData);
     } catch (error) {
         console.error(error);

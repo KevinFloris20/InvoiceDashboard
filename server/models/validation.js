@@ -302,7 +302,21 @@ function validateAWIquery(data){
     return { isValid, errors, cleanedSearchQuery: finalOutput };
 }
 
-async function valAndTransformInvoiceQuery(data){
+function valAndTransformInvoiceQuery(data){//
+    let errors = [];
+    let isValid = true;
+    const { invoiceidSearch, invoiceNumSearch } = data;    
+
+    let finalOutput = {
+        invoice_Id: null,
+        invoice_Num: null,
+    }
+
+    // for now we just assign the values to the finalOutput
+    finalOutput.invoice_Id = invoiceidSearch;
+    finalOutput.invoice_Num = invoiceNumSearch;
+
+    return { isValid, errors, cleanedSearchQuery: finalOutput };
 }
 
 const info = {

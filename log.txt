@@ -1261,3 +1261,194 @@ Stack Trace: AxiosError: Request failed with status code 400
     at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
 "{\"numberOfResults\":\"ALL\",\"fromAccount\":\"ALL\",\"startDate\":\"2024-12-10\",\"endDate\":\"2024-12-15\"}"
 
+[2024-04-29T00:33:02.369Z] Error in getInvoice
+Error Details: Cannot read properties of undefined (reading 'invoice_Id')
+Stack Trace: TypeError: Cannot read properties of undefined (reading 'invoice_Id')
+    at interactWithFirestore (C:\Users\theus\Yeaa\fcrdashboard\server\models\firestoreApp.js:280:34)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async C:\Users\theus\Yeaa\fcrdashboard\server\routes.js:114:31
+
+
+[2024-04-29T00:34:24.484Z] Error in getInvoice
+Error Details: Cannot read properties of undefined (reading 'timestampValue')
+Stack Trace: TypeError: Cannot read properties of undefined (reading 'timestampValue')
+    at C:\Users\theus\Yeaa\fcrdashboard\server\models\firestoreApp.js:328:126
+    at Array.map (<anonymous>)
+    at interactWithFirestore (C:\Users\theus\Yeaa\fcrdashboard\server\models\firestoreApp.js:325:66)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async C:\Users\theus\Yeaa\fcrdashboard\server\routes.js:114:31
+{}
+
+[2024-04-29T00:35:27.484Z] Error in getInvoice
+Error Details: Cannot read properties of undefined (reading 'timestampValue')
+Stack Trace: TypeError: Cannot read properties of undefined (reading 'timestampValue')
+    at C:\Users\theus\Yeaa\fcrdashboard\server\models\firestoreApp.js:333:126
+    at Array.map (<anonymous>)
+    at interactWithFirestore (C:\Users\theus\Yeaa\fcrdashboard\server\models\firestoreApp.js:330:66)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async C:\Users\theus\Yeaa\fcrdashboard\server\routes.js:114:31
+{}
+
+[2024-04-29T00:36:03.336Z] Error in getInvoice
+Error Details: Cannot read properties of undefined (reading 'timestampValue')
+Stack Trace: TypeError: Cannot read properties of undefined (reading 'timestampValue')
+    at C:\Users\theus\Yeaa\fcrdashboard\server\models\firestoreApp.js:334:126
+    at Array.map (<anonymous>)
+    at interactWithFirestore (C:\Users\theus\Yeaa\fcrdashboard\server\models\firestoreApp.js:331:66)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async C:\Users\theus\Yeaa\fcrdashboard\server\routes.js:114:31
+{}
+
+[2024-04-29T00:36:35.266Z] Error in getInvoice
+Error Details: Cannot read properties of undefined (reading 'timestampValue')
+Stack Trace: TypeError: Cannot read properties of undefined (reading 'timestampValue')
+    at C:\Users\theus\Yeaa\fcrdashboard\server\models\firestoreApp.js:334:126
+    at Array.map (<anonymous>)
+    at interactWithFirestore (C:\Users\theus\Yeaa\fcrdashboard\server\models\firestoreApp.js:331:66)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async C:\Users\theus\Yeaa\fcrdashboard\server\routes.js:114:31
+{}
+
+[2024-04-29T00:38:20.366Z] Error in getInvoice
+Error Details: Cannot read properties of undefined (reading 'timestampValue')
+Stack Trace: TypeError: Cannot read properties of undefined (reading 'timestampValue')
+    at C:\Users\theus\Yeaa\fcrdashboard\server\models\firestoreApp.js:334:126
+    at Array.map (<anonymous>)
+    at interactWithFirestore (C:\Users\theus\Yeaa\fcrdashboard\server\models\firestoreApp.js:331:66)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async C:\Users\theus\Yeaa\fcrdashboard\server\routes.js:114:31
+{}
+
+[2024-04-29T00:51:04.448Z] Error in interactWithFirestore
+Error Details: Unsupported operation: getInvoice
+Stack Trace: Error: Unsupported operation: getInvoice
+    at interactWithFirestore (C:\Users\theus\Yeaa\fcrdashboard\server\models\firestoreApp.js:272:23)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async C:\Users\theus\Yeaa\fcrdashboard\server\routes.js:114:31
+{}
+
+[2024-04-29T00:59:22.264Z] Error in getInvoice
+Error Details: Request failed with status code 400
+Response Data: [object Object]
+Stack Trace: AxiosError: Request failed with status code 400
+    at settle (C:\Users\theus\Yeaa\fcrdashboard\node_modules\axios\dist\node\axios.cjs:1967:12)
+    at Unzip.handleStreamEnd (C:\Users\theus\Yeaa\fcrdashboard\node_modules\axios\dist\node\axios.cjs:3062:11)
+    at Unzip.emit (node:events:527:35)
+    at endReadableNT (node:internal/streams/readable:1589:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+{
+  "invoice_Id": "0cp8LhwNQ13h06S6Q8dD",
+  "invoice_Num": ""
+}
+
+[2024-04-29T00:59:25.664Z] Error in getInvoice
+Error Details: Request failed with status code 400
+Response Data: [object Object]
+Stack Trace: AxiosError: Request failed with status code 400
+    at settle (C:\Users\theus\Yeaa\fcrdashboard\node_modules\axios\dist\node\axios.cjs:1967:12)
+    at Unzip.handleStreamEnd (C:\Users\theus\Yeaa\fcrdashboard\node_modules\axios\dist\node\axios.cjs:3062:11)
+    at Unzip.emit (node:events:527:35)
+    at endReadableNT (node:internal/streams/readable:1589:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+{
+  "invoice_Id": "0cp8LhwNQ13h06S6Q8dD",
+  "invoice_Num": ""
+}
+
+[2024-04-29T01:17:17.561Z] Error in getInvoice
+Error Details: Request failed with status code 400
+Response Data: [object Object]
+Stack Trace: AxiosError: Request failed with status code 400
+    at settle (C:\Users\theus\Yeaa\fcrdashboard\node_modules\axios\dist\node\axios.cjs:1967:12)
+    at Unzip.handleStreamEnd (C:\Users\theus\Yeaa\fcrdashboard\node_modules\axios\dist\node\axios.cjs:3062:11)
+    at Unzip.emit (node:events:527:35)
+    at endReadableNT (node:internal/streams/readable:1589:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+{
+  "invoice_Id": "0cp8LhwNQ13h06S6Q8dD",
+  "invoice_Num": ""
+}
+
+[2024-04-29T01:17:22.602Z] Error in getInvoice
+Error Details: Request failed with status code 400
+Response Data: [object Object]
+Stack Trace: AxiosError: Request failed with status code 400
+    at settle (C:\Users\theus\Yeaa\fcrdashboard\node_modules\axios\dist\node\axios.cjs:1967:12)
+    at Unzip.handleStreamEnd (C:\Users\theus\Yeaa\fcrdashboard\node_modules\axios\dist\node\axios.cjs:3062:11)
+    at Unzip.emit (node:events:527:35)
+    at endReadableNT (node:internal/streams/readable:1589:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+{
+  "invoice_Id": "",
+  "invoice_Num": "11111"
+}
+
+[2024-04-29T01:17:32.778Z] Error in getInvoice
+Error Details: Request failed with status code 400
+Response Data: [object Object]
+Stack Trace: AxiosError: Request failed with status code 400
+    at settle (C:\Users\theus\Yeaa\fcrdashboard\node_modules\axios\dist\node\axios.cjs:1967:12)
+    at Unzip.handleStreamEnd (C:\Users\theus\Yeaa\fcrdashboard\node_modules\axios\dist\node\axios.cjs:3062:11)
+    at Unzip.emit (node:events:527:35)
+    at endReadableNT (node:internal/streams/readable:1589:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+{
+  "invoice_Id": "",
+  "invoice_Num": "5"
+}
+
+[2024-04-29T01:32:24.222Z] Error in getInvoice
+Error Details: Request failed with status code 400
+Response Data: [object Object]
+Stack Trace: AxiosError: Request failed with status code 400
+    at settle (C:\Users\theus\Yeaa\fcrdashboard\node_modules\axios\dist\node\axios.cjs:1967:12)
+    at Unzip.handleStreamEnd (C:\Users\theus\Yeaa\fcrdashboard\node_modules\axios\dist\node\axios.cjs:3062:11)
+    at Unzip.emit (node:events:527:35)
+    at endReadableNT (node:internal/streams/readable:1589:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+"{\n  \"invoice_Id\": \"\",\n  \"invoice_Num\": \"5\"\n}"
+
+[2024-04-29T01:32:33.383Z] Error in getInvoice
+Error Details: Request failed with status code 400
+Response Data: [object Object]
+Stack Trace: AxiosError: Request failed with status code 400
+    at settle (C:\Users\theus\Yeaa\fcrdashboard\node_modules\axios\dist\node\axios.cjs:1967:12)
+    at Unzip.handleStreamEnd (C:\Users\theus\Yeaa\fcrdashboard\node_modules\axios\dist\node\axios.cjs:3062:11)
+    at Unzip.emit (node:events:527:35)
+    at endReadableNT (node:internal/streams/readable:1589:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+"{\n  \"invoice_Id\": \"wu1oziLRDTRnQfnvRXNB\",\n  \"invoice_Num\": \"\"\n}"
+
+[2024-04-29T01:32:39.811Z] Error in getInvoice
+Error Details: Request failed with status code 400
+Response Data: [object Object]
+Stack Trace: AxiosError: Request failed with status code 400
+    at settle (C:\Users\theus\Yeaa\fcrdashboard\node_modules\axios\dist\node\axios.cjs:1967:12)
+    at Unzip.handleStreamEnd (C:\Users\theus\Yeaa\fcrdashboard\node_modules\axios\dist\node\axios.cjs:3062:11)
+    at Unzip.emit (node:events:527:35)
+    at endReadableNT (node:internal/streams/readable:1589:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+"{\n  \"invoice_Id\": \"\",\n  \"invoice_Num\": \"11111\"\n}"
+
+[2024-04-29T01:34:37.922Z] Error in getInvoice
+Error Details: Request failed with status code 400
+Response Data: [object Object]
+Stack Trace: AxiosError: Request failed with status code 400
+    at settle (C:\Users\theus\Yeaa\fcrdashboard\node_modules\axios\dist\node\axios.cjs:1967:12)
+    at Unzip.handleStreamEnd (C:\Users\theus\Yeaa\fcrdashboard\node_modules\axios\dist\node\axios.cjs:3062:11)
+    at Unzip.emit (node:events:527:35)
+    at endReadableNT (node:internal/streams/readable:1589:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+"{\n  \"invoice_Id\": \"\",\n  \"invoice_Num\": \"11111\"\n}"
+
+[2024-04-29T01:38:32.087Z] Error in getInvoice
+Error Details: Request failed with status code 400
+Response Data: [object Object]
+Stack Trace: AxiosError: Request failed with status code 400
+    at settle (C:\Users\theus\Yeaa\fcrdashboard\node_modules\axios\dist\node\axios.cjs:1967:12)
+    at Unzip.handleStreamEnd (C:\Users\theus\Yeaa\fcrdashboard\node_modules\axios\dist\node\axios.cjs:3062:11)
+    at Unzip.emit (node:events:527:35)
+    at endReadableNT (node:internal/streams/readable:1589:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+"{\n  \"invoice_Id\": \"bZI9wVZ8mtKJK77ZuvBZ\",\n  \"invoice_Num\": \"\"\n}"
+

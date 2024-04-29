@@ -1284,6 +1284,21 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Error:', error);
         }
     });
+    document.getElementById('advSearchFormB').addEventListener('submit', async function(event) {
+        event.preventDefault();
+        const formData = new FormData(this);
+        const searchParams = new URLSearchParams(formData);
+        const queryString = searchParams.toString();
+        try {
+            const response = await fetch(`/getInvoice?${queryString}`);
+            console.log(response);
+            if (!response.ok) throw new Error(`Failed to fetch invoices: ${response}`);
+            const invoices = await response.json();
+            renderInvoicesTable(invoices);
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    });
 
     //submit num of most recent amt of invoices by number (Search Invoices)
 
