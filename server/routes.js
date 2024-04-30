@@ -8,13 +8,13 @@ const path = require('path');
 //server the public dir files
 ///////////////////////////////////////
 const isAuthenticated = (req, res, next) => {
-    if (req.isAuthenticated() || true) {
+    if (req.isAuthenticated()) {
         return next();
     }
     res.redirect('/login');
 };
 function isAuthenticatedAjax(req, res, next) {
-    if (req.isAuthenticated() || true) {
+    if (req.isAuthenticated()) {
         return next();
     }
     res.status(401).json({ error: 'User not authenticated' });
@@ -31,6 +31,12 @@ router.get('/login', (req, res) => {
 // Serve the main page after authentication
 router.get('/', isAuthenticated, (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'public/index.html'));
+});
+
+// for some reason im getting a weird error
+router.get('/other/site.webmanifest', isAuthenticated, (req, res) => {
+    res.type('application/manifest+json');
+    res.sendFile(path.join(__dirname, '..', 'public', 'other', 'site.webmanifest'));
 });
 
 // Serve static files after authentication
@@ -52,6 +58,7 @@ router.get('/FCRInvoiceTemplate.png', isAuthenticated, (req, res) => {
         res.status(404).send('Image not found');
     }
 });
+
 
 ///////////////////////////////////////
 
