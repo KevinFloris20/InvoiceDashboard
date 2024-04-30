@@ -44,6 +44,13 @@ function validateInvoiceSearchQuery(data) {
     let isValid = true;
     const {numberOfResults, fromAccount, startDate, endDate} = data;
 
+    [numberOfResults, fromAccount, startDate, endDate].forEach(value => {
+        if (typeof value !== 'string' || value.length > 250) {
+            errors.push('Invalid input: All inputs must be strings and it cant be super long');
+            isValid = false;
+        }
+    });
+
     let finalObject = {
         invoiceStartDate: null,
         invoiceEndDate: null,
@@ -51,7 +58,6 @@ function validateInvoiceSearchQuery(data) {
         clientAccountName: null
     };
 
-    //just assign the values to the finalObject for now
     finalObject.invoiceStartDate = startDate;
     finalObject.invoiceEndDate = endDate;
     finalObject.numberOfQueryRes = numberOfResults;
@@ -65,6 +71,14 @@ function valSearchQuery(data) {
     let isValid = true;
     const {numberOfResults, fromAccount, startDate, endDate} = data;
 
+    [numberOfResults, fromAccount, startDate, endDate].forEach((value, index) => {
+        if (typeof value !== 'string' || value.length > 250) {
+            let fieldName = ['numberOfResults', 'fromAccount', 'startDate', 'endDate'][index];
+            errors.push(`Invalid input: All inputs must be strings and it cant be super long for ${fieldName}`);
+            isValid = false;
+        }
+    });
+
     let finalObject = {
         invoiceStartDate: null,
         invoiceEndDate: null,
@@ -72,7 +86,6 @@ function valSearchQuery(data) {
         clientAccountName: null
     };
 
-    //just assign the values to the finalObject for now
     finalObject.invoiceStartDate = startDate;
     finalObject.invoiceEndDate = endDate;
     finalObject.numberOfQueryRes = numberOfResults;
@@ -290,14 +303,21 @@ function validateAWIquery(data){
     let isValid = true;
     const { equipmentIdSearch, workItemId } = data;
 
+    [equipmentIdSearch, workItemId].forEach(value => {
+        if (typeof value !== 'string' || value.length > 250) {
+            errors.push('Invalid input: All inputs must be strings and it cant be super long');
+            isValid = false;
+        }
+    });
+
     let finalOutput = {
         workItem_Id: null,
         equipmentName: null,
     }
 
-    // for now we just assign the values to the finalOutput
     finalOutput.workItem_Id = parseInt(workItemId);
     finalOutput.equipmentName = equipmentIdSearch;
+    console.log('validateAWIquery',finalOutput);
 
     return { isValid, errors, cleanedSearchQuery: finalOutput };
 }
@@ -305,14 +325,20 @@ function validateAWIquery(data){
 function valAndTransformInvoiceQuery(data){//
     let errors = [];
     let isValid = true;
-    const { invoiceidSearch, invoiceNumSearch } = data;    
+    const { invoiceidSearch, invoiceNumSearch } = data;  
+
+    [invoiceidSearch, invoiceNumSearch].forEach(value => {
+        if (typeof value !== 'string' || value.length > 250) {
+            errors.push('Invalid input: All inputs must be strings and it cant be super long');
+            isValid = false;
+        }
+    });
 
     let finalOutput = {
         invoice_Id: null,
         invoice_Num: null,
     }
 
-    // for now we just assign the values to the finalOutput
     finalOutput.invoice_Id = invoiceidSearch;
     finalOutput.invoice_Num = invoiceNumSearch;
 

@@ -148,7 +148,6 @@ router.get('/getAdvancedInvoice', isAuthenticatedAjax, async (req, res) => {
         if (!isValid) {
             return res.status(400).json({ error: errors });
         }
-        console.log(cleanedSearchQuery);
         const firestoreData = await interactWithFirestore('readAdvancedData',cleanedSearchQuery);
         res.json(firestoreData);
     } catch (error) {
@@ -164,7 +163,7 @@ router.get('/getWorkItem', isAuthenticatedAjax, async (req, res) => {
         if (!isValid) {
             return res.status(400).json({ error: errors });
         }
-        console.log("Received query: ",cleanedSearchQuery);
+        console.log("Received query /getWorkItem: ",cleanedSearchQuery);
         const result = await displayAdvancedWorkItems(cleanedSearchQuery);
         res.json(result);
     } catch (error) {
@@ -190,7 +189,7 @@ router.get('/getAdvancedWorkItems', isAuthenticatedAjax, async (req, res) => {
         if (!isValid) {
             return res.status(400).json({ error: errors });
         }
-        console.log('Received query:',cleanedSearchQuery);
+        console.log('Received query /getAdvancedWorkItems:',cleanedSearchQuery);
         const result = await displayAdvancedWorkItems(cleanedSearchQuery);
         res.json(result);
     } catch (error) {
@@ -227,13 +226,11 @@ router.get('/getAdvancedWorkItems', isAuthenticatedAjax, async (req, res) => {
 router.post('/submit-form', isAuthenticatedAjax, async (req, res) => {
     try {
         const submitData = req.body;
-        console.log(submitData);
         const validation = validateAndTransform(submitData);
-
         if (!validation.isValid) {
             return res.status(400).json({ errors: validation.errors });
         }
-
+        console.log(validation.data);
         const result = await interactWithFirestore('writeData', validation.data);
         res.json({ message: 'Invoice submitted successfully', result: result });
     } catch (error) {
@@ -244,6 +241,10 @@ router.post('/submit-form', isAuthenticatedAjax, async (req, res) => {
 router.post('/download-invoice', isAuthenticatedAjax, async (req, res) => {
     try {
         const data = req.body; 
+        const { isValid, errors, output } = validateAndTransform(data);
+        if (!isValid) {
+            return res.status(400).json({ errors: errors });
+        }
         var pdfPath;
         if (fs.existsSync('FCRInvoiceTemplate.pdf')) {
             pdfPath = 'FCRInvoiceTemplate.pdf';
@@ -311,7 +312,7 @@ router.post('/addWorkItem', isAuthenticatedAjax, async (req, res) => {
             return res.status(400).json({ error: errors });
         }
         try {
-            console.log(data)
+            console.log('submit /addWorkItem: ',data)
             await addWorkItem(data.clientsName, data.unitNum, data.description, data.workDate);
             res.json({ message: 'Work item added successfully' });
         } catch (error) {
@@ -341,12 +342,12 @@ router.post('/deleteWorkItem', isAuthenticatedAjax, async (req, res) => {
 router.post('/updateWorkItem', isAuthenticatedAjax, async (req, res) => {
     try {
         const allClients = await getClients();
-        console.log(req.body)
         const { isValid, errors, data } = validateWorkItem(req.body, allClients);
         if (!isValid) {
             return res.status(400).json({ error: errors });
         }
         try {
+            console.log('submit /updateWorkItem: ',data)
             await updateWorkItem(data.workItemId, data.description, data.workDate);
             res.json({ message: 'Work item updated successfully' });
         } catch (error) {
@@ -361,22 +362,16 @@ router.post('/updateWorkItem', isAuthenticatedAjax, async (req, res) => {
 
 router.post('/submitInvoiceWorkItems', isAuthenticatedAjax, async (req, res) => {
     try{
-        console.log(req.body);
-
-        // Validate what the client sent us
-        const { isValid, errors, cleanedworkItemToInvoiceConverterData } = await validateWITI(req.body);
+        const data = req.body;
+        const { isValid, errors, cleanedworkItemToInvoiceConverterData } = await validateWITI(data);
         if (!isValid) {
             return res.status(400).json({ message: errors });
         }
-
-        console.log(cleanedworkItemToInvoiceConverterData);
-
-        //Then submit this into the work item converter
+        console.log('submit New inv /submitInvoiceWorkItems:',cleanedworkItemToInvoiceConverterData);
         const {errorMessages, invoiceId} = await workItemToInvoiceConverter(cleanedworkItemToInvoiceConverterData);
         if (errorMessages.length) {
             return res.status(400).json({ message: errorMessages });
         }
-
         res.json({ message: 'Work items submitted successfully', invoiceId: invoiceId});
     }catch(error){
         console.error(error.message);

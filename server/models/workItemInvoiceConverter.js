@@ -163,21 +163,6 @@ async function workItemToInvoiceConverter(data) {
             }
         }
 
-
-
-        //send the invoice id to mySqlApp.js to update the work items
-        // CREATE PROCEDURE InsertInvoiceAndUpdateWorkItems(
-        //     IN p_externalUniqueId VARCHAR(255),
-        //     IN p_regularString VARCHAR(255),
-        //     IN p_invoiceDate DATE,
-        //     IN p_creationDate DATETIME,
-        //     IN p_total DECIMAL(10,2),
-        //     IN p_clientName VARCHAR(255),
-        //     IN p_workItemIds TEXT
-        // )
-        //turn finalInvoice into a string for sql.
-        // await addInvoiceAndUpdateWorkItems(invoiceId, JSON.stringify(finalInvoice), transInvoice['B'].timestampValue, new Date(),totalPrice.toFixed(2), clientDetails.client_name, data.work_item_IDs);
-
         // return :3
         return {errorMessages, invoiceId};
 

@@ -286,6 +286,13 @@ async function displayAdvancedWorkItems(data) {
                             descriptionPriceObject[`${key}C`] = entry.C;
                         }
 
+                        let invoice_Name = null;
+                        if(item.invoice_id !== null){
+                            const invoiceInfo = await getInvoiceByID(item.invoice_id);
+                            let regString = JSON.parse(invoiceInfo[0].regular_string);
+                            invoice_Name = regString.A;
+                        }
+
                         workItems.push({
                             workItemID: item.workItem_id,
                             clientID: item.client_id,
@@ -295,7 +302,8 @@ async function displayAdvancedWorkItems(data) {
                             descriptionPrice: descriptionPriceObject,
                             totalCharges: totalCharges.toFixed(2),
                             workDate: item.work_date,
-                            invoiceID: item.invoice_id
+                            invoiceID: item.invoice_id,
+                            invoiceName: invoice_Name
                         });
                     }
                     resolve(workItems);
