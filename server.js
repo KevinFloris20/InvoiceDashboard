@@ -31,10 +31,24 @@ passport.deserializeUser((id, done) => {
     done(null, user);
 });
 
+function checkHttps(req, res, next) {
+    if (req.secure) {
+        return next();
+    } else if (req.get('x-forwarded-proto') === 'https') {
+        return next();
+    } else {
+        res.redirect('https://' + req.hostname + req.url);
+    }
+}
+//if on local keep going if not check for https
+if (PORT != port) {
+    app.use(checkHttps);
+}
+
 
 //Limit on the users attempts
 const limiter = rateLimit({
-    windowMs: 18 * 60 * 60 * 1000, // 18 hours
+    windowMs: 18 * 60 * 60 * 1000, // 18hours
     max: 100 
 });
 app.use(limiter);
@@ -63,9 +77,11 @@ app.use(passport.session());
 
 // Login route
 app.post('/login', passport.authenticate('local', {
-    successRedirect: '/',
     failureRedirect: '/login',
-}));
+}), (req, res) => {
+    console.log("Session:", req.session);
+    res.redirect('/');
+});
 
 
 // Import routes

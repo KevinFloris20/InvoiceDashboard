@@ -2,5 +2,9 @@ runtime: nodejs18
 entrypoint: node server.js
 inbound_services:
   - warmup
+handlers:
+  - url: /.*
+    script: auto
 env_variables:
   NODE_ENV: 'production'
+
