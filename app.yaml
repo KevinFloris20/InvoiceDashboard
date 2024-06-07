@@ -7,4 +7,3 @@ handlers:
     script: auto
 env_variables:
   NODE_ENV: 'production'
-
