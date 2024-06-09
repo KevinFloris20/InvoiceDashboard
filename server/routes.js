@@ -27,6 +27,14 @@ router.get('/login', (req, res) => {
     }
     res.sendFile(path.join(__dirname, '..', 'public/login.html'));
 });
+router.get('/logout', (req, res) => {
+    req.logout((err) => {
+        if (err) {
+            return next(err);
+        }
+        res.redirect('/login');
+    });
+});
 
 // Serve the main page after authentication
 router.get('/', isAuthenticated, (req, res) => {

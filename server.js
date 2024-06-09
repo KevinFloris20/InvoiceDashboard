@@ -4,6 +4,7 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const rateLimit = require('express-rate-limit');
 require('dotenv').config({path:'cred.env'});
+const FirestoreSeshStore = require('./server/models/firestoreSessionStore.js');
 // live site https://invoicedashboardfcr.ue.r.appspot.com/
 const app = express();
 const port = 7000
@@ -11,7 +12,7 @@ const PORT = process.env.PORT || port;
 const users = JSON.parse(process.env.USERS || '[]');
 
 
-// Passport configuration
+//passport config
 passport.use(new LocalStrategy(
     (username, password, done) => {
         const user = users.find(u => u.username === username && u.password === password);
@@ -26,9 +27,14 @@ passport.use(new LocalStrategy(
 passport.serializeUser((user, done) => {
     done(null, user.id);
 });
+
 passport.deserializeUser((id, done) => {
     const user = users.find(u => u.id === id);
-    done(null, user);
+    if (user) {
+        done(null, user);
+    } else {
+        done(new Error('User not found'));
+    }
 });
 
 function checkHttps(req, res, next) {
@@ -54,11 +60,12 @@ const limiter = rateLimit({
 app.use(limiter);
 
 
-// Session configuration
+//seshh config
 app.set('trust proxy', 1);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(session({
+    store: new FirestoreSeshStore(),
     secret: process.env.SESSION_SECRET || 'default_session_secret',
     resave: false,
     saveUninitialized: false,
@@ -69,17 +76,15 @@ app.use(session({
     }
 }));
 
-
-// Initialize passport
+//init passport
 app.use(passport.initialize());
 app.use(passport.session());
 
 
-// Login route
+//login route
 app.post('/login', passport.authenticate('local', {
     failureRedirect: '/login',
 }), (req, res) => {
-    console.log("Session:", req.session);
     res.redirect('/');
 });
 
