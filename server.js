@@ -53,11 +53,12 @@ if (PORT != port) {
 
 
 //Limit on the users attempts
-const limiter = rateLimit({
-    windowMs: 18 * 60 * 60 * 1000, // 18hours
-    max: 100 
-});
-app.use(limiter);
+//idk what to do here D:
+// const limiter = rateLimit({
+//     windowMs: 30 * 60 * 1000, // 30 minutes for login attempts
+//     max: 1000,
+// });
+// app.use("/login", limiter);
 
 
 //seshh config
@@ -70,7 +71,7 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
     cookie: {
-        maxAge: 18 * 60 * 60 * 1000,
+        maxAge: 18 * 60 * 60 * 1000, // 18 hours
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production' && PORT !== port
     }

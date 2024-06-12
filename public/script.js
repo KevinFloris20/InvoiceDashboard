@@ -652,7 +652,9 @@ function populateForm(workItemDetails, isViewMode) {
         }
     }
 
-    document.querySelector(`#addWorkItemForm > div:nth-child(1) > div:nth-child(1) > div > div > div`).classList.add('disabled');
+    // document.querySelector(`#addWorkItemForm > div:nth-child(1) > div:nth-child(1) > div > div > div`).classList.add('disabled');
+    document.querySelector('#AWIDDdiv').classList.add('disabled');
+    document.querySelector('#AWIClientDropdown').classList.add('disabled');
     document.getElementById('AWIAddClientBtn').classList.add('disabled');
     
   
@@ -776,9 +778,11 @@ function cancelViewOrEditMode() {
     document.querySelector('#addWorkItemSection > div > h1').style.display = 'block';
     document.getElementById('addWorkItemForm').reset();
     document.querySelectorAll('#addWorkItemForm input, #addWorkItemForm select').forEach(input => {
-        input.setAttribute('disabled', 'false');
+        input.removeAttribute('disabled');
     });
-    document.querySelector(`#addWorkItemForm > div:nth-child(1) > div:nth-child(1) > div > div > div`).classList.remove('disabled');
+    // document.querySelector(`#addWorkItemForm > div:nth-child(1) > div:nth-child(1) > div > div > div`).classList.remove('disabled');
+    document.querySelector('#AWIDDdiv').classList.remove('disabled');
+    document.querySelector('#AWIClientDropdown').classList.remove('disabled');
     document.getElementById('AWIAddClientBtn').classList.remove('disabled');
     document.getElementById('AWIClientDropdown').selectedIndex = 0;
 
