@@ -654,7 +654,7 @@ function populateForm(workItemDetails, isViewMode) {
 
     // document.querySelector(`#addWorkItemForm > div:nth-child(1) > div:nth-child(1) > div > div > div`).classList.add('disabled');
     document.querySelector('#AWIDDdiv').classList.add('disabled');
-    document.querySelector('#AWIClientDropdown').classList.add('disabled');
+    // document.querySelector('#AWIClientDropdown').classList.add('disabled');
     document.getElementById('AWIAddClientBtn').classList.add('disabled');
     
   

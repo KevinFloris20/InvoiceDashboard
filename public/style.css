@@ -70,8 +70,13 @@ div{
     height:fit-content;
     width: calc(20% - 2 * 10px); 
     margin: 10px;
+    position: fixed;
+    right: 0px;
 }
-
+#errorList{
+    max-height: 44vh;
+    overflow: auto;
+}
 .success-message{
     color: rgb(0, 180, 0);
 }
