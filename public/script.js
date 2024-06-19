@@ -646,15 +646,14 @@ function populateForm(workItemDetails, isViewMode) {
 
     const dropdown = document.getElementById('AWIClientDropdown');
     for (const option of dropdown.options) {
-        if (option.value === `${workItemDetails.clientID} - ${workItemDetails.clientName}`) {
-            option.selected = true;
+        if (option.value === `${workItemDetails.clientID}`) {
+            dropdown.value = option.value;
             break;
         }
     }
 
-    // document.querySelector(`#addWorkItemForm > div:nth-child(1) > div:nth-child(1) > div > div > div`).classList.add('disabled');
     document.querySelector('#AWIDDdiv').classList.add('disabled');
-    // document.querySelector('#AWIClientDropdown').classList.add('disabled');
+    document.querySelector('#AWIClientDropdown').classList.add('disabled');
     document.getElementById('AWIAddClientBtn').classList.add('disabled');
     
   
@@ -780,7 +779,6 @@ function cancelViewOrEditMode() {
     document.querySelectorAll('#addWorkItemForm input, #addWorkItemForm select').forEach(input => {
         input.removeAttribute('disabled');
     });
-    // document.querySelector(`#addWorkItemForm > div:nth-child(1) > div:nth-child(1) > div > div > div`).classList.remove('disabled');
     document.querySelector('#AWIDDdiv').classList.remove('disabled');
     document.querySelector('#AWIClientDropdown').classList.remove('disabled');
     document.getElementById('AWIAddClientBtn').classList.remove('disabled');
